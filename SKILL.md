@@ -17,7 +17,7 @@ Use this skill as a PixelLab routing brain. Classify the user's asset or API int
    use hosted MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
 4. Use MCP only if the current agent actually exposes PixelLab MCP tools, either bare or prefixed. If not, say MCP is not configured and offer setup, or REST v2 code only when the user asks for direct API/code.
 5. Refresh current facts when exact endpoint names, parameters, auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
-6. Before live generation, confirm the PixelLab account API token/secret is configured without asking the user to paste it into chat.
+6. Before live generation, confirm the single PixelLab account credential is configured without asking the user to paste it into chat.
 7. Act or answer. Ask a short clarification only for known collisions.
 
 ## Surface Rules
@@ -70,7 +70,7 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 
 Read only the relevant reference:
 
-- Credentials, token/secret terminology, and MCP token reuse: `references/credentials.md`.
+- Credential naming (`API key`, `API token`, `bearer token`, `secret`) and MCP credential reuse: `references/credentials.md`.
 - Browser fallback and website automation boundaries: `references/browser-fallback.md`.
 - Paperdolling and layered character workflows: `references/paperdolling.md`.
 - Tileset and tile-variant details: `references/tilesets.md`.
@@ -92,7 +92,7 @@ Do not invent provider internals where PixelLab docs are silent.
 ## Do Not Use
 
 - Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied DevTools bearer tokens. Treat them as unsupported unless PixelLab documents them.
-- Do not ask users to paste the PixelLab account API token/secret into chat. Direct them to local environment or MCP secret setup instead.
+- Do not ask users to paste the PixelLab account credential into chat. Direct them to local environment or MCP secret setup instead.
 - Do not treat `https://api.pixellab.ai/` redirecting to v1 docs as proof that root website routes map to `/v1`.
 - Do not confuse website Create Tileset Pro with public `create_tiles_pro` / `create-tiles-pro`; they are different flows.
 - Do not call website session bearer tokens API tokens. Public REST/MCP bearer tokens and website session tokens are different auth contexts.
@@ -125,7 +125,7 @@ For questions, answer with:
 
 For tasks, execute generation/editing only when the user clearly requested it and credentials/tooling are configured. Ask before ambiguous credit-spending batch work, destructive deletes, or unsupported automation. Otherwise provide the exact route and minimal code or call shape the user needs.
 
-If credentials are missing, stop before generation and tell the user to configure the single PixelLab account API token/secret locally. Prefer `PIXELLAB_API_TOKEN`; treat `PIXELLAB_API_KEY` or `PIXELLAB_SECRET` only as compatibility aliases when already present. Never request the token value in chat.
+If no PixelLab account credential is configured, stop before generation and tell the user to configure the single credential locally. PixelLab surfaces may call the same value an API key, API token, bearer token, or secret. Prefer `PIXELLAB_API_TOKEN` for new examples; treat `PIXELLAB_API_KEY` or `PIXELLAB_SECRET` only as existing compatibility aliases for that same credential. Never request the credential value in chat.
 
 After any live PixelLab call, report the surface, tool or endpoint, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, and credit/balance delta when exposed. If usage is not exposed, say so.
 
