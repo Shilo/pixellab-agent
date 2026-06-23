@@ -17,7 +17,8 @@ Use this skill as a PixelLab routing brain. Classify the user's asset or API int
    use hosted MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
 4. Use MCP only if the current agent actually exposes PixelLab MCP tools, either bare or prefixed. If not, say MCP is not configured and offer setup, or REST v2 code only when the user asks for direct API/code.
 5. Refresh current facts when exact endpoint names, parameters, auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
-6. Act or answer. Ask a short clarification only for known collisions.
+6. Before live generation, confirm credentials are configured without asking the user to paste tokens into chat.
+7. Act or answer. Ask a short clarification only for known collisions.
 
 ## Surface Rules
 
@@ -25,7 +26,7 @@ Use this skill as a PixelLab routing brain. Classify the user's asset or API int
 |---|---|---|
 | Hosted MCP | Workflows that need managed PixelLab assets with IDs, polling, downloads, list/get/delete helpers, and project/sandbox/agent helpers. | Raw image/edit/UI primitives that MCP does not expose, or any MCP call when tools are not available in the current agent. |
 | REST v2 | Scripts, batch jobs, server integrations, exact endpoint control, generic images, backgrounds, UI, inpaint/edit, prompt enhancement, raw animation, rotate, resize, remove background, and API parity checks. | Guessing SDK methods without checking the installed SDK or current docs. |
-| Website / Map Workshop | Human product surface, full-map manual work, rich libraries, and website-only flows. | Programmatic use of copied browser session tokens or undocumented root endpoints. |
+| Website / Map Workshop | Human product surface, full-map manual work, rich libraries, visible browser assistance, and website-only flows. | Programmatic use of copied browser session tokens or undocumented root endpoints. |
 | Aseprite | Local in-editor plugin workflows when the user is actively working inside Aseprite. | Treating local plugin routes as public REST/MCP contracts. |
 | Pixelorama / editor | Browser editor for existing website assets and save-back through `replace-png` routes. | New asset generation or public automation. |
 | REST v1 | Existing legacy code and old SDK compatibility. | New work unless the user explicitly needs v1. |
@@ -59,11 +60,15 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 
 ## Clarify Only For Collisions
 
-- "Tiles": ask whether the user wants individual tile variants or a terrain/autotile tileset.
+- "Tiles": ask whether the user wants a terrain/autotile tileset, platformer/sidescroller tileset, or individual tile variants.
 - "Map": ask whether they want a whole map, map object, map image, tileset, isometric tile, or tile variants.
 - "Object/character": infer character for people, NPCs, creatures, body templates, or identity/state animation; infer object for props/items/furniture/weapons. Ask only if unclear.
 - "Effect": ask static sprite or animated effect when not obvious. For static VFX, ask whether it should be a reusable managed object or a one-off sprite.
 - "Isometric tileset": ask whether they need one isometric tile or a full tileset, because public docs expose a single isometric tile route.
+- "Paperdoll": ask for base character, layers, directions, animation list, and whether outputs must be isolated layers or composited previews. Preserve canvas, frame count/order, origin, transparency, and palette; warn that text-only output can drift.
+- Supplied images: infer role from the request, but ask when one file could be identity, style, concept, edit target, palette, pose, first frame, or last frame. Check current endpoint schema before choosing parameter names or base64 shape.
+
+For endpoint-specific image roles, paperdolling contracts, tileset details, token setup, browser fallback, and usage reporting, read `references/pixellab-details.md`.
 
 ## Model And Mode Terms
 
@@ -80,6 +85,7 @@ Do not invent provider internals where PixelLab docs are silent.
 ## Do Not Use
 
 - Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied DevTools bearer tokens. Treat them as unsupported unless PixelLab documents them.
+- Do not ask users to paste PixelLab API tokens into chat. Direct them to local environment or MCP secret setup instead.
 - Do not treat `https://api.pixellab.ai/` redirecting to v1 docs as proof that root website routes map to `/v1`.
 - Do not confuse website Create Tileset Pro with public `create_tiles_pro` / `create-tiles-pro`; they are different flows.
 - Do not call website session bearer tokens API tokens. Public REST/MCP bearer tokens and website session tokens are different auth contexts.
@@ -111,6 +117,12 @@ For questions, answer with:
 4. Official-doc caveat when the answer was not freshly verified.
 
 For tasks, execute generation/editing only when the user clearly requested it and credentials/tooling are configured. Ask before ambiguous credit-spending batch work, destructive deletes, or unsupported automation. Otherwise provide the exact route and minimal code or call shape the user needs.
+
+If credentials are missing, stop before generation and tell the user to configure `PIXELLAB_API_TOKEN`, `PIXELLAB_API_KEY`, or agent/MCP secret config locally. Never request the token value in chat.
+
+After any live PixelLab call, report the surface, tool or endpoint, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, and credit/balance delta when exposed. If usage is not exposed, say so.
+
+Use browser automation only for visible website assistance after explicit user permission. Ask again before login/session actions, spending credits, submitting generations, downloads, or edits. Never scrape session tokens or call undocumented website endpoints.
 
 ## Examples
 
