@@ -22,9 +22,9 @@ Without `/pixellab-pip`, the official MCP flow is:
 
 1. User configures an MCP-capable agent with server URL `https://api.pixellab.ai/mcp`.
 2. User configures the MCP client to send `Authorization: Bearer <PixelLab bearer token>` from secret/env config.
-3. The agent sees PixelLab MCP tools, often bare or prefixed by the host.
+3. Agent sees PixelLab MCP tools, often bare or prefixed by the host.
 4. User asks the agent to create assets.
-5. The agent uses MCP tools directly and polls with corresponding `get_*` tools.
+5. Agent uses MCP tools directly and polls with corresponding `get_*` tools.
 
 `https://api.pixellab.ai/mcp/docs` is a tool guide for agents. It explains available MCP tools, non-blocking jobs, polling, downloads, and warns that MCP tools are not REST endpoints.
 

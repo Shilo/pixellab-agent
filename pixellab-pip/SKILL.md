@@ -1,11 +1,11 @@
 ---
 name: pixellab-pip
-description: PixelLab Pip is a PixelLab asset/API skill for creating, drawing, generating, editing, animating, and answering questions across MCP, REST v2, website/editor Pixelorama, Aseprite, and legacy v1. Use for PixelLab or pixel-art game-asset requests about sprites, sprite sheets, characters, objects, tilesets, tilemaps, tiles, maps, UI, icons, backgrounds, palettes, image edits, animations, SDK/API integration, bearer-token auth, MCP setup, endpoint/tool choice, docs, troubleshooting, or vibe-coding.
+description: PixelLab Pip is an assistant for creating, drawing, generating, editing, animating, and answering PixelLab asset/API questions across MCP, REST v2, website/editor Pixelorama, Aseprite, and legacy v1. Use for PixelLab or pixel-art game-asset requests about sprites, sprite sheets, characters, objects, tilesets, tilemaps, tiles, maps, UI, icons, backgrounds, palettes, image edits, animations, SDK/API integration, bearer-token auth, MCP setup, endpoint/tool choice, docs, troubleshooting, or vibe-coding.
 ---
 
 # PixelLab Pip
 
-Use this skill as a high-level PixelLab assistant. Classify the user's asset, API, or question intent first, then choose the supported PixelLab surface. Answer questions directly when the request is a question.
+Classify the user's asset, API, or question intent first, then choose the supported PixelLab surface. Answer questions directly when the request is a question.
 
 ## Workflow
 
@@ -15,7 +15,7 @@ Use this skill as a high-level PixelLab assistant. Classify the user's asset, AP
    `general_image | background | character | object | effect_vfx | ui | whole_map | map_image | map_object | top_down_tileset | sidescroller_tileset | isometric_tile | tile_variants | animation | existing_image`.
 3. Choose the surface:
    use hosted MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
-4. Use MCP only if the current agent environment actually exposes PixelLab MCP tools, either bare or prefixed. If not, say MCP is not configured and offer setup, or REST v2 code only when the user asks for direct API/code.
+4. Use MCP only if PixelLab MCP tools are available, either bare or prefixed. If not, say MCP is not configured and offer setup, or REST v2 code only when the user asks for direct API/code.
    If tools are prefixed, such as `mcp__pixellab__create_character`, match by suffix.
 5. Refresh current facts when a needed tool/endpoint/field is missing or unclear, or when auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
 6. Before live generation, confirm the PixelLab bearer token is configured without asking the user to paste it into chat.
@@ -25,7 +25,7 @@ Use this skill as a high-level PixelLab assistant. Classify the user's asset, AP
 
 | Surface | Use for | Avoid |
 |---|---|---|
-| Hosted MCP | Workflows that need managed PixelLab assets with IDs, polling, downloads, list/get/delete helpers, and project/sandbox/agent helpers. | Raw image/edit/UI primitives that MCP does not expose, or any MCP call when tools are not available in the current agent environment. |
+| Hosted MCP | Workflows that need managed PixelLab assets with IDs, polling, downloads, list/get/delete helpers, and project/sandbox/agent helpers. | Raw image/edit/UI primitives that MCP does not expose, or any MCP call when PixelLab MCP tools are unavailable. |
 | REST v2 | Scripts, batch jobs, server integrations, exact endpoint control, generic images, backgrounds, UI, inpaint/edit, prompt enhancement, raw animation, rotate, resize, remove background, and API parity checks. | Guessing SDK methods without checking the installed SDK or current docs. |
 | Website / Map Workshop | Human product surface, full-map manual work, rich libraries, visible browser assistance, and website-only flows. | Programmatic use of copied browser session tokens or undocumented root endpoints. |
 | Aseprite | Local in-editor plugin workflows when the user is actively working inside Aseprite. | Treating local plugin routes as public REST/MCP contracts. |
@@ -141,7 +141,7 @@ Use browser automation only for visible website/editor/Pixelorama assistance aft
 | Request | Route |
 |---|---|
 | "Make a wizard with idle and walk animations." | MCP `create_character`, then `animate_character`. |
-| "Generate a mossy platformer tileset from code." | REST v2 `create-tileset-sidescroller`; use MCP `create_sidescroller_tileset` if working inside an MCP-enabled agent environment. |
+| "Generate a mossy platformer tileset from code." | REST v2 `create-tileset-sidescroller`; use MCP `create_sidescroller_tileset` if working in an MCP-enabled agent. |
 | "Create a 512x512 title screen background." | REST v2 `create-image-pixflux-background` or another current image endpoint verified from docs. |
 | "Make HUD buttons and a health bar." | REST v2 `generate-ui-v2`. |
 | "Convert this image to pixel art and remove the background." | REST v2 `image-to-pixelart` or Pro variant, then `remove-background`. |
