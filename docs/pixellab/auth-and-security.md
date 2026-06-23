@@ -2,6 +2,8 @@
 
 Last reviewed: 2026-06-23.
 
+Purpose: document the safe credential and session boundaries agents need before calling PixelLab MCP, REST v2, website/editor workflows, or generated asset links.
+
 PixelLab REST v2 and hosted MCP use bearer-token authentication. Pip should guide users toward local secret configuration and avoid exposing credentials in chat or generated docs.
 
 ## Bearer Token Handling

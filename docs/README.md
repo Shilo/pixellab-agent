@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-06-23.
 
-These docs summarize the public-facing research behind PixelLab Pip. They are written for a public repository: concise, technical, source-linked, and focused on helping agents choose the correct PixelLab surface.
+These docs explain the PixelLab surfaces, asset workflows, terminology, SDK boundaries, and auth rules that Pip needs in order to automate PixelLab correctly. They supplement the repository README; install, update, and plugin metadata stay there.
 
 For exact current endpoint schemas, tool lists, model/mode availability, pricing, and authentication behavior, verify against the official PixelLab docs:
 
@@ -17,12 +17,11 @@ For exact current endpoint schemas, tool lists, model/mode availability, pricing
 
 ## Contents
 
-- [PixelLab Pip Design](pixellab-pip-design.md) - goal, scope, and routing behavior.
-- [Distribution](pixellab-pip-distribution.md) - chosen public repo and plugin/skill layout.
-- [Public Surfaces](pixellab-public-surfaces.md) - MCP, REST v2, website/editor, Aseprite, Pixelorama, and legacy v1 boundaries.
-- [Terminology](pixellab-terminology.md) - public product labels, endpoint labels, and terms agents should not over-interpret.
-- [SDK Compatibility](pixellab-sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
-- [Auth And Security](pixellab-auth-and-security.md) - bearer-token handling and automation boundaries.
+- [PixelLab Surfaces And Services](pixellab/surfaces-and-services.md) - MCP, REST v2, website/editor, Aseprite, Pixelorama, SDK, and legacy v1 boundaries.
+- [PixelLab Asset Routing](pixellab/asset-routing.md) - how common asset requests map to PixelLab tools, endpoints, and workflows.
+- [PixelLab Terminology](pixellab/terminology.md) - public product labels, endpoint labels, and terms agents should not over-interpret.
+- [PixelLab SDK Compatibility](pixellab/sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
+- [PixelLab Auth And Security](pixellab/auth-and-security.md) - bearer-token handling and automation boundaries.
 
 ## Publication Rules
 

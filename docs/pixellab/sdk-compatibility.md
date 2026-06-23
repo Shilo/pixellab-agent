@@ -2,6 +2,8 @@
 
 Last reviewed: 2026-06-23.
 
+Purpose: help agents decide when to use an official PixelLab SDK and when to call REST v2 directly.
+
 PixelLab publishes official SDK and tooling repositories under [pixellab-code](https://github.com/pixellab-code). Pip should prefer official docs and installed package behavior over assumptions from memory.
 
 ## Guidance
@@ -11,6 +13,17 @@ PixelLab publishes official SDK and tooling repositories under [pixellab-code](h
 - Verify installed SDK coverage before claiming a method exists.
 - Treat branch-specific SDK code as evidence only for that branch, not as released package behavior.
 - Do not assume every current REST v2 endpoint is available in every SDK release.
+
+## Decision Table
+
+| Situation | Recommended path |
+|---|---|
+| User asks for a PixelLab REST/API integration from scratch | Start from REST v2 docs/OpenAPI, then offer SDK code only after confirming coverage. |
+| User already has PixelLab SDK code installed | Inspect the installed package or lockfile before choosing SDK method names. |
+| User needs an endpoint that appears in REST v2 but not the installed SDK | Call REST v2 directly. |
+| User asks for MCP setup or agent-managed assets | Use hosted MCP docs and tools, not SDK wrappers. |
+| User asks about old code using v1/default SDK examples | Treat as legacy compatibility and explain the v2 path for new work. |
+| User asks for exact enums, required fields, polling, or result shapes | Verify against REST v2 OpenAPI before finalizing code. |
 
 ## Official References
 

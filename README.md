@@ -110,7 +110,7 @@ Do not use copied website session tokens or undocumented website endpoints for a
 
 ## Documentation
 
-Public research summaries live in [docs/](docs/). They cover Pip's design, distribution, PixelLab surfaces, terminology, SDK compatibility, and auth/security boundaries.
+Supplemental PixelLab technical notes live in [docs/pixellab/](docs/pixellab/). They explain PixelLab surfaces, asset routing, terminology, SDK compatibility, and auth/security boundaries for agents that need deeper implementation context.
 
 ## Project Layout
 

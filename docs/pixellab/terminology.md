@@ -2,6 +2,8 @@
 
 Last reviewed: 2026-06-23.
 
+Purpose: prevent agents from over-interpreting PixelLab labels such as `Pro`, `v3`, `new`, `Pixen`, `PixFlux`, `BitForge`, `tiles`, and `tileset`.
+
 PixelLab product labels, endpoint names, editor labels, and SDK method names can use related but different terms. Pip should map the user's plain-language request to the concrete documented surface instead of treating labels as universal model selectors.
 
 ## Product And Endpoint Labels
