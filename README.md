@@ -15,6 +15,7 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 - [Usage](#usage)
 - [Authentication](#authentication)
 - [Documentation](#documentation)
+- [Showcase](#showcase)
 - [Project Layout](#project-layout)
 - [Other Tools](#other-tools)
 - [PixelLab Resources](#pixellab-resources)
@@ -115,6 +116,10 @@ Do not use copied website session tokens or undocumented website endpoints for a
 
 Supplemental PixelLab technical notes live in [docs/pixellab/](docs/pixellab/). They explain PixelLab surfaces, asset routing, terminology, SDK compatibility, and auth/security boundaries for agents that need deeper implementation context.
 
+## Showcase
+
+Future examples and generated showcase notes will live in [docs/showcase/](docs/showcase/). The first planned showcase is using Pip to route and generate its own Pixel Pup icon.
+
 ## Project Layout
 
 ```text
@@ -130,6 +135,7 @@ GEMINI.md
 .codex-plugin/plugin.json
 plugin.json
 docs/
+  showcase/
 skills/
   pixellab-pip/
     SKILL.md

@@ -60,12 +60,19 @@ Image input role is endpoint-specific. Do not map every supplied image to `refer
   - `color_image`: style/color guide.
 - `edit-images-v2`
   - `edit_images`: targets to edit.
+  - `method`: `edit_with_text` or `edit_with_reference`.
   - `reference_image`: required only for `method=edit_with_reference`.
+  - No mask input or layer output was documented.
 - `image-to-pixelart` / `image-to-pixelart-pro`
   - `image`: target image to convert, not a style reference.
 - `animate-with-text-v3`
   - `first_frame`: required starting frame.
   - `last_frame`: optional ending frame for interpolation/guidance.
+- `inpaint-v3`
+  - `inpainting_image`: target image to edit.
+  - `mask_image`: white marks pixels to generate/replace; black preserves pixels.
+  - `context_image` and `bounding_box` are deprecated in current OpenAPI.
+  - Output is a whole edited image, not an isolated layer.
 - `map-objects`
   - `init_image`: starting image to transform.
   - `background_image`: background/map image for style matching when using inpainting.

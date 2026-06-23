@@ -25,9 +25,14 @@ Use this as routing guidance, not as a frozen schema. Refresh official docs for 
 | Background, scene, title image | REST v2 background/image generation. | Treat as image generation unless the user needs map/editor semantics. |
 | UI, HUD, button, panel, menu | REST v2 UI generation. | Website UI libraries are human/editor surfaces unless a public endpoint covers the task. |
 | Image edit, inpaint, remove background, resize, convert to pixel art | REST v2 edit/transform endpoints. | Supplied images are optional unless the selected route requires image fields. |
+| Reduce colors / quantize palette | Website/editor/local image tooling. | No public REST v2/MCP reduce-colors endpoint was documented. |
+| Unzoom pixel art | Aseprite or Pixelorama extension. | Website docs list this as extension-only. |
+| Try on garment/item | Website Try on for single-image compositing; REST `transfer-outfit-v2` for animation-frame outfit transfer. | Do not treat either as isolated layer extraction. |
+| Multi image | Website experimental flow or closest documented REST image/edit route after checking current docs. | No direct public REST v2/MCP "multi image" route was documented. |
+| Reshape | Website Reshape or closest documented edit/character route after checking current docs. | Website docs require exactly 64x64 canvas; no public REST v2/MCP reshape endpoint was documented. |
 | Prompt enhancement | REST v2 prompt enhancement endpoints. | Pick the enhancer that matches the asset type when documented. |
-| Map image or level concept | REST v2 image/background route unless the user needs Map Workshop behavior. | A visual map concept is not the same thing as a website Map Workshop project. |
-| Map object | MCP map-object tool when configured; REST v2 map-object endpoint when documented. | Distinguish map objects from whole maps and terrain tilesets. |
+| Map image or level concept | REST v2 image/background route unless the user needs Map Workshop behavior. | A visual map concept is not the same thing as a website Map Workshop project; map extension/texture flows are website workflows unless public endpoints are documented. |
+| Map object | MCP map-object tool when configured; REST v2 map-object endpoint when documented. | Distinguish map objects from whole maps and terrain tilesets. MCP map objects auto-delete after 8 hours. |
 | Whole map / Map Workshop project | Visible website workflow or generated component assets. | Do not invent public map CRUD/export APIs when not documented. |
 | Balance, usage, async job status | MCP balance/status tools when configured; REST v2 balance/background-job endpoints for code. | Report usage/balance only when exposed by the selected route. |
 

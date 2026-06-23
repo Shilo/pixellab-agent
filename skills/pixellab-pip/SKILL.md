@@ -45,13 +45,18 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 | Isometric tile/block/floor | MCP `create_isometric_tile`. | `create-isometric-tile`. |
 | Tile variants / tiles pro | MCP `create_tiles_pro` for individual tile variants such as hex, octagon, square top-down, and isometric tiles. | `create-tiles-pro`, `tiles-pro/{tile_id}`. |
 | General image, sprite, icon-like standalone asset | REST v2. | `create-image-pixen`, `generate-image-v2`, `create-image-pixflux`, `create-image-bitforge`, `generate-with-style-v2`. |
-| Background, scene, environment, backdrop | REST v2; no direct hosted MCP background tool was documented. | `create-image-pixflux-background` or normal image generation with background in the prompt. |
+| Background, scene, environment, backdrop | REST v2 image generation; no direct hosted MCP background tool was documented. | Use normal image generation with a scene/background prompt. Do not assume `create-image-pixflux-background` means a scene-backdrop generator without checking current docs. |
 | UI, HUD, button, panel, health bar, menu | REST v2. | `generate-ui-v2`. Website UI library is a human/editor surface unless public lifecycle endpoints exist. |
 | Image edit, inpaint, mask, convert, resize, remove background | REST v2. | `inpaint`, `inpaint-v3`, `edit-image`, `edit-images-v2`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`. |
+| Reduce colors / quantize palette | Website/editor/local image tooling. | No public REST v2/MCP reduce-colors endpoint was documented; use website docs or local tooling instead of inventing a route. |
+| Unzoom pixel art / remove upscaling | Aseprite or Pixelorama extension. | Website docs list this as editor-extension only; do not route to REST/MCP unless official docs add an endpoint. |
+| Try on garment/item on character | Website Try on for single-image experimental output; REST `transfer-outfit-v2` only for animation-frame outfit transfer. | Try on returns a composited image, not isolated paperdoll layers. |
+| Multi image combine references | Website experimental flow or closest documented REST image/edit route after verifying docs. | No direct public REST v2/MCP "multi image" route was documented. |
+| Reshape character proportions | Website Reshape or closest documented edit/character route after verifying docs. | Website docs require exactly 64x64 canvas; no public REST v2/MCP reshape endpoint was documented. |
 | Prompt enhancement, improve generation prompt | REST v2. | `enhance-pixen-prompt`, `enhance-character-v3-prompt`, or `enhance-animation-v3-prompt` depending on target asset. |
 | Raw animation, skeleton, interpolation, outfit transfer, rotate | REST v2 unless animating a managed MCP character/object. | `animate-with-text*`, `animate-with-skeleton`, `estimate-skeleton`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `rotate`, `generate-8-rotations-v2/v3`. |
-| Map image, generated level image, visual map concept | REST v2 image/background route. | No full public REST/MCP map CRUD surface was documented. |
-| Map object | MCP `create_map_object` plus `get_map_object` by default. | `POST /map-objects`; verify current result and polling behavior from OpenAPI before writing code. |
+| Map image, generated level image, visual map concept | REST v2 image/background route; website for map extension/texture workflows. | No full public REST/MCP map CRUD, map extension, or map texture surface was documented. |
+| Map object | MCP `create_map_object` plus `get_map_object` by default. | `POST /map-objects`; MCP map objects auto-delete after 8 hours. Verify current REST result and polling behavior from OpenAPI before writing code. |
 | Whole map, Map Workshop, map CRUD/export | Website manually, or generate components with MCP/REST. | No full public REST/MCP map CRUD surface was documented in the research. |
 | Static effect or VFX sprite | REST v2 image/object route depending whether it should be a reusable object. | No standalone public VFX endpoint was documented. |
 | Animated effect or VFX | REST v2 raw animation or MCP object animation if it should become a managed object. | `animate-with-text-v3`, `animate-with-skeleton`, or object animation endpoints; treat VFX as a description, not a separate endpoint. |
@@ -136,7 +141,7 @@ For questions, answer with:
 3. Warnings for unsupported or confusing alternatives.
 4. Verification note only when the answer depends on a current fact that was missing, unclear, or not freshly verified.
 
-For tasks, execute generation/editing only when the user clearly requested it and both the bearer token and tooling are configured. Ask before ambiguous credit-spending batch work or destructive deletes. Refuse unsupported automation, then route to the closest documented MCP/REST option or a visible manual website flow. Otherwise provide the exact route and minimal code or call shape the user needs.
+For tasks, execute generation/editing only when the user clearly requested it and both the bearer token and tooling are configured. For nontrivial live generation, prefer one candidate first, report enough route details to review it, then continue only if the user asks for more. Ask before ambiguous credit-spending batch work or destructive deletes. Refuse unsupported automation, then route to the closest documented MCP/REST option or a visible manual website flow. Otherwise provide the exact route and minimal code or call shape the user needs.
 
 If no PixelLab bearer token is configured, stop before generation and tell the user to get the bearer token from `https://www.pixellab.ai/account` after signing in, or follow the PixelLab MCP setup page at `https://www.pixellab.ai/mcp`, then configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
 
@@ -150,7 +155,7 @@ Use browser automation only for visible website/editor/Pixelorama assistance aft
 |---|---|
 | "Make a wizard with idle and walk animations." | MCP `create_character`, then `animate_character`. |
 | "Generate a mossy platformer tileset from code." | REST v2 `create-tileset-sidescroller`; use MCP `create_sidescroller_tileset` if working in an MCP-enabled agent. |
-| "Create a 512x512 title screen background." | REST v2 `create-image-pixflux-background` or another current image endpoint verified from docs. |
+| "Create a title screen background." | REST v2 image generation with a scene/background prompt; verify the current endpoint and size support from docs. |
 | "Make HUD buttons and a health bar." | REST v2 `generate-ui-v2`. |
 | "Convert this image to pixel art and remove the background." | REST v2 `image-to-pixelart` or Pro variant, then `remove-background`. |
 | "Inpaint this masked area." | REST v2 `inpaint` or `inpaint-v3` after checking current docs and inputs. |
