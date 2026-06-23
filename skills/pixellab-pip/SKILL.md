@@ -7,6 +7,8 @@ description: PixelLab Pip is an assistant for creating, drawing, generating, edi
 
 Classify the user's asset, API, or question intent first, then choose the supported PixelLab surface. Answer questions directly when the request is a question.
 
+Text prompts are enough for most PixelLab generation requests. Treat supplied images as optional inputs for style, identity, pose, palette, image-to-image, or editing tasks, not as a requirement unless the selected endpoint/workflow specifically needs one.
+
 ## Workflow
 
 1. Classify the request:
@@ -67,7 +69,7 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 - "Effect": ask static sprite or animated effect when not obvious. For static VFX, ask whether it should be a reusable managed object or a one-off sprite.
 - "Isometric tileset": ask whether they need one isometric tile or a full tileset, because public docs expose a single isometric tile route.
 - "Paperdoll": gather base, layers, directions, animations, and isolated-vs-composited output; see `references/paperdolling.md`.
-- Supplied images: infer role from the request, but ask when one file could be identity, style, concept, edit target, palette, pose, first frame, or last frame.
+- Supplied images are optional unless the chosen route specifically requires an existing image. When images are supplied, infer their role from the request, but ask when one file could be identity, style, concept, edit target, palette, pose, first frame, or last frame.
 
 Read only the relevant reference:
 
@@ -130,7 +132,7 @@ For questions, answer with:
 
 For tasks, execute generation/editing only when the user clearly requested it and both the bearer token and tooling are configured. Ask before ambiguous credit-spending batch work or destructive deletes. Refuse unsupported automation, then route to the closest documented MCP/REST option or a visible manual website flow. Otherwise provide the exact route and minimal code or call shape the user needs.
 
-If no PixelLab bearer token is configured, stop before generation and tell the user to configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
+If no PixelLab bearer token is configured, stop before generation and tell the user to get the token from `https://www.pixellab.ai/account` after signing in, then configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
 
 After any live PixelLab call, report the surface, tool or endpoint, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, and credit/balance delta when exposed. If usage is not exposed, say so.
 

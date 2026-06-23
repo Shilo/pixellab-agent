@@ -33,6 +33,14 @@ Pip:
 
 ## Install
 
+### Agent-Assisted Install
+
+You can try this first in local coding agents that can run plugin-management commands:
+
+> Install PixelLab Pip from [https://github.com/Shilo/pixellab-pip](https://github.com/Shilo/pixellab-pip) using the proper marketplace or plugin workflow for this agent. Prefer marketplace install/update over copying files.
+
+This is realistic for Claude Code, Codex, Gemini CLI, and GitHub Copilot CLI. It may work in Cursor when the agent can run shell commands or plugin commands. It is not reliable in VS Code UI-only flows or web-only chats such as Claude.ai, ChatGPT, or Gemini web.
+
 ### Marketplace Install
 
 Install PixelLab Pip as a plugin when your agent supports plugins or marketplaces. This keeps the skill updatable and avoids copying runtime files into multiple places.
@@ -44,19 +52,11 @@ Install PixelLab Pip as a plugin when your agent supports plugins or marketplace
 | Codex | `codex plugin marketplace add Shilo/pixellab-pip`, then install `pixellab-pip` from `/plugins` or the Codex plugin directory. | `codex plugin marketplace upgrade pixellab-pip` |
 | GitHub Copilot CLI | `copilot plugin marketplace add Shilo/pixellab-pip`, then `copilot plugin install pixellab-pip@pixellab-pip` | `copilot plugin update pixellab-pip` |
 | VS Code agent plugins | Enable `chat.plugins.enabled`, add `Shilo/pixellab-pip` to `chat.plugins.marketplaces`, or use **Chat: Install Plugin From Source** with this repo URL. | VS Code checks plugin marketplaces for updates automatically when extension updates run. |
-| Gemini CLI | `gemini extensions install <repo-url>` using [Shilo/pixellab-pip](https://github.com/Shilo/pixellab-pip) | `gemini extensions update pixellab-pip` |
+| Gemini CLI | `gemini extensions install https://github.com/Shilo/pixellab-pip` | `gemini extensions update pixellab-pip` |
 
-PixelLab Pip currently targets Claude Code, Cursor, Codex, GitHub Copilot CLI, VS Code agent plugins, and Gemini CLI. It does not auto-install into web-only chats such as Claude.ai, ChatGPT, or Gemini web.
+PixelLab Pip is agent-agnostic. It can be used by any agent app that supports Agent Skills or compatible plugin/extension wrappers. This repo includes ready-to-use metadata for Claude Code, Cursor, Codex, GitHub Copilot CLI, VS Code agent plugins, and Gemini CLI.
 
 Gemini uses `gemini-extension.json` for installation and `GEMINI.md` for invocation context. Gemini extensions are not native Agent Skills plugins, so those files adapt Gemini to the same Pip instructions in `skills/pixellab-pip/SKILL.md`.
-
-### Agent-Assisted Install
-
-You can try this prompt in a local coding agent that can run plugin-management commands:
-
-> Install PixelLab Pip from [https://github.com/Shilo/pixellab-pip](https://github.com/Shilo/pixellab-pip) using the proper marketplace or plugin workflow for this agent. Prefer marketplace install/update over copying files.
-
-This is mostly useful in Claude Code, Codex, Gemini CLI, GitHub Copilot CLI, or another local agent with shell access. It is not reliable in web-only assistants or agents that cannot install plugins from GitHub.
 
 ### Manual Install
 
@@ -95,13 +95,13 @@ Recommended explicit trigger:
 
 If your agent app namespaces plugin skills, use the name it shows, such as `pixellab-pip:pixellab-pip`.
 
-Implicit invocation should also work when an agent sees a PixelLab-specific request, such as pixel art, sprites, characters, objects, tilesets, tilemaps, UI, backgrounds, animations, MCP, REST v2, SDK/API, or PixelLab docs. Explicit invocation is still recommended when you want Pip used for sure.
+Implicit invocation should also work when an agent sees a PixelLab-specific text prompt, such as "create an image", "make a sprite", "draw a character", "generate a tileset", "animate this", "edit this image", "use PixelLab MCP", "call the REST API", or "check PixelLab docs". A supplied image can help for image-to-image or editing tasks, but it is not required for most generation requests. Explicit invocation is still recommended when you want Pip used for sure.
 
 ## Authentication
 
 PixelLab generation requires a PixelLab bearer token and may spend credits. This skill does not include or store that token.
 
-Configure the PixelLab bearer token locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
+Get your token from the PixelLab [account page](https://www.pixellab.ai/account) after signing in. Configure it locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
 
 Do not use copied website session tokens or undocumented website endpoints for automation unless PixelLab documents them as supported.
 
