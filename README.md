@@ -16,8 +16,8 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 - [Authentication](#authentication)
 - [Documentation](#documentation)
 - [Project Layout](#project-layout)
-- [Other Unofficial PixelLab Tools](#other-unofficial-pixellab-tools)
-- [Official PixelLab Resources](#official-pixellab-resources)
+- [Other Tools](#other-tools)
+- [PixelLab Resources](#pixellab-resources)
 
 ## What Pip Does
 
@@ -107,7 +107,7 @@ Implicit invocation should also work when an agent sees a PixelLab-specific requ
 
 PixelLab generation requires a PixelLab bearer token and may spend credits. This skill does not include or store that token.
 
-Get your secret token from the PixelLab [account page](https://www.pixellab.ai/account) after signing in. Configure it locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
+Get your secret token from the PixelLab [account page](https://www.pixellab.ai/account) after signing in, or follow PixelLab's [MCP setup page](https://www.pixellab.ai/mcp). Configure it locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
 
 Do not use copied website session tokens or undocumented website endpoints for automation unless PixelLab documents them as supported.
 
@@ -151,7 +151,19 @@ Runtime files:
 - `skills/pixellab-pip/references/usage-reporting.md` - usage, balance, job, and result reporting.
 - `skills/pixellab-pip/references/official-docs.md` - when and how to refresh official PixelLab docs.
 
-## Other Unofficial PixelLab Tools
+## Other Tools
+
+### [Vibe Coding AI Toolkit](https://www.pixellab.ai/mcp)
+
+PixelLab's MCP setup page for connecting PixelLab to AI coding assistants. It helps users configure direct MCP access so an agent can generate game-ready characters, animations, tilesets, and map objects inside coding workflows.
+
+Use the Vibe Coding AI Toolkit directly when you already know MCP is the right surface and want to configure PixelLab tools in a supported MCP client. Use Pip when you want an agent to decide whether MCP, REST v2, website/editor workflows, Aseprite, Pixelorama, legacy v1, or SDK/API docs are the right route.
+
+### [PixelLab API](https://www.pixellab.ai/pixellab-api)
+
+PixelLab's official API catalog for programmatic pixel-art generation, editing, animation, tilesets, characters, objects, prompt enhancement, Pro tools, pricing, and endpoint links.
+
+Use the PixelLab API directly when you are writing code against REST v2 and already know the endpoint you need. Use Pip when you want help choosing the endpoint or deciding whether REST v2, MCP, website/editor workflows, SDKs, or legacy v1 are a better fit.
 
 ### [PixelLab AI Skill](https://clawhub.ai/uncmatteth/skills/pixellab-ai) (By [@uncmatteth](https://clawhub.ai/uncmatteth))
 
@@ -165,10 +177,12 @@ An **unofficial** browser tool for building PixelLab-style pixel-art prompts fro
 
 Use it when you want to manually craft or learn stronger PixelLab prompts before generation. Use Pip when you want an agent to route the request, choose the right PixelLab surface, handle auth boundaries, or provide API/MCP implementation guidance.
 
-## Official PixelLab Resources
+## PixelLab Resources
 
 - [PixelLab.ai](https://www.pixellab.ai/) - PixelLab's official product homepage.
 - [Account page](https://www.pixellab.ai/account) - Sign in and get the PixelLab token used for REST/MCP bearer auth.
+- [Vibe Coding AI Toolkit](https://www.pixellab.ai/mcp) - Official PixelLab MCP setup page for AI coding assistants.
+- [PixelLab API](https://www.pixellab.ai/pixellab-api) - Official PixelLab API catalog with endpoint families, pricing summaries, and docs links.
 - [MCP endpoint](https://api.pixellab.ai/mcp) - Hosted PixelLab MCP endpoint for compatible agent clients.
 - [MCP docs](https://api.pixellab.ai/mcp/docs) - Official PixelLab MCP tool and setup documentation.
 - [REST v2 docs](https://api.pixellab.ai/v2/docs) - Interactive official REST v2 API documentation.

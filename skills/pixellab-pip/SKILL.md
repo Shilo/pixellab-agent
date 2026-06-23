@@ -38,8 +38,8 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 
 | User intent | Default route after Surface Rules | REST v2 route when coding/exact control is needed |
 |---|---|---|
-| Character, player, NPC, enemy, creature | MCP `create_character`, then `create_character_state`, `animate_character`, `get_character`, list/delete helpers as needed. | Character endpoints such as `create-character-v3`, `create-character-with-4-directions`, `create-character-with-8-directions`, `create-character-pro`, state, animation, tags, ZIP/list/get/delete endpoints. |
-| Object, prop, item, pickup, weapon, furniture | MCP `create_1_direction_object`, `create_8_direction_object`, `create_map_object`, object state/animation/review tools. | Object endpoints such as `create-1-direction-object`, `create-8-direction-object`, `map-objects`, object state/animation/list/get/delete endpoints. |
+| Character, player, NPC, enemy, creature | MCP `create_character`, then `create_character_state`, `animate_character`, `get_character`, list/delete helpers, and `delete_animation` when explicitly requested. | Character endpoints such as `create-character-v3`, `create-character-with-4-directions`, `create-character-with-8-directions`, `create-character-pro`, state, animation, tags, ZIP/list/get/delete endpoints. |
+| Object, prop, item, pickup, weapon, furniture | MCP `create_1_direction_object`, `create_8_direction_object`, `create_map_object`, object state/animation/review/tag tools. | Object endpoints such as `create-1-direction-object`, `create-8-direction-object`, `map-objects`, object state/animation/tags/list/get/delete endpoints. |
 | Top-down terrain tileset, Wang/autotile/RPG tileset | MCP `create_topdown_tileset`. | `create-tileset`, `tilesets`. |
 | Sidescroller/platformer tileset | MCP `create_sidescroller_tileset`. | `create-tileset-sidescroller`, sidescroller tileset endpoints. |
 | Isometric tile/block/floor | MCP `create_isometric_tile`. | `create-isometric-tile`. |
@@ -79,13 +79,7 @@ Read only the relevant reference:
 - Official PixelLab docs, MCP docs, REST docs, and web-refresh routing: `references/official-docs.md`.
 - Usage, balance, job, and result reporting: `references/usage-reporting.md`.
 
-Optional repo docs may be absent in raw skill installs. If available, read only the relevant doc when broader PixelLab context is needed:
-
-- PixelLab surface/service boundaries: `../../docs/pixellab/surfaces-and-services.md`.
-- Plain-language asset routing: `../../docs/pixellab/asset-routing.md`.
-- Product and endpoint terminology: `../../docs/pixellab/terminology.md`.
-- SDK-vs-REST decision support: `../../docs/pixellab/sdk-compatibility.md`.
-- Public auth/session/security context: `../../docs/pixellab/auth-and-security.md`.
+Optional in plugin/repo installs: for broader context, read one relevant `../../docs/pixellab/` file if present: `surfaces-and-services.md`, `asset-routing.md`, `terminology.md`, `sdk-compatibility.md`, or `auth-and-security.md`.
 
 ## Model And Mode Terms
 
@@ -138,7 +132,7 @@ For questions, answer with:
 
 For tasks, execute generation/editing only when the user clearly requested it and both the bearer token and tooling are configured. Ask before ambiguous credit-spending batch work or destructive deletes. Refuse unsupported automation, then route to the closest documented MCP/REST option or a visible manual website flow. Otherwise provide the exact route and minimal code or call shape the user needs.
 
-If no PixelLab bearer token is configured, stop before generation and tell the user to get the bearer token from `https://www.pixellab.ai/account` after signing in, then configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
+If no PixelLab bearer token is configured, stop before generation and tell the user to get the bearer token from `https://www.pixellab.ai/account` after signing in, or follow the PixelLab MCP setup page at `https://www.pixellab.ai/mcp`, then configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
 
 After any live PixelLab call, report the surface, tool or endpoint, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, and credit/balance delta when exposed. If usage is not exposed, say so.
 
