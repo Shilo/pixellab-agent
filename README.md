@@ -95,13 +95,19 @@ Recommended explicit trigger:
 
 If your agent app namespaces plugin skills, use the name it shows, such as `pixellab-pip:pixellab-pip`.
 
-Implicit invocation should also work when an agent sees a PixelLab-specific text prompt, such as "create an image", "make a sprite", "draw a character", "generate a tileset", "animate this", "edit this image", "use PixelLab MCP", "call the REST API", or "check PixelLab docs". A supplied image can help for image-to-image or editing tasks, but it is not required for most generation requests. Explicit invocation is still recommended when you want Pip used for sure.
+Example prompt:
+
+```text
+/pixellab-pip make a cute knight character sprite
+```
+
+Implicit invocation should also work when an agent sees a PixelLab-specific request such as "create an image", "make a sprite", "draw a character", "generate a tileset", "animate this", "edit this image", "use PixelLab MCP", "call the REST API", or "check PixelLab docs". Explicit invocation is still recommended when you want Pip used for sure.
 
 ## Authentication
 
 PixelLab generation requires a PixelLab bearer token and may spend credits. This skill does not include or store that token.
 
-Get your token from the PixelLab [account page](https://www.pixellab.ai/account) after signing in. Configure it locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
+Get your secret token from the PixelLab [account page](https://www.pixellab.ai/account) after signing in. Configure it locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
 
 Do not use copied website session tokens or undocumented website endpoints for automation unless PixelLab documents them as supported.
 

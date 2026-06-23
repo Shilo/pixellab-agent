@@ -6,8 +6,8 @@ PixelLab uses one account-level bearer token for public REST v2 and hosted MCP. 
 
 User-facing setup wording:
 
-- Get your PixelLab token from `https://www.pixellab.ai/account` after signing in.
-- Store your PixelLab token in `PIXELLAB_SECRET`.
+- Get your PixelLab secret token from `https://www.pixellab.ai/account` after signing in.
+- Store your PixelLab secret token in `PIXELLAB_SECRET`.
 - The PixelLab API/account UI may label this value as an API key, API token, or secret.
 - Do not paste the value into chat.
 
