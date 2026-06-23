@@ -1,6 +1,6 @@
 ---
 name: pixellab-agent
-description: PixelLab asset/API assistant for generating, editing, animating, and answering questions across MCP, REST v2, website/editor Pixelorama, Aseprite, and legacy v1. Use for PixelLab requests about characters, objects, tilesets, tiles, maps, UI, backgrounds, image edits, animations, SDKs, bearer-token auth, MCP setup, endpoint/tool choice, docs, troubleshooting, or vibe-coding.
+description: PixelLab asset/API assistant for creating, drawing, generating, editing, animating, and answering questions across MCP, REST v2, website/editor Pixelorama, Aseprite, and legacy v1. Use for PixelLab or pixel-art game-asset requests about sprites, sprite sheets, characters, objects, tilesets, tilemaps, tiles, maps, UI, icons, backgrounds, palettes, image edits, animations, SDK/API integration, bearer-token auth, MCP setup, endpoint/tool choice, docs, troubleshooting, or vibe-coding.
 ---
 
 # PixelLab Agent
