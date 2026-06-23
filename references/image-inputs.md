@@ -4,6 +4,8 @@ Read this to classify image input roles when the user supplies attachments or fi
 
 Image input role is endpoint-specific. Do not map every supplied image to `reference_image`. Some PixelLab image inputs are references, but others are edit targets, init/source images, masks, palettes, terrain style guides, or animation frame anchors. Classify the user's goal first, then pick the endpoint field.
 
+Field names below are routing aids; confirm exact names and enums against `https://api.pixellab.ai/v2/openapi.json` before writing code, since the API evolves.
+
 ## Goal Router
 
 | User goal | Use this role | Meaning | Common fields/endpoints |
@@ -13,8 +15,8 @@ Image input role is endpoint-specific. Do not map every supplied image to `refer
 | "Make it look like this" | Style reference | Copy visual style, pixel size, palette feel, rendering, or tile shape, not the exact subject identity. | `style_image`, `style_images`, `reference_image` in `create-character-pro` style methods. |
 | "Use this rough design" | Concept image | Use the image as a design idea or sketch; text can reinterpret it. | `concept_image` in `generate-ui-v2`; `concept_image` with `method=create_from_concept` in `create-character-pro`. |
 | "Start from this and transform it" | Init/source image | The supplied image is the starting state to modify, not merely inspiration. | `init_image` in PixFlux, BitForge, and map object routes. |
-| "Edit/convert this image" | Target image | This is the image being edited, converted, resized, pixelated, or inpainted. | `image` in `edit-image`, `image-to-pixelart`, `image-to-pixelart-pro`; `edit_images` in `edit-images-v2`; `inpainting_image` and `mask_image` in BitForge/inpaint flows. |
-| "Match these colors" | Palette reference | Extract or force colors from the supplied image/palette, not its subject. | `color_image`, `color_palette`, `force_colors`. |
+| "Edit/convert this image" | Target image | This is the image being edited, converted, resized, pixelated, or inpainted. | `image` in `edit-image`, `image-to-pixelart`, `image-to-pixelart-pro`; `edit_images` in `edit-images-v2`; `inpainting_image` for BitForge/inpaint targets; pair with `mask_image` only when the user supplies an edit-area mask. |
+| "Match these colors" | Palette reference | Extract or force colors from the supplied image/palette, not its subject. | `color_image`, `color_palette`. |
 | "Animate from/to these frames" | Frame reference | The image is an animation boundary or motion anchor. | `first_frame`, `last_frame`, character south frame for animation prompt enhancement. |
 | "Match this terrain/tile" | Terrain/tile style reference | Copy style/material/shape for a terrain layer, transition, or tile variant. | `lower_reference_image`, `upper_reference_image`, `transition_reference_image`, `style_images` in `create-tiles-pro`. |
 
@@ -39,6 +41,7 @@ Image input role is endpoint-specific. Do not map every supplied image to `refer
 - `generate-ui-v2`
   - `concept_image`: optional UI design/layout guide.
   - `color_palette`: text color palette guidance.
+  - If the user asks to use an image as UI "style", clarify whether it should guide layout/concept or only palette, because no generic UI `style_image` field was documented.
 - `create-character-v3`
   - `reference_image`: south-facing character image to rotate into 8 directions. If omitted, PixelLab first generates from text.
   - `outline` and `detail` are ignored when `reference_image` is provided.

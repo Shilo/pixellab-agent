@@ -10,7 +10,7 @@ Use this skill as a PixelLab routing brain. Classify the user's asset or API int
 ## Workflow
 
 1. Classify the request:
-   `question | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | automate website/editor`.
+   `question | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | website/editor assistance`.
 2. Classify the target asset or surface:
    `general_image | background | character | object | effect_vfx | ui | whole_map | map_image | map_object | top_down_tileset | sidescroller_tileset | isometric_tile | tile_variants | animation | existing_image`.
 3. Choose the surface:
@@ -28,16 +28,16 @@ Use this skill as a PixelLab routing brain. Classify the user's asset or API int
 | REST v2 | Scripts, batch jobs, server integrations, exact endpoint control, generic images, backgrounds, UI, inpaint/edit, prompt enhancement, raw animation, rotate, resize, remove background, and API parity checks. | Guessing SDK methods without checking the installed SDK or current docs. |
 | Website / Map Workshop | Human product surface, full-map manual work, rich libraries, visible browser assistance, and website-only flows. | Programmatic use of copied browser session tokens or undocumented root endpoints. |
 | Aseprite | Local in-editor plugin workflows when the user is actively working inside Aseprite. | Treating local plugin routes as public REST/MCP contracts. |
-| Pixelorama / editor | Browser editor for existing website assets and save-back through `replace-png` routes. | New asset generation or public automation. |
+| Pixelorama / editor | Browser editor for existing website assets and visible save-back workflows. | New asset generation or public automation. |
 | REST v1 | Existing legacy code and old SDK compatibility. | New work unless the user explicitly needs v1. |
 
 Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2/...` paths.
 
 ## Intent Router
 
-| User intent | Default route | REST v2 route when coding/exact control is needed |
+| User intent | Default route after Surface Rules | REST v2 route when coding/exact control is needed |
 |---|---|---|
-| Character, player, NPC, enemy, creature | MCP `create_character`, then `create_character_state`, `animate_character`, `get_character`, list/delete helpers as needed. | Character endpoints such as `create-character-v3`, 4/8-direction character endpoints, `create-character-pro`, state, animation, tags, ZIP/list/get/delete endpoints. |
+| Character, player, NPC, enemy, creature | MCP `create_character`, then `create_character_state`, `animate_character`, `get_character`, list/delete helpers as needed. | Character endpoints such as `create-character-v3`, `create-character-with-4-directions`, `create-character-with-8-directions`, `create-character-pro`, state, animation, tags, ZIP/list/get/delete endpoints. |
 | Object, prop, item, pickup, weapon, furniture | MCP `create_1_direction_object`, `create_8_direction_object`, `create_map_object`, object state/animation/review tools. | Object endpoints such as `create-1-direction-object`, `create-8-direction-object`, `map-objects`, object state/animation/list/get/delete endpoints. |
 | Top-down terrain tileset, Wang/autotile/RPG tileset | MCP `create_topdown_tileset`. | `create-tileset`, `tilesets`. |
 | Sidescroller/platformer tileset | MCP `create_sidescroller_tileset`. | `create-tileset-sidescroller`, sidescroller tileset endpoints. |
@@ -65,7 +65,7 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 - "Object/character": infer character for people, NPCs, creatures, body templates, or identity/state animation; infer object for props/items/furniture/weapons. Ask only if unclear.
 - "Effect": ask static sprite or animated effect when not obvious. For static VFX, ask whether it should be a reusable managed object or a one-off sprite.
 - "Isometric tileset": ask whether they need one isometric tile or a full tileset, because public docs expose a single isometric tile route.
-- "Paperdoll": ask for base character, layers, directions, animation list, and whether outputs must be isolated layers or composited previews. Preserve canvas, frame count/order, origin, transparency, and palette; warn that text-only output can drift.
+- "Paperdoll": gather base, layers, directions, animations, and isolated-vs-composited output; see `references/paperdolling.md`.
 - Supplied images: infer role from the request, but ask when one file could be identity, style, concept, edit target, palette, pose, first frame, or last frame. Check current endpoint schema before choosing parameter names or base64 shape.
 
 Read only the relevant reference:
@@ -82,7 +82,8 @@ Read only the relevant reference:
 
 Treat PixelLab model/provider language as product labels unless official docs disclose more.
 
-- `Pixen`, `PixFlux`, `BitForge`, `PixPatch`: public product/workflow labels, not guaranteed provider names.
+- `Pixen`, `PixFlux`, `BitForge`: public product/workflow labels, not guaranteed provider names.
+- `PixPatch`: website-surface label; no public v2 `PixPatch` image endpoint was documented.
 - `Pro`: quality/tier/mode label across many unrelated tools, not one endpoint or model.
 - `v3` and `new`: workflow/version labels scoped to a selected operation, not a universal model.
 - `S-XL`, `M-XL`, `S-M`, `M-L`: size/product labels, not asset intents.
@@ -92,11 +93,11 @@ Do not invent provider internals where PixelLab docs are silent.
 
 ## Do Not Use
 
-- Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied DevTools bearer tokens. Treat them as unsupported unless PixelLab documents them.
+- Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied browser session tokens. Treat them as unsupported unless PixelLab documents them.
 - Do not ask users to paste the PixelLab bearer token into chat. Direct them to local environment or MCP secret setup instead.
 - Do not treat `https://api.pixellab.ai/` redirecting to v1 docs as proof that root website routes map to `/v1`.
 - Do not confuse website Create Tileset Pro with public `create_tiles_pro` / `create-tiles-pro`; they are different flows.
-- Do not call website session bearer tokens API tokens. Public REST/MCP bearer tokens and website session tokens are different auth contexts.
+- Do not call website session tokens API tokens or PixelLab bearer tokens. Public REST/MCP bearer tokens and website session tokens are different auth contexts.
 - Do not default to v1 or old SDK README examples for new work.
 - Do not assume an installed SDK exposes every current v2 endpoint or parameter. Live `llms.txt` links official Python and JavaScript/TypeScript SDKs, but for exact v2 coverage confirm the installed package/docs or call REST v2 directly.
 - Do not claim public SDK coverage without checking the installed package, current docs, or official repo state.
@@ -124,7 +125,7 @@ For questions, answer with:
 3. Warnings for unsupported or confusing alternatives.
 4. Official-doc caveat when the answer was not freshly verified.
 
-For tasks, execute generation/editing only when the user clearly requested it and bearer-token/tooling setup is configured. Ask before ambiguous credit-spending batch work, destructive deletes, or unsupported automation. Otherwise provide the exact route and minimal code or call shape the user needs.
+For tasks, execute generation/editing only when the user clearly requested it and bearer-token/tooling setup is configured. Ask before ambiguous credit-spending batch work or destructive deletes. Refuse unsupported automation, then route to the closest documented MCP/REST option or a visible manual website flow. Otherwise provide the exact route and minimal code or call shape the user needs.
 
 If no PixelLab bearer token is configured, stop before generation and tell the user to configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
 
