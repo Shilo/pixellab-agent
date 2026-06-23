@@ -17,7 +17,7 @@ Use this skill as a PixelLab routing brain. Classify the user's asset or API int
    use hosted MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
 4. Use MCP only if the current agent actually exposes PixelLab MCP tools, either bare or prefixed. If not, say MCP is not configured and offer setup, or REST v2 code only when the user asks for direct API/code.
 5. Refresh current facts when exact endpoint names, parameters, auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
-6. Before live generation, confirm credentials are configured without asking the user to paste tokens into chat.
+6. Before live generation, confirm the PixelLab account API token/secret is configured without asking the user to paste it into chat.
 7. Act or answer. Ask a short clarification only for known collisions.
 
 ## Surface Rules
@@ -68,7 +68,14 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 - "Paperdoll": ask for base character, layers, directions, animation list, and whether outputs must be isolated layers or composited previews. Preserve canvas, frame count/order, origin, transparency, and palette; warn that text-only output can drift.
 - Supplied images: infer role from the request, but ask when one file could be identity, style, concept, edit target, palette, pose, first frame, or last frame. Check current endpoint schema before choosing parameter names or base64 shape.
 
-For endpoint-specific image roles, paperdolling contracts, tileset details, token setup, browser fallback, and usage reporting, read `references/pixellab-details.md`.
+Read only the relevant reference:
+
+- Credentials, token/secret terminology, and MCP token reuse: `references/credentials.md`.
+- Browser fallback and website automation boundaries: `references/browser-fallback.md`.
+- Paperdolling and layered character workflows: `references/paperdolling.md`.
+- Tileset and tile-variant details: `references/tilesets.md`.
+- Image input roles and attachment/file-path handling: `references/image-inputs.md`.
+- Usage, balance, job, and result reporting: `references/usage-reporting.md`.
 
 ## Model And Mode Terms
 
@@ -85,7 +92,7 @@ Do not invent provider internals where PixelLab docs are silent.
 ## Do Not Use
 
 - Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied DevTools bearer tokens. Treat them as unsupported unless PixelLab documents them.
-- Do not ask users to paste PixelLab API tokens into chat. Direct them to local environment or MCP secret setup instead.
+- Do not ask users to paste the PixelLab account API token/secret into chat. Direct them to local environment or MCP secret setup instead.
 - Do not treat `https://api.pixellab.ai/` redirecting to v1 docs as proof that root website routes map to `/v1`.
 - Do not confuse website Create Tileset Pro with public `create_tiles_pro` / `create-tiles-pro`; they are different flows.
 - Do not call website session bearer tokens API tokens. Public REST/MCP bearer tokens and website session tokens are different auth contexts.
@@ -118,7 +125,7 @@ For questions, answer with:
 
 For tasks, execute generation/editing only when the user clearly requested it and credentials/tooling are configured. Ask before ambiguous credit-spending batch work, destructive deletes, or unsupported automation. Otherwise provide the exact route and minimal code or call shape the user needs.
 
-If credentials are missing, stop before generation and tell the user to configure `PIXELLAB_API_TOKEN`, `PIXELLAB_API_KEY`, or agent/MCP secret config locally. Never request the token value in chat.
+If credentials are missing, stop before generation and tell the user to configure the single PixelLab account API token/secret locally. Prefer `PIXELLAB_API_TOKEN`; treat `PIXELLAB_API_KEY` or `PIXELLAB_SECRET` only as compatibility aliases when already present. Never request the token value in chat.
 
 After any live PixelLab call, report the surface, tool or endpoint, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, and credit/balance delta when exposed. If usage is not exposed, say so.
 

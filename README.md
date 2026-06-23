@@ -18,7 +18,7 @@ Place this folder wherever your agent loads Agent Skills, such as `~/.codex/skil
 
 PixelLab generation requires credentials and may spend credits. This skill does not include credentials.
 
-Configure PixelLab credentials locally with `PIXELLAB_API_TOKEN`, `PIXELLAB_API_KEY`, or your agent/MCP host's secret configuration. Do not paste API tokens into agent chat.
+Configure the single PixelLab account API token/secret locally. Prefer `PIXELLAB_API_TOKEN` or your agent/MCP host's secret configuration. Existing SDK/MCP setups may call the same token `PIXELLAB_API_KEY` or `PIXELLAB_SECRET`; those are compatibility aliases, not different tokens. Do not paste API tokens into agent chat.
 
 Useful official entry points:
 
@@ -32,7 +32,12 @@ Do not use copied website session tokens or undocumented website endpoints for a
 ## Files
 
 - `SKILL.md` - the portable Agent Skills file.
-- `references/pixellab-details.md` - optional details loaded by the agent only for token setup, browser fallback, paperdolling, tilesets, image inputs, or usage reporting.
+- `references/credentials.md` - PixelLab token terminology, safe local setup, and MCP token-source reuse.
+- `references/browser-fallback.md` - permission rules for visible website/editor fallback.
+- `references/paperdolling.md` - layered character and outfit workflow contract.
+- `references/tilesets.md` - terrain/platformer/tile-variant routing details.
+- `references/image-inputs.md` - endpoint-specific image input roles.
+- `references/usage-reporting.md` - usage, balance, job, and result reporting.
 
 No platform-specific plugin wrapper is required for the first version.
 
