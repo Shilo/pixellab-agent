@@ -208,12 +208,12 @@ Runs the beginner-friendly PixelLab setup wizard. Pip recommends MCP + API for A
 
 For most users, run `/pixellab-pip setup` and choose MCP + API. MCP connects PixelLab directly to your AI assistant/editor/app, and API fallback lets Pip use documented REST/API routes when MCP tools are unavailable, incomplete, or insufficient.
 
-The setup command behaves like a wizard, not a static help page. It infers what it can, asks at most the next short question when needed, and keeps secrets out of chat and shared files.
+The setup command behaves like a wizard, not a static help page. For a bare setup request, it should ask which setup mode you want before preparing MCP/API-specific changes, and it keeps secrets out of chat and shared files.
 
 | Wizard mode | Use it when | What Pip does |
 |---|---|---|
 | MCP + API | Recommended. You want direct PixelLab tools in your assistant/editor/app plus Pip REST/API fallback. | Sets up MCP first, then confirms the same `PIXELLAB_SECRET` source is visible to the assistant/editor/app session where Pip runs. |
-| MCP only | You only want PixelLab MCP tools in your assistant/editor/app. | Detects or asks which app you use, prepares an MCP config preview, and applies it only after confirmation. This may use an app secret setting, an env/secret reference, or a user-chosen hardcoded MCP config when the app has no token-free option. |
+| MCP only | You only want PixelLab MCP tools in your assistant/editor/app. | Detects or asks which app you use, prepares an MCP config preview, and applies it only after confirmation. It prefers app secret settings or an env/secret reference; a hardcoded MCP config is only an explicit user-chosen fallback when the app has no token-free option, and it does not configure Pip REST/API fallback. |
 | API only | You only want Pip to use REST/API fallback when MCP tools are unavailable, incomplete, or insufficient. | Configures or verifies `PIXELLAB_SECRET` for Pip fallback without adding MCP. |
 | Manual | You want to use PixelLab's website instructions yourself. | Opens or links to [PixelLab's MCP setup page](https://www.pixellab.ai/mcp), tells you to pick your app there, and stops. |
 

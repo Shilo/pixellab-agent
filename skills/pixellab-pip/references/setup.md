@@ -25,7 +25,7 @@ For a bare setup command, mode selection is mandatory before any MCP/API-specifi
 For setup-mode selection, prefer these choices:
 
 - MCP + API (recommended): Connect PixelLab tools directly to the assistant/editor and configure `PIXELLAB_SECRET` so Pip can use REST/API fallback.
-- MCP only: Connect PixelLab tools directly to the assistant/editor. This can use an app secret setting, an env/secret reference, or a user-chosen literal-token MCP config when the app has no token-free option.
+- MCP only: Connect PixelLab tools directly to the assistant/editor. Prefer app secret settings or an env/secret reference; use a literal-token MCP config only as an explicit user-chosen fallback when the app has no token-free option, and warn that it does not configure Pip REST/API fallback.
 - API only: Configure `PIXELLAB_SECRET` for Pip's REST/API fallback without adding MCP.
 - Manual: Open or link PixelLab's MCP setup page and stop.
 
@@ -76,7 +76,7 @@ Do not tell users to run secret-setting commands through an assistant chat, slas
 1. App/editor secret settings or app secret store named `PIXELLAB_SECRET`.
 2. OS environment-variable UI for a user-scoped `PIXELLAB_SECRET`.
 3. Hidden local prompt or secret-store command that does not place the token in command text.
-4. Normal external terminal command, only if the user chooses it; show placeholders such as `<PIXELLAB_SECRET>` and warn not to run it inside an assistant prompt, assistant shell escape, or Codex-readable integrated terminal.
+4. Normal external terminal command, only if the user chooses it; show value placeholders such as `<paste-your-Secret-here>` and warn not to run it inside an assistant prompt, assistant shell escape, or Codex-readable integrated terminal.
 5. Project-local file such as `.env.local` or `.pixellab`, only for explicit loader or wrapper setups that read that file; do not present it as MCP-ready or Pip-ready by itself.
 
 Preferred storage order:
@@ -244,7 +244,8 @@ Compact output templates:
 - Pasted Secret: "I cannot use a Secret pasted here. Treat it as exposed and replace it. Open `https://www.pixellab.ai/account`, sign in, copy a new value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`; do not paste it into chat."
 - Unsafe secret scan or session token: "I will not scan broad secret locations or use browser/session tokens. Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`; do not paste it here."
 - No writes while auth is incomplete: "I will not write anything. Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`; I can show token-free setup previews only."
-- Manual setup: "Open `https://www.pixellab.ai/mcp`, pick your app there, and follow PixelLab's instructions. If it asks for auth, get the value labeled `Secret` from `https://www.pixellab.ai/account` and store it locally as `PIXELLAB_SECRET`; do not paste it here."
+- Manual setup: "Open `https://www.pixellab.ai/mcp`, pick your app there, and follow PixelLab's instructions. I will stop here."
+- Manual setup when the user explicitly asks about auth: "Open `https://www.pixellab.ai/mcp`, pick your app there, and follow PixelLab's instructions. If it asks for auth, get the value labeled `Secret` from `https://www.pixellab.ai/account`; do not paste it here. I will stop here."
 
 Avoid config-first output for beginners. Do not show OS-specific, shell-specific, package-manager, SDK, framework, backend, deployment, or programming-language setup commands in setup mode unless the user asks for a specific manual secret-storage path.
 
