@@ -6,7 +6,7 @@
 
 Meet PixelLab Pip: a tiny Pixel Pup who fetches the right route through PixelLab's MCP tools, REST v2 API, website/editor workflows, Aseprite, Pixelorama, and legacy v1.
 
-Pip is helpful and practical under the collar: he maps plain-language requests to the right PixelLab tool or workflow, keeps agents away from undocumented website/session endpoints, and helps untangle overlapping tool names, endpoint paths, model labels, and editor workflows.
+Pip is helpful and practical under the collar: he scouts out the right PixelLab tool or workflow for plain-language requests and helps untangle overlapping tool names, endpoint paths, model labels, and editor workflows.
 
 For [PixelLab.ai](https://www.pixellab.ai/).
 
