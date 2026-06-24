@@ -264,6 +264,8 @@ Authorization: Bearer <PIXELLAB_SECRET>
 
 In docs and previews, `<PIXELLAB_SECRET>` means a reference to the private local secret, not a value to paste into chat. Use your app's secret settings when available. If the app requires a config file, keep that file private and do not commit it.
 
+Some apps, including some Claude Code MCP header flows, may not provide a reliable token-free secret reference. In that case Pip should not write the config automatically. It can instead offer a manual fallback command for you to run in your own external terminal, with a placeholder such as `<paste-your-Secret-here>`, after warning that the app may store the raw Secret in local MCP config or shell history.
+
 ### Backup: REST v2 API
 
 Use the REST API only when you are writing your own code, such as a script, app, backend, batch job, SDK integration, or deployment.

@@ -69,7 +69,7 @@ Preferred storage order:
 2. Hidden local prompt or app UI that writes user-scoped env/keychain/secret config.
 3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`, only if the user explicitly chooses that option.
 
-Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcripts, copied website session tokens, and literal token values in config files. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.
+Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcripts, copied website session tokens, and literal token values in config files unless the user explicitly chooses a manual fallback that requires one. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.
 
 If the user asks for `.env.local`, explain that Pip does not use `.env.local` for PixelLab secret setup because `.env*` files often contain unrelated private secrets. Do not write `PIXELLAB_SECRET` to `.env.local`. If the user wants a project-local file, use a private PixelLab-only `.pixellab` file containing only `PIXELLAB_SECRET` after a token-free preview and explicit approval. Inspect an existing `.env.local` only for troubleshooting when the user names that exact file, explicitly approves inspection, and confirms the purpose is troubleshooting an existing setup. If the purpose is unclear, ask before inspecting. Never print or copy values from it.
 
@@ -99,7 +99,7 @@ For automatic MCP setup:
 - Detect OS/shell only when needed to choose a local write method.
 - Locate likely config paths only for known supported apps and only after explaining what will be inspected.
 - Use PixelLab MCP URL `https://api.pixellab.ai/mcp`.
-- Use `Authorization: Bearer <PIXELLAB_SECRET>` or the app's documented env/secret syntax. Never use or preview a literal token.
+- Use `Authorization: Bearer <PIXELLAB_SECRET>` or the app's documented env/secret syntax. Never use or preview a real literal token.
 - Prefer app secret settings or a secret store named `PIXELLAB_SECRET`.
 - Patch or create MCP config only after confirmation.
 - Tell the user to restart/reload the assistant/editor/app only if needed.
@@ -122,14 +122,25 @@ Known app preview rules:
   ```
 
   Ask before running it. It stores the server URL and env var name, not the Secret value.
-- Claude Code: current `claude mcp add --help` supports HTTP MCP headers, but header examples can expand or store literal values if used carelessly. Do not preview a command that embeds the Secret. Preview only the token-free destination and shape: Claude Code MCP config, HTTP transport, URL `https://api.pixellab.ai/mcp`, and `Authorization: Bearer <PIXELLAB_SECRET>` as a private env/secret reference. Verify current Claude secret-reference syntax or ask for the exact settings/config path before writing. If no token-free secret-reference path is available, route to Manual.
+- Claude Code: current `claude mcp add --help` supports HTTP MCP headers, but header examples can expand or store literal values if used carelessly. First try to find a verified token-free path. Preview only the token-free destination and shape: Claude Code MCP config, HTTP transport, URL `https://api.pixellab.ai/mcp`, and `Authorization: Bearer <PIXELLAB_SECRET>` as a private env/secret reference. Verify current Claude secret-reference syntax or ask for the exact settings/config path before writing.
+  If no token-free secret-reference path is available, do not write the config automatically. Offer the user explicit options:
+  1. Open or link PixelLab's MCP setup page and let the user follow it.
+  2. Manually run a Claude Code command in their own external terminal that hardcodes the Secret, after warning that Claude Code may store the raw Secret in its MCP config.
+  3. Discuss a token-free wrapper workaround if they prefer not to store the raw Secret.
+  For the hardcoded-token option, show only a placeholder command and tell the user to replace `<paste-your-Secret-here>` themselves outside chat:
+
+  ```text
+  claude mcp add --transport http pixellab https://api.pixellab.ai/mcp --header "Authorization: Bearer <paste-your-Secret-here>"
+  ```
+
+  Never run that command for the user, and never ask them to paste the real Secret into chat.
 - Cursor, VS Code Agent Plugins, Gemini CLI, GitHub Copilot CLI, and generic MCP-compatible apps: do not invent exact config syntax. Use the app's settings UI/docs, PixelLab's MCP page, or an exact path/format the user provides. Always show a token-free preview and ask before writing.
 
 If the app is unknown, route to Manual: open or link `https://www.pixellab.ai/mcp`, tell the user to pick their app there, and stop unless they come back with a known supported app name, exact settings screen, config path, or documented MCP format.
 
 ## API Wizard
 
-Use API setup only when the user chooses API/both or clearly asks for code/backend/script setup. Say this is the backup/advanced path for direct code. If MCP is unavailable for the user's assistant/editor/app and they did not ask to write code, route to Manual or ask for a different MCP-compatible app/config path.
+Use API setup only when the user chooses API/both or clearly asks for code/backend/script setup. Say this is the backup/advanced path for direct code. If MCP is unavailable for the user's assistant/editor/app and they did not ask to write code, offer Manual, a user-run hardcoded-token command when the app supports it, or ask for a different MCP-compatible app/config path.
 
 For automatic API setup:
 
@@ -238,7 +249,8 @@ For setup help, report only what helps the user proceed:
 ## What Not To Do
 
 - Do not ask for, paste, print, echo, log, quote, summarize, measure, or transform the bearer token.
-- Do not suggest any assistant-shell command that includes the literal Secret value, including Claude Code or Codex CLI shell escapes.
+- Do not suggest any agent-run or assistant-shell command that includes the literal Secret value, including Claude Code or Codex CLI shell escapes.
+- A user-run external-terminal command with a literal Secret is allowed only as an explicit manual fallback after warning that the token may be stored in local config or shell history. Show placeholders only; never run it or ask the user to paste the real Secret into chat.
 - Do not describe `setx` or `export` as inherently unsafe or forbidden; describe the risk as literal-token command text being stored or exposed.
 - Do not present literal-token shell commands as the safest default for manual setup; list safer secret UIs, secret stores, or hidden prompts first.
 - Do not use website/Supabase/browser session tokens for REST or MCP.

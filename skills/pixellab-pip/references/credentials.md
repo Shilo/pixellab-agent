@@ -41,7 +41,9 @@ If PixelLab MCP is already configured, reuse its credential source when safe:
 
 Never ask the user to paste the bearer token into chat. Never print, echo, log, summarize, measure, transform, validate, or use token values from chat or config output. If a token appears in chat or tool output, do not repeat it; tell the user to treat it as exposed and replace it before continuing setup. Never use website/Supabase session tokens for REST or MCP.
 
-Never suggest assistant-shell commands that include a literal token. This includes Claude Code and Codex CLI shell escapes. Even when a command is executed by the user's local shell, the command text may still be visible to the assistant session, saved in transcripts/logs, visible in Codex-readable terminal output, or preserved in command history.
+Never suggest agent-run or assistant-shell commands that include a literal token. This includes Claude Code and Codex CLI shell escapes. Even when a command is executed by the user's local shell from inside an assistant session, the command text may still be visible to the assistant session, saved in transcripts/logs, visible in Codex-readable terminal output, or preserved in command history.
+
+A user-run external-terminal command with a literal token is allowed only as an explicit manual fallback after warning that the token may be stored in local config or shell history. Show placeholders only; never run it, never put the real token in generated text, and never ask the user to paste the real token into chat.
 
 Do not describe `setx`, `export`, PowerShell `$env:`, or `ENV=value command` as inherently forbidden. The risk is the literal Secret appearing in command text. If users ask for CLI setup, show a placeholder-based command for a normal external terminal and explain the shell-history/process-history tradeoff. For the safest default, list secret UIs, secret stores, hidden prompts, or a private PixelLab-only `.pixellab` file first.
 
