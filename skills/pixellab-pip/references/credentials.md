@@ -11,8 +11,8 @@ User-facing setup wording:
 - If the user chooses Manual setup, open or link to `https://www.pixellab.ai/mcp`, tell them to pick their app there, and stop.
 - The PixelLab API/account UI may label this value as an API key, API token, or secret.
 - Do not paste the value into chat.
-- Do not put the value in an assistant shell escape such as Claude Code `!` or Codex CLI `!`, or in a Codex app integrated terminal command that Codex can read.
-- Prefer app/OS secret settings, environment-variable UI, secret stores, or hidden prompts over literal-token shell commands that can be saved in shell history.
+- Do not put the value in an assistant shell escape, including Claude Code or Codex CLI shell commands, or in a Codex app integrated terminal command that Codex can read.
+- Prefer app/OS secret settings, environment-variable UI, secret stores, hidden prompts, or a private PixelLab-only `.pixellab` file over literal-token shell commands that can be saved in shell history.
 - If the user wants a CLI option such as `setx`, `export`, PowerShell `$env:`, or `ENV=value command`, explain that the command itself is allowed in a normal external terminal, but the literal Secret in command text may be saved or exposed. Use placeholders in examples.
 
 Use the bearer token as:
@@ -39,11 +39,11 @@ If PixelLab MCP is already configured, reuse its credential source when safe:
 - If the MCP config uses an app secret setting or secret store named `PIXELLAB_SECRET`, tell the user to configure REST/API code to use that same `PIXELLAB_SECRET` source when the app or runtime supports it.
 - If the MCP config contains a literal `Authorization: Bearer ...` value, do not extract, print, or copy it. Suggest moving it to env/secret config.
 
-Never ask the user to paste the bearer token into chat. Never print, echo, log, summarize, measure, transform, or validate token values. Never use website/Supabase session tokens for REST or MCP.
+Never ask the user to paste the bearer token into chat. Never print, echo, log, summarize, measure, transform, validate, or use token values from chat or config output. If a token appears in chat or tool output, do not repeat it; tell the user to treat it as exposed and replace it before continuing setup. Never use website/Supabase session tokens for REST or MCP.
 
-Never suggest `! setx ...`, `! export ...`, or similar assistant-shell commands that include a literal token. This includes Claude Code and Codex CLI `!` shell commands. Even when a command is executed by the user's local shell, the command text may still be visible to the assistant session, saved in transcripts/logs, visible in Codex-readable terminal output, or preserved in command history.
+Never suggest assistant-shell commands that include a literal token. This includes Claude Code and Codex CLI shell escapes. Even when a command is executed by the user's local shell, the command text may still be visible to the assistant session, saved in transcripts/logs, visible in Codex-readable terminal output, or preserved in command history.
 
-Do not describe `setx`, `export`, PowerShell `$env:`, or `ENV=value command` as inherently forbidden. The risk is the literal Secret appearing in command text. If users ask for CLI setup, show a placeholder-based command for a normal external terminal and explain the shell-history/process-history tradeoff. For the safest default, list secret UIs, secret stores, or hidden prompts first.
+Do not describe `setx`, `export`, PowerShell `$env:`, or `ENV=value command` as inherently forbidden. The risk is the literal Secret appearing in command text. If users ask for CLI setup, show a placeholder-based command for a normal external terminal and explain the shell-history/process-history tradeoff. For the safest default, list secret UIs, secret stores, hidden prompts, or a private PixelLab-only `.pixellab` file first.
 
 When checking MCP config files for credential setup, inspect only the specific config paths referenced by the user or approved after a token-free explanation. Do not scan broad home/auth/config directories, shell history, keychains, project trees, or existing `.env*` files because tool output can leak secrets.
 
@@ -55,3 +55,5 @@ Fallback order:
 2. Hidden local prompt that writes user-scoped env/keychain config.
 3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`, only if the user explicitly chooses that option.
 4. Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcript, and copied browser session tokens. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.
+
+Pip does not use `.env.local` for PixelLab secret setup. If the user asks for a local file, use a private PixelLab-only `.pixellab` file containing only `PIXELLAB_SECRET` after a token-free preview and explicit approval. Inspect an existing `.env.local` only for troubleshooting when the user names that exact file, explicitly approves inspection, and confirms the purpose is troubleshooting an existing setup. If the purpose is unclear, ask before inspecting. Never print or copy values from it.

@@ -232,9 +232,10 @@ Token setup options, from safest default to more manual:
 1. App/editor secret settings or app secret store named `PIXELLAB_SECRET`.
 2. OS user environment-variable UI for `PIXELLAB_SECRET`.
 3. A hidden local prompt or secret-store command that does not put the Secret in command text.
-4. A normal external terminal command such as `setx`, `export`, or PowerShell env setup if you accept shell-history/process-history tradeoffs.
+4. A private PixelLab-only `.pixellab` file containing only `PIXELLAB_SECRET`, if you explicitly want a project-local file.
+5. A normal external terminal command such as `setx`, `export`, or PowerShell env setup if you accept shell-history/process-history tradeoffs.
 
-Do not run literal-Secret commands through assistant prompt lines, Claude Code `!`, Codex CLI `!`, or a Codex-readable integrated terminal. `setx` and `export` are not forbidden; the risk is putting the actual Secret in command text that can be saved or exposed.
+Do not run literal-Secret commands through assistant prompt lines, Claude/Codex shell escapes, or a Codex-readable integrated terminal. `setx` and `export` are not forbidden; the risk is putting the actual Secret in command text that can be saved or exposed. If a Secret is pasted into chat or visible tool output, treat it as exposed and replace it before continuing setup.
 
 ### What The Wizard Is Allowed To Do
 
@@ -245,7 +246,7 @@ Do not run literal-Secret commands through assistant prompt lines, Claude Code `
 - Use `https://api.pixellab.ai/mcp` for MCP and `https://api.pixellab.ai/v2` for REST API.
 - Verify setup only after you approve a no-credit check, such as MCP `get_balance` or REST `GET /balance`.
 
-Pip must never ask you to paste the Secret into chat, print it, echo it, log it, summarize it, transform it, or show raw auth headers. If you choose Manual, Pip should only open or link to `https://www.pixellab.ai/mcp`, tell you to pick your app there, and stop.
+Pip must never ask you to paste the Secret into chat, print it, echo it, log it, summarize it, transform it, use it from chat/tool output, or show raw auth headers. If you choose Manual, Pip should only open or link to `https://www.pixellab.ai/mcp`, tell you to pick your app there, and stop.
 
 ### Recommended: MCP
 
