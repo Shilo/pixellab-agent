@@ -11,12 +11,12 @@ Classify the user's asset, API, or question intent first, then choose the suppor
 
 1. Classify the request:
    `question | setup | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | website/editor assistance`.
-   Treat a standalone `setup` word after an explicit skill invocation, such as `/pixellab-pip setup` or `@pixellab-pip setup`, as setup intent. If a host exposes structured arguments, use them only as another way to read the same natural-language intent.
+   Treat a standalone `setup` word after an explicit skill invocation, such as `/pixellab-pip setup` or `@pixellab-pip setup`, as setup intent. If an app exposes structured arguments, use them only as another way to read the same natural-language intent.
 2. Classify the target asset or surface:
    `general_image | background | character | object | effect_vfx | ui | whole_map | map_image | map_object | top_down_tileset | sidescroller_tileset | isometric_tile | tile_variants | animation | existing_image`.
 3. Choose the surface:
-   use hosted MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
-   For setup intent, read `references/setup.md` and configure only what the user approves.
+   use PixelLab MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
+   For setup intent, read `references/setup.md` and run the setup wizard contract: recommend MCP first, support API/both/manual modes, and change settings only after a token-free preview and explicit approval.
 4. Use MCP only if PixelLab MCP tools are available, either bare or prefixed. If MCP is unavailable, route to the matching REST v2 endpoint when one is documented. If MCP and REST v2 are both unavailable or fail, explain why before using any non-PixelLab fallback.
    If tools are prefixed, such as `mcp__pixellab__create_character`, match by suffix.
 5. Refresh current facts when a needed tool/endpoint/field is missing or unclear, or when auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
@@ -121,7 +121,7 @@ Use REST `enhance-pixen-prompt` for Pixen image prompts, `enhance-character-v3-p
 ## Do Not Use
 
 - Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied browser session tokens. Treat them as unsupported unless PixelLab documents them.
-- Do not ask users to paste the PixelLab bearer token into chat. Direct them to local environment or MCP secret setup instead.
+- Do not ask users to paste the PixelLab bearer token into chat. Direct them to the setup wizard, local `PIXELLAB_SECRET`, or app secret settings instead.
 - Do not treat `https://api.pixellab.ai/` redirecting to v1 docs as proof that root website routes map to `/v1`.
 - Do not confuse website Create Tileset Pro with public `create_tiles_pro` / `create-tiles-pro`; they are different flows.
 - Do not refer to website session tokens as API tokens or PixelLab bearer tokens. Public REST/MCP bearer tokens and website session tokens are different auth contexts.
@@ -156,7 +156,7 @@ For questions, answer with:
 
 For tasks, execute PixelLab generation/editing only when the user clearly requested it and both the bearer token and tooling are configured. For nontrivial live generation, prefer one candidate first, report enough route details to review it, then continue only if the user asks for more. Ask before ambiguous credit-spending batch work or destructive deletes. Refuse unsupported automation, then route to the closest documented MCP/REST option or a visible manual website flow. Create local replacement art/files only when the user explicitly asks for a local fallback or approves one after both MCP and REST/API are unavailable or fail; label the result as a non-PixelLab fallback. Otherwise provide the exact route and minimal code or call shape the user needs.
 
-If no PixelLab bearer token is configured, stop before PixelLab generation and tell the user to get the bearer token from `https://www.pixellab.ai/account` after signing in, or follow the PixelLab MCP setup page at `https://www.pixellab.ai/mcp`, then configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat. If the user requested an output asset and a local fallback is possible, offer it as a separate non-PixelLab fallback and wait for approval before creating files.
+If no PixelLab bearer token is configured, stop before PixelLab generation and offer the setup wizard. Tell the user to open `https://www.pixellab.ai/account` after signing in and copy the value labeled `Secret`, then store it locally as `PIXELLAB_SECRET` or in app secret settings; never ask them to paste it into chat. If the user chooses Manual setup, open or link `https://www.pixellab.ai/mcp`, tell them to pick their app there, and stop. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. If the user requested an output asset and a local fallback is possible, offer it as a separate non-PixelLab fallback and wait for approval before creating files.
 
 After any live PixelLab call, report the surface, tool or endpoint, prompt/description prep method, final natural-language parameter values used, key result-affecting controls such as size/view/direction/mode/seed/frame count/image roles or asset IDs, job/asset/result IDs, output paths or URLs, async polling/status when relevant, credit/balance delta when exposed, and candidate/final status. Do not call an output final unless existence and explicitly requested constraints were verified. If usage is not exposed, say so. Do not paste secrets, raw files/base64, or full response JSON unless debugging exact schemas.
 

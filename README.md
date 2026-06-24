@@ -151,21 +151,7 @@ Manual install is useful for project-local setup or agent apps that support raw 
 .cursor/skills/pixellab-pip/SKILL.md
 ```
 
-PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Force .agents\skills\pixellab-pip
-Copy-Item -Recurse -Force skills\pixellab-pip\* .agents\skills\pixellab-pip\
-# Then run in Codex: $pixellab-pip setup
-```
-
-macOS/Linux shell:
-
-```bash
-mkdir -p .agents/skills/pixellab-pip
-cp -R skills/pixellab-pip/. .agents/skills/pixellab-pip/
-# Then run in Codex: $pixellab-pip setup
-```
+Then run the setup command your assistant supports, such as `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`.
 
 ## Usage
 
@@ -200,79 +186,69 @@ Implicit invocation should also work when an agent sees PixelLab/Pip context plu
 $pixellab-pip setup
 ```
 
-Runs guided PixelLab MCP/API setup, diagnoses missing auth, and configures only what the user approves without reading or printing the secret value.
+Runs the beginner-friendly PixelLab setup wizard. Pip recommends MCP for AI assistants/editors, can set up API access for code projects, and only changes settings after a token-free preview and explicit approval.
 
 ## MCP And API Setup
 
-For most users, set up PixelLab MCP first. MCP connects PixelLab directly to your AI assistant, so the assistant can use PixelLab tools without you writing API code.
+For most users, run `/pixellab-pip setup` and choose MCP. MCP connects PixelLab directly to your AI assistant/editor/app, so the assistant can use PixelLab tools without you writing API code.
 
-| Path | Use it when | What it needs |
+The setup command behaves like a wizard, not a static help page. It infers what it can, asks at most the next short question when needed, and keeps secrets out of chat and shared files.
+
+| Wizard mode | Use it when | What Pip does |
 |---|---|---|
-| MCP | Recommended. You want your AI assistant or editor to make PixelLab assets for you. | The setup steps on PixelLab's [MCP setup page](https://www.pixellab.ai/mcp). |
-| REST v2 API | Backup/advanced path. You are writing your own script, app, backend, or batch job. | Code that sends requests to `https://api.pixellab.ai/v2`. |
+| MCP | Recommended. You want an AI assistant, editor, or MCP-compatible app to make PixelLab assets for you. | Detects or asks which app you use, prepares a token-free MCP config preview, and applies it only after confirmation. |
+| API | You are writing your own script, app, backend, batch job, or SDK integration. | Shows runtime-secret guidance and language/platform examples only after you name the platform. |
+| Both | You want PixelLab in an assistant and in your own code. | Sets up MCP first, then reuses the same `PIXELLAB_SECRET` source for API code. |
+| Manual | You want to use PixelLab's website instructions yourself. | Opens or links to [PixelLab's MCP setup page](https://www.pixellab.ai/mcp), tells you to pick your app there, and stops. |
 
-Both paths use the same PixelLab account secret. Open the PixelLab [account page](https://www.pixellab.ai/account) after signing in and copy the value labeled `Secret`. PixelLab may call this value an API key, API token, secret, or token. Pip calls it a bearer token for MCP/API auth.
+PixelLab Pip can tailor MCP setup for the supported assistant/app names already used by this project: Claude Code, Codex, Gemini CLI, Cursor, VS Code Agent Plugins, GitHub Copilot CLI, and generic MCP-compatible apps. It stays agent-agnostic and OS-agnostic until the detected or named app requires a specific settings location.
 
-Store the token outside chat. The recommended local name is:
+Both MCP and API use the same PixelLab account secret. Open the PixelLab [account page](https://www.pixellab.ai/account) after signing in and copy the value labeled `Secret`. PixelLab may call this value an API key, API token, secret, or token. Pip calls it a bearer token for MCP/API auth.
+
+Store the token outside chat. The recommended local secret name is:
 
 ```text
 PIXELLAB_SECRET
 ```
 
+### What The Wizard Is Allowed To Do
+
+- Detect the current assistant/editor/app when possible, or ask which one you use.
+- Inspect only the specific config path or setting it explains and you approve; it should not scan home directories or existing `.env*` files.
+- Prefer app secret settings, OS/user-level environment settings, or an app secret store named `PIXELLAB_SECRET`.
+- Show a token-free preview before writing any environment variable, app config, MCP settings file, shell profile, or project file.
+- Use `https://api.pixellab.ai/mcp` for MCP and `https://api.pixellab.ai/v2` for REST API.
+- Verify setup only after you approve a no-credit check, such as MCP `get_balance` or REST `GET /balance`.
+
+Pip must never ask you to paste the Secret into chat, print it, echo it, log it, summarize it, transform it, or show raw auth headers. If you choose Manual, Pip should only open or link to `https://www.pixellab.ai/mcp`, tell you to pick your app there, and stop.
+
 ### Recommended: MCP
 
-1. Open PixelLab's [MCP setup page](https://www.pixellab.ai/mcp).
-2. Sign in if PixelLab asks you to.
-3. Pick the assistant, editor, or app you use.
-4. Copy the setup command PixelLab shows for that app.
-5. When the command contains `YOUR_SECRET` or `<PIXELLAB_SECRET>`, replace that placeholder with the actual `Secret` value from your PixelLab [account page](https://www.pixellab.ai/account).
-6. Follow PixelLab's instructions for your app. That may mean running a command, pasting settings into an app, or using a built-in settings screen.
-7. Restart your assistant/editor if it does not show the PixelLab tools right away.
-8. Run the PixelLab Pip setup command your assistant supports, such as `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`, to check whether PixelLab is connected.
-
-For manual MCP setup, the PixelLab address is:
+Choose MCP when you want PixelLab tools inside an AI assistant/editor/app. Pip should configure your app to use:
 
 ```text
 https://api.pixellab.ai/mcp
 ```
 
-The authorization line should use your `PIXELLAB_SECRET`:
+with authorization supplied from a private `PIXELLAB_SECRET` setting, for example:
 
 ```text
 Authorization: Bearer <PIXELLAB_SECRET>
 ```
 
-In examples, `<PIXELLAB_SECRET>` means "the Secret value from your PixelLab account page." Do not include the angle brackets when you replace it.
-
-Some apps use a JSON settings file. If yours does, the shape usually looks like this:
-
-```json
-{
-  "mcpServers": {
-    "pixellab": {
-      "url": "https://api.pixellab.ai/mcp",
-      "transport": "http",
-      "headers": {
-        "Authorization": "Bearer <PIXELLAB_SECRET>"
-      }
-    }
-  }
-}
-```
-
-Use your app's secret settings when available. If the app makes you edit a file, keep that file private and do not commit it.
+In docs and previews, `<PIXELLAB_SECRET>` means a reference to the private local secret, not a value to paste into chat. Use your app's secret settings when available. If the app requires a config file, keep that file private and do not commit it.
 
 ### Backup: REST v2 API
 
-Use the REST API only when you are writing your own code or when MCP is not available in your assistant/editor.
+Use the REST API only when you are writing your own code, such as a script, app, backend, batch job, SDK integration, or deployment.
 
-For REST v2 API calls, read `PIXELLAB_SECRET` inside your code or deployment runtime and send it as:
+For REST v2 API calls, read `PIXELLAB_SECRET` inside your code or deployment runtime and send:
 
 ```text
 Authorization: Bearer <PIXELLAB_SECRET>
 ```
 
-Do not paste the Secret into chat, commit it, put it in examples, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. Pip can help check setup with `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`, but it should only inspect specific files or settings that you name and approve.
+Pip should provide code examples only after you name the language, framework, deployment platform, or SDK. Do not paste the Secret into chat, commit it, put it in examples, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps.
 
 ## Authentication
 

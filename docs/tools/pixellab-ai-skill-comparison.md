@@ -27,6 +27,7 @@ Use PixelLab AI Skill when you want its packaged recipe/script workflow. Use Pip
 | Distribution | ClawHub skill with OpenClaw-oriented install instructions. | Multi-agent plugin/skill repo with Claude, Codex, Cursor, Copilot, VS Code, Gemini, and manual skill paths. |
 | Invocation scope | Explicit PixelLab / pixellab-ai workflow help. | PixelLab asset/API requests, explicit `/pixellab-pip`, and implicit PixelLab-specific tasks. |
 | Secret name | Uses `PIXELLAB_API_KEY`. | Uses `PIXELLAB_SECRET` for local setup; calls the runtime auth value a PixelLab bearer token. |
+| Secret setup pattern | Teaches repo-local `.env.local` setup and helper auto-load behavior. | Avoids `.env*` by default; prefers app secret settings, secret stores, or user-scoped environment setup with token-free previews. |
 | Live generation | Provides helper commands for REST calls, polling, downloads, and output files. | Calls MCP/REST only when configured and appropriate; otherwise gives the selected route or minimal call shape. |
 | REST helpers | Bundles `pixellab_client.py` and `pixellab_workflow.py` for REST calls, polling, manifests, and local files. | Does not bundle REST client scripts; prefers MCP when available or direct REST guidance. |
 | Examples | Includes endpoint example JSON files for image, character, object, animation, tiles, UI, inpaint, resize, remove-background, prompt enhancement, rotation, interpolation, outfit transfer, and tags. | Does not bundle endpoint payload examples; refreshes official REST/MCP docs when exact schemas matter. |
@@ -47,6 +48,12 @@ Use PixelLab AI Skill when you want its packaged recipe/script workflow. Use Pip
 | Validation | Includes asset inspection and sprite validation commands. | Requires checking existence and requested constraints before calling an output final; no bundled validator scripts. |
 | Subagents | Recommends worker subagents for live API calls. | Does not require subagents; stays portable across agents. |
 | External/community references | Lists YouTube and Discord workflow references. | Uses official PixelLab docs and local technical notes; avoids community-derived claims unless separately reviewed. |
+
+## Secret Setup Tradeoff
+
+PixelLab AI Skill is more operational out of the box because its helper scripts can auto-load `PIXELLAB_API_KEY` from `.env.local`. That is convenient for a REST helper workflow, but it teaches agents and users to rely on a file pattern that often contains unrelated private project secrets.
+
+Pip intentionally avoids `.env*` files by default. Its setup flow should use `PIXELLAB_SECRET` through app secret settings, a secret store, or a user-scoped environment setting, and should inspect `.env*` only when the user names an exact file and explicitly approves inspection. This is less automatic today, but it is safer for mixed projects where `.env.local` may contain database URLs, cloud keys, or other private tokens.
 
 ## PixelLab AI Skill Package Inventory
 
@@ -84,6 +91,7 @@ These ideas are already covered in Pip through `SKILL.md`, `references/localizat
 
 - Do not copy PixelLab AI Skill's helper scripts, recipes, manifest workflow, or folder contract. Those are a separate production pipeline.
 - Do not add a bundled REST client unless repeated use proves agents need one.
+- Do not adopt `.env.local` as Pip's default secret setup path; use it only as an explicitly approved fallback if a future helper needs project-local configuration.
 - Do not require worker subagents; Pip should stay useful in agents that do not support delegation.
 - Do not replace Pip's bearer-token naming with `PIXELLAB_API_KEY`; Pip's README uses PixelLab's user-facing "secret token" wording, while the runtime skill uses bearer-token terminology.
 - Do not add community tutorial or Discord-derived claims to runtime references without separate public-source review.

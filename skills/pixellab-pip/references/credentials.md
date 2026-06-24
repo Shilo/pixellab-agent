@@ -6,8 +6,9 @@ PixelLab uses one account-level bearer token for public REST v2 and PixelLab MCP
 
 User-facing setup wording:
 
-- Open `https://www.pixellab.ai/account` after signing in and copy the value labeled `Secret`, or follow PixelLab's MCP setup page at `https://www.pixellab.ai/mcp`.
-- Store that Secret value in `PIXELLAB_SECRET`.
+- Open `https://www.pixellab.ai/account` after signing in and copy the value labeled `Secret`.
+- Store that Secret value locally as `PIXELLAB_SECRET`, preferably in the assistant/editor/app secret settings, an app secret store, or a user-level environment setting.
+- If the user chooses Manual setup, open or link to `https://www.pixellab.ai/mcp`, tell them to pick their app there, and stop.
 - The PixelLab API/account UI may label this value as an API key, API token, or secret.
 - Do not paste the value into chat.
 
@@ -25,23 +26,25 @@ PIXELLAB_SECRET
 
 Do not create additional env var aliases. Official examples may say `YOUR_API_TOKEN` or `YOUR_SECRET`; put that same bearer token in `PIXELLAB_SECRET`.
 
+In setup previews, `<PIXELLAB_SECRET>` means a private local secret reference. It does not mean the user should paste the real Secret into chat, a shared config file, or a generated doc.
+
 ## MCP Reuse
 
 If PixelLab MCP is already configured, reuse its credential source when safe:
 
 - If the MCP config uses `PIXELLAB_SECRET`, REST code can read the same env var.
-- If the MCP config uses an app secret setting named `PIXELLAB_SECRET`, tell the user to configure REST/API code to use that same `PIXELLAB_SECRET` setting when the app supports it.
+- If the MCP config uses an app secret setting or secret store named `PIXELLAB_SECRET`, tell the user to configure REST/API code to use that same `PIXELLAB_SECRET` source when the app or runtime supports it.
 - If the MCP config contains a literal `Authorization: Bearer ...` value, do not extract, print, or copy it. Suggest moving it to env/secret config.
 
-Never ask the user to paste the bearer token into chat. Never use website/Supabase session tokens for REST or MCP.
+Never ask the user to paste the bearer token into chat. Never print, echo, log, summarize, measure, transform, or validate token values. Never use website/Supabase session tokens for REST or MCP.
 
-When checking MCP config files for credential setup, inspect only the specific config paths referenced by the user. Do not scan broad home/auth/config directories because tool output can leak secrets.
+When checking MCP config files for credential setup, inspect only the specific config paths referenced by the user or approved after a token-free explanation. Do not scan broad home/auth/config directories, shell history, keychains, project trees, or existing `.env*` files because tool output can leak secrets.
 
-Before writing environment settings, keychain/secret-store entries, MCP app config, private PixelLab-only env files, shell profiles, or project files, follow `references/setup.md`: explain the destination, show a token-free preview or secret reference, and get explicit approval.
+Before writing environment settings, keychain/secret-store entries, MCP app config, private PixelLab-only env files, shell profiles, deployment settings, or project files, follow `references/setup.md`: explain the destination, show a token-free preview or secret reference, and get explicit approval.
 
 Fallback order:
 
-1. User-scoped OS environment variable or MCP app secret/env config.
+1. Assistant/editor/app secret settings, app secret store, or user-scoped OS environment variable named `PIXELLAB_SECRET`.
 2. Hidden local prompt that writes user-scoped env/keychain config.
-3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`.
+3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`, only if the user explicitly chooses that option.
 4. Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcript, and copied browser session tokens. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.

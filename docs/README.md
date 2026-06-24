@@ -1,6 +1,6 @@
 # PixelLab Pip Docs
 
-Last reviewed: 2026-06-23.
+Last reviewed: 2026-06-24.
 
 These docs explain PixelLab tools, workflows, terminology, SDK boundaries, and auth rules that Pip needs in order to automate PixelLab correctly. They supplement the repository README; install, update, and plugin metadata stay there.
 
@@ -22,6 +22,7 @@ For exact current endpoint schemas, tool lists, model/mode availability, pricing
 - [PixelLab Terminology](pixellab/terminology.md) - product labels, endpoint labels, and terms agents should not over-interpret.
 - [PixelLab SDK Compatibility](pixellab/sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
 - [PixelLab Auth And Security](pixellab/auth-and-security.md) - bearer-token handling and automation boundaries.
+- [Official PixelLab MCP Service Comparison](tools/pixellab-mcp-service-comparison.md) - technical comparison between Pip and the official hosted MCP service.
 - [PixelLab AI Skill Comparison](tools/pixellab-ai-skill-comparison.md) - feature comparison between Pip and the unofficial PixelLab AI Skill.
 
 ## Publication Rules
