@@ -12,6 +12,8 @@ $pixellab-pip setup
 
 Some apps expose text after a slash command as arguments, while others treat it as normal prompt text. Treat `setup` the same either way. Do not require flags, positional syntax, or app-specific argument features.
 
+For a standalone `setup` after skill invocation, treat the setup mode as `unknown` unless the user explicitly names an assistant/editor/app target or the prior conversation clearly established one. The current runtime app can be mentioned as the likely MCP target after the user chooses MCP, but it must not by itself skip the MCP/API/both/manual choice.
+
 ## Setup Wizard Contract
 
 `/pixellab-pip setup` behaves like a beginner-friendly wizard, not a static help page. Start from the next safest action, recommend MCP first, and ask only the shortest question needed to continue.
@@ -33,7 +35,7 @@ Use user wording to infer intent:
 
 ## Decision Tree
 
-1. Identify the desired mode from the user's words. If unclear, say MCP is recommended for normal assistant/editor use and ask which mode they want.
+1. Identify the desired mode from the user's words. If unclear, say MCP is recommended for normal assistant/editor use and ask which mode they want. A bare `setup` command is unclear even when the current app is detectable.
 2. If mode is `manual`, link or open `https://www.pixellab.ai/mcp`, tell the user to choose their app there, and stop.
 3. If mode is `mcp` or `both`, detect the current assistant/editor/app when possible. If detection is unclear, ask which app they use or offer the manual website option.
 4. For known supported apps, tailor only to the named/detected app: Claude Code, Codex, Gemini CLI, Cursor, VS Code Agent Plugins, GitHub Copilot CLI, or generic MCP-compatible apps.
