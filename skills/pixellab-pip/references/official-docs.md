@@ -32,6 +32,14 @@ MCP may also expose `pixellab://docs/...` documentation resources for engine/fra
 
 `https://api.pixellab.ai/v2/llms.txt` is a REST API guide for agents. It lists v2 endpoints, base URL, bearer auth, async job behavior, and links to OpenAPI/interactive docs.
 
+## MCP vs REST Image Editing Boundary
+
+As of the current MCP guide, PixelLab MCP documents managed asset tools for characters, character states, character animations, top-down tilesets, sidescroller tilesets, isometric tiles, tile variants, objects, map objects, projects, chat/sandbox helpers, and balance checks. It does not document raw image-editing tools equivalent to REST v2 `edit-image`, `edit-images-v2`, `inpaint`, `inpaint-v3`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, or `remove-background`.
+
+MCP `create_map_object` may expose map-object-specific `background_image` or `inpainting` parameters. Treat those as map-object generation controls, not as generic replacements for REST v2 `inpaint` or `inpaint-v3`.
+
+For supplied-image edits, image conversion, inpainting, resizing, background removal, and additive sprite effects on the same canvas, route to REST v2 unless current MCP docs or visible MCP tools expose a matching image-edit tool. Do not assume a REST endpoint has an MCP equivalent just because MCP is configured. If a future MCP tool appears, prefer the visible tool and update this reference.
+
 ## What This Skill Adds
 
 `/pixellab-pip` does not replace official docs. It adds:

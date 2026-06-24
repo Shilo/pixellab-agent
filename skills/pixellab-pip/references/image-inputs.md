@@ -25,6 +25,8 @@ When images are visible to the agent, inspect them and write task-relevant facts
 
 ## Endpoint Semantics
 
+These image-editing and image-conversion routes are REST v2 routes unless current MCP docs or visible MCP tools expose a matching image-edit tool. Do not route supplied-image edits to managed MCP object/character tools just because MCP is configured.
+
 - `generate-image-v2`
   - `reference_images`: subject guidance, up to 4 images.
   - `style_image`: style and pixel-size reference.
@@ -76,6 +78,12 @@ When images are visible to the agent, inspect them and write task-relevant facts
   - If no fixed output size is requested, prefer `image-to-pixelart-pro`.
   - If fixed output size is requested and fits current `image-to-pixelart` `output_size` limits, use normal `image-to-pixelart`.
   - If requested size is outside current `output_size` limits, warn that Pro cannot guarantee exact dimensions before spending credits. If the user proceeds, use Pro, verify dimensions, then ask before PixelLab `resize` or local nearest-neighbor/canvas resize/pad/crop.
+- `resize`
+  - `image`: target image to resize.
+  - Use for PixelLab resizing only after checking current size limits and output behavior. For simple nearest-neighbor canvas padding/cropping, local tooling may be safer after user approval.
+- `remove-background`
+  - `image`: target image whose background should be removed.
+  - Use for transparent-background extraction when the user wants PixelLab's public REST route, not MCP.
 - `animate-with-text-v3`
   - `first_frame`: required starting frame.
   - `last_frame`: optional ending frame for interpolation/guidance.
