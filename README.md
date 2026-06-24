@@ -227,6 +227,15 @@ Store the token outside chat. The recommended local secret name is:
 PIXELLAB_SECRET
 ```
 
+Token setup options, from safest default to more manual:
+
+1. App/editor secret settings or app secret store named `PIXELLAB_SECRET`.
+2. OS user environment-variable UI for `PIXELLAB_SECRET`.
+3. A hidden local prompt or secret-store command that does not put the Secret in command text.
+4. A normal external terminal command such as `setx`, `export`, or PowerShell env setup if you accept shell-history/process-history tradeoffs.
+
+Do not run literal-Secret commands through assistant prompt lines, Claude Code `!`, Codex CLI `!`, or a Codex-readable integrated terminal. `setx` and `export` are not forbidden; the risk is putting the actual Secret in command text that can be saved or exposed.
+
 ### What The Wizard Is Allowed To Do
 
 - Detect the current assistant/editor/app when possible, or ask which one you use.

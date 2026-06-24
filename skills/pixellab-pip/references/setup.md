@@ -52,7 +52,14 @@ PixelLab uses one account-level bearer token for public REST v2 and PixelLab MCP
 
 Tell the user to open `https://www.pixellab.ai/account` after signing in and copy the value labeled `Secret`. Never ask the user to paste the bearer token into chat. Never print, echo, log, summarize, transform, validate, measure, or copy a token value from chat or config output. If a token appears in chat or tool output, do not repeat it.
 
-Do not tell users to run secret-setting commands through an assistant chat, slash-command argument, Claude Code `!` shell command, Codex CLI `!` shell command, or a Codex app integrated terminal with the literal Secret value. Commands typed into assistant UIs can appear in chat history, transcripts, debug logs, command history, terminal output, or tool output. Codex app terminal output can be read by Codex, so it is not a secret-entry UI. Do not recommend literal-token shell commands such as `setx PIXELLAB_SECRET "actual-secret"` or `export PIXELLAB_SECRET="actual-secret"` as the safest default either, because normal shell history may preserve them. Prefer app secret settings, OS environment-variable UI, secret stores, or hidden prompts that do not put the token in the command text.
+Do not tell users to run secret-setting commands through an assistant chat, slash-command argument, Claude Code `!` shell command, Codex CLI `!` shell command, or a Codex app integrated terminal with the literal Secret value. Commands typed into assistant UIs can appear in chat history, transcripts, debug logs, command history, terminal output, or tool output. Codex app terminal output can be read by Codex, so it is not a secret-entry UI.
+
+`setx`, `export`, PowerShell `$env:`, and `ENV=value command` are not forbidden. They are just lower-safety options when the command contains the literal Secret because shell history or process details may preserve it. When token setup is needed, list the options concisely in this order:
+
+1. App/editor secret settings or app secret store named `PIXELLAB_SECRET`.
+2. OS environment-variable UI for a user-scoped `PIXELLAB_SECRET`.
+3. Hidden local prompt or secret-store command that does not place the token in command text.
+4. Normal external terminal command, only if the user chooses it; show placeholders such as `<PIXELLAB_SECRET>` and warn not to run it inside an assistant prompt, `!` shell escape, or Codex-readable integrated terminal.
 
 Preferred storage order:
 
@@ -114,7 +121,8 @@ For automatic API setup:
 - Provide language/platform examples only after the user names the language, framework, deployment platform, SDK, or runtime.
 - Do not assume shell, OS, package manager, or SDK availability.
 - Do not hard-code token literals or generate commands that echo the secret.
-- Avoid commands that persist secrets in shell history, including literal-token `setx`, `export`, `$env:`, or `ENV=value command` examples.
+- Do not say `setx`, `export`, PowerShell `$env:`, or `ENV=value command` are forbidden; explain they are acceptable only in a normal external terminal when the user accepts shell-history/process-history tradeoffs.
+- Avoid literal-token command examples. Use placeholders and safer hidden-prompt or UI options first.
 - Do not prefix secret-setting commands with assistant shell escapes such as Claude Code `!` or Codex CLI `!`; the command text can become part of the assistant session.
 - Reuse the same `PIXELLAB_SECRET` source as MCP when mode is `both`.
 - Verify with REST `GET /balance` only after user approval, without printing auth headers or full JSON.
@@ -157,6 +165,7 @@ Good user-facing setup output:
 - "Which setup do you want: MCP, API, both, or Manual?"
 - "Manual means I will open PixelLab's MCP setup page, you pick your app there, and I stop."
 - "I will not ask you to paste the Secret here."
+- "Token setup options are app secret settings, OS environment-variable UI, a hidden prompt, or a normal external terminal command if you accept shell-history tradeoffs."
 - "Before I write anything, I will show a preview that uses `PIXELLAB_SECRET` instead of your token."
 - "I can verify with a no-credit balance check if you approve."
 
@@ -214,7 +223,8 @@ For setup help, report only what helps the user proceed:
 
 - Do not ask for, paste, print, echo, log, quote, summarize, measure, or transform the bearer token.
 - Do not suggest `! setx ...`, `! export ...`, or any assistant-shell command that includes the literal Secret value, including Claude Code or Codex CLI `!` commands.
-- Do not present literal-token shell commands as the safest default for manual setup; prefer secret UIs, secret stores, or hidden prompts.
+- Do not describe `setx` or `export` as inherently unsafe or forbidden; describe the risk as literal-token command text being stored or exposed.
+- Do not present literal-token shell commands as the safest default for manual setup; list safer secret UIs, secret stores, or hidden prompts first.
 - Do not use website/Supabase/browser session tokens for REST or MCP.
 - Do not scrape browser storage or session cookies.
 - Do not call undocumented website endpoints as setup verification.
