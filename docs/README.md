@@ -22,6 +22,7 @@ For exact current endpoint schemas, tool lists, model/mode availability, pricing
 - [PixelLab Terminology](pixellab/terminology.md) - public product labels, endpoint labels, and terms agents should not over-interpret.
 - [PixelLab SDK Compatibility](pixellab/sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
 - [PixelLab Auth And Security](pixellab/auth-and-security.md) - bearer-token handling and automation boundaries.
+- [PixelLab AI Skill Comparison](tools/pixellab-ai-skill-comparison.md) - feature comparison between Pip and the unofficial PixelLab AI Skill.
 
 ## Publication Rules
 
