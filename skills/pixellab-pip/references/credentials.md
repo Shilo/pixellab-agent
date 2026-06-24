@@ -2,7 +2,7 @@
 
 Read this for PixelLab bearer-token setup, PixelLab UI naming, or reusing MCP auth for REST API calls.
 
-PixelLab uses one account-level bearer token for public REST v2 and hosted MCP. End-user setup should store that token in `PIXELLAB_SECRET`. PixelLab UI and examples may call the same value an API key, API token, or secret; when discussing REST/MCP authentication, use the technical term `bearer token`.
+PixelLab uses one account-level bearer token for public REST v2 and PixelLab MCP. End-user setup should store that token in `PIXELLAB_SECRET`. PixelLab UI and examples may call the same value an API key, API token, or secret; when discussing REST/MCP authentication, use the technical term `bearer token`.
 
 User-facing setup wording:
 
@@ -30,18 +30,18 @@ Do not create additional env var aliases. Official examples may say `YOUR_API_TO
 If PixelLab MCP is already configured, reuse its credential source when safe:
 
 - If the MCP config uses `PIXELLAB_SECRET`, REST code can read the same env var.
-- If the MCP config uses a host secret setting named `PIXELLAB_SECRET`, tell the user to configure REST/API code to use that same `PIXELLAB_SECRET` setting when the host supports it.
+- If the MCP config uses an app secret setting named `PIXELLAB_SECRET`, tell the user to configure REST/API code to use that same `PIXELLAB_SECRET` setting when the app supports it.
 - If the MCP config contains a literal `Authorization: Bearer ...` value, do not extract, print, or copy it. Suggest moving it to env/secret config.
 
 Never ask the user to paste the bearer token into chat. Never use website/Supabase session tokens for REST or MCP.
 
 When checking MCP config files for credential setup, inspect only the specific config paths referenced by the user. Do not scan broad home/auth/config directories because tool output can leak secrets.
 
-Before writing environment settings, keychain/secret-store entries, MCP host config, private PixelLab-only env files, shell profiles, or project files, follow `references/setup.md`: explain the destination, show a token-free preview or secret reference, and get explicit approval.
+Before writing environment settings, keychain/secret-store entries, MCP app config, private PixelLab-only env files, shell profiles, or project files, follow `references/setup.md`: explain the destination, show a token-free preview or secret reference, and get explicit approval.
 
 Fallback order:
 
-1. User-scoped OS environment variable or MCP host secret/env config.
+1. User-scoped OS environment variable or MCP app secret/env config.
 2. Hidden local prompt that writes user-scoped env/keychain config.
 3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`.
 4. Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcript, and copied browser session tokens. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.

@@ -204,14 +204,14 @@ Runs guided PixelLab MCP/API setup, diagnoses missing auth, and configures only 
 
 ## MCP And API Setup
 
-For new PixelLab automation, Pip primarily guides users toward two setup paths:
+For most users, set up PixelLab MCP first. MCP connects PixelLab directly to your AI assistant, so the assistant can use PixelLab tools without you writing API code.
 
 | Path | Use it when | What it needs |
 |---|---|---|
-| MCP | You want an AI assistant or IDE to create managed PixelLab assets while coding. | A PixelLab MCP server config for `https://api.pixellab.ai/mcp` plus bearer auth. |
-| REST v2 API | You are writing scripts, apps, batch jobs, server code, or direct HTTP/SDK integrations. | Requests to `https://api.pixellab.ai/v2` plus bearer auth. |
+| MCP | Recommended. You want your AI assistant or editor to make PixelLab assets for you. | The setup steps on PixelLab's [MCP setup page](https://www.pixellab.ai/mcp). |
+| REST v2 API | Backup/advanced path. You are writing your own script, app, backend, or batch job. | Code that sends requests to `https://api.pixellab.ai/v2`. |
 
-Both paths use the same PixelLab account bearer token. Open the PixelLab [account page](https://www.pixellab.ai/account) after signing in and copy the value labeled `Secret`, or follow PixelLab's [MCP setup page](https://www.pixellab.ai/mcp). PixelLab may call this value an API key, API token, secret, or token. Pip calls it a bearer token for REST/MCP auth.
+Both paths use the same PixelLab account secret. Open the PixelLab [account page](https://www.pixellab.ai/account) after signing in and copy the value labeled `Secret`. PixelLab may call this value an API key, API token, secret, or token. Pip calls it a bearer token for MCP/API auth.
 
 Store the token outside chat. The recommended local name is:
 
@@ -219,20 +219,32 @@ Store the token outside chat. The recommended local name is:
 PIXELLAB_SECRET
 ```
 
-Safe setup options, from best default to fallback:
+### Recommended: MCP
 
-1. Use your agent app, IDE, OS, or deployment platform's secret store.
-2. Use a user-scoped environment variable named `PIXELLAB_SECRET`.
-3. Use an MCP host setting that references `PIXELLAB_SECRET` or a host-managed secret.
-4. Use a private `.pixellab` file only when you explicitly want an app-local fallback; keep it gitignored and store only `PIXELLAB_SECRET`.
+1. Open PixelLab's [MCP setup page](https://www.pixellab.ai/mcp).
+2. Sign in if PixelLab asks you to.
+3. Pick the assistant, editor, or app you use.
+4. Copy the setup command PixelLab shows for that app.
+5. When the command contains `YOUR_SECRET` or `<PIXELLAB_SECRET>`, replace that placeholder with the actual `Secret` value from your PixelLab [account page](https://www.pixellab.ai/account).
+6. Follow PixelLab's instructions for your app. That may mean running a command, pasting settings into an app, or using a built-in settings screen.
+7. Restart your assistant/editor if it does not show the PixelLab tools right away.
+8. Run the PixelLab Pip setup command your assistant supports, such as `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`, to check whether PixelLab is connected.
 
-For MCP, configure your host to connect to:
+For manual MCP setup, the PixelLab address is:
 
 ```text
 https://api.pixellab.ai/mcp
 ```
 
-Use your host's MCP settings UI when possible. If your host uses config files, prefer a token-free secret reference. Exact syntax varies by host, but the shape is:
+The authorization line should use your `PIXELLAB_SECRET`:
+
+```text
+Authorization: Bearer <PIXELLAB_SECRET>
+```
+
+In examples, `<PIXELLAB_SECRET>` means "the Secret value from your PixelLab account page." Do not include the angle brackets when you replace it.
+
+Some apps use a JSON settings file. If yours does, the shape usually looks like this:
 
 ```json
 {
@@ -248,7 +260,11 @@ Use your host's MCP settings UI when possible. If your host uses config files, p
 }
 ```
 
-Use your host's environment-variable or secret syntax so `<PIXELLAB_SECRET>` is filled from the local `PIXELLAB_SECRET` value. Do not paste the real Secret into shared config files.
+Use your app's secret settings when available. If the app makes you edit a file, keep that file private and do not commit it.
+
+### Backup: REST v2 API
+
+Use the REST API only when you are writing your own code or when MCP is not available in your assistant/editor.
 
 For REST v2 API calls, read `PIXELLAB_SECRET` inside your code or deployment runtime and send it as:
 
@@ -256,7 +272,7 @@ For REST v2 API calls, read `PIXELLAB_SECRET` inside your code or deployment run
 Authorization: Bearer <PIXELLAB_SECRET>
 ```
 
-Do not paste the token into chat, commit it, put it in examples, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. Pip can help check setup with `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`, but it should only inspect specific files or settings that you name and approve.
+Do not paste the Secret into chat, commit it, put it in examples, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. Pip can help check setup with `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`, but it should only inspect specific files or settings that you name and approve.
 
 ## Authentication
 

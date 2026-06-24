@@ -1,6 +1,6 @@
 # Setup Mode
 
-Use this reference when the user asks natural-language setup questions such as installing PixelLab Pip, connecting PixelLab to an agent, enabling MCP tools, using REST/API v2, fixing authentication, checking readiness, or deciding between MCP and API. This is a reference for the existing PixelLab Pip skill, not a separate skill.
+Use this reference when the user asks natural-language setup questions such as installing PixelLab Pip, connecting PixelLab to an assistant, enabling MCP tools, using REST/API v2, fixing authentication, checking readiness, or deciding between MCP and API. This is a reference for the existing PixelLab Pip skill, not a separate skill.
 
 The intended first-run command is one short word after the skill trigger:
 
@@ -10,20 +10,20 @@ The intended first-run command is one short word after the skill trigger:
 $pixellab-pip setup
 ```
 
-Some hosts expose text after a slash command as arguments, while others treat it as normal prompt text. Treat `setup` the same either way. Do not require flags, positional syntax, or host-specific argument features.
+Some apps expose text after a slash command as arguments, while others treat it as normal prompt text. Treat `setup` the same either way. Do not require flags, positional syntax, or app-specific argument features.
 
 ## Setup Intent
 
 First classify what the user wants to set up:
 
-- `mcp`: hosted PixelLab MCP tools inside an agent, IDE, desktop app, or MCP host.
-- `api`: direct REST v2 usage from scripts, apps, SDKs, curl, or backend code.
-- `both`: MCP for agent workflows plus REST/API for code or automation.
-- `unknown`: ask one short question, or explain the difference and recommend `both` for users who want agent-generated assets and code integration.
+- `mcp`: recommended default; PixelLab tools inside an AI assistant, IDE, desktop app, or MCP-compatible app.
+- `api`: backup/advanced path; direct REST v2 usage from scripts, apps, SDKs, curl, or backend code.
+- `both`: MCP first, plus REST/API only if the user is also writing direct code or automation.
+- `unknown`: recommend MCP first unless the user clearly says they are writing their own code against the API.
 
 Use user wording to infer intent:
 
-- MCP signals: "agent", "Claude", "Codex", "Cursor", "MCP", "tools", "server", "host config", "desktop app", "connect PixelLab to my assistant".
+- MCP signals: "agent", "assistant", "Claude", "Codex", "Cursor", "MCP", "tools", "desktop app", "connect PixelLab to my assistant".
 - API signals: "REST", "API", "curl", "SDK", "Python", "JavaScript", "backend", "endpoint", "batch", "integration", "web app".
 - Both signals: "set everything up", "agent and code", "MCP plus API", "use in my app and assistant".
 
@@ -34,9 +34,9 @@ Diagnose before changing anything. Keep checks narrow and relevant to the user's
 For MCP readiness, check:
 
 - Whether PixelLab MCP tools are currently available in the agent. Match tool names by suffix if they are prefixed.
-- Whether the user's MCP host is known and what config path or UI they want to use.
+- Whether the user's assistant/editor is known and what settings screen or config file they want to use.
 - Whether an MCP config was explicitly provided or the user asked you to inspect a specific file.
-- Whether the host can pass `PIXELLAB_SECRET` from an environment variable or secret store.
+- Whether the assistant/editor can pass `PIXELLAB_SECRET` from an environment variable or secret setting.
 
 For API readiness, check:
 
@@ -49,7 +49,7 @@ Do not scan broad home, auth, shell history, keychain, credential, config, proje
 
 ## Safe Credential Setup
 
-PixelLab uses one account-level bearer token for public REST v2 and hosted MCP. The PixelLab UI may call it an API key, API token, secret, or token. For REST/MCP auth, call it a bearer token.
+PixelLab uses one account-level bearer token for public REST v2 and PixelLab MCP. The PixelLab UI may call it an API key, API token, secret, or token. For REST/MCP auth, call it a bearer token.
 
 Tell the user to open `https://www.pixellab.ai/account` after signing in and copy the value labeled `Secret`, or follow PixelLab's MCP setup page at `https://www.pixellab.ai/mcp`.
 
@@ -57,8 +57,8 @@ Never ask the user to paste the bearer token into chat. Never print, echo, log, 
 
 Preferred storage order:
 
-1. User-scoped OS environment variable or MCP host secret/env config using `PIXELLAB_SECRET`.
-2. Hidden local prompt or host UI that writes user-scoped env/keychain/secret config.
+1. User-scoped OS environment variable or assistant/editor secret settings using `PIXELLAB_SECRET`.
+2. Hidden local prompt or app UI that writes user-scoped env/keychain/secret config.
 3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`.
 
 Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcripts, copied website session tokens, and literal `Authorization: Bearer ...` values in config files. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.
@@ -79,17 +79,14 @@ Do not introduce aliases such as `PIXELLAB_API_KEY`, `PIXELLAB_TOKEN`, or `YOUR_
 
 ## User-Facing Setup Output
 
-For setup readiness output, keep wording friendly and action-oriented. Prefer "Next step" language over long diagnostic inventories.
+For setup readiness output, keep wording friendly, action-oriented, agent-agnostic, and OS-agnostic by default. Prefer "Next step" language over long diagnostic inventories. Avoid jargon such as "host" in user-facing text; say "assistant", "editor", "app", or the named product instead.
 
 - Tell the user to open `https://www.pixellab.ai/account` and copy the value labeled `Secret`.
+- Recommend PixelLab's official MCP setup page first: `https://www.pixellab.ai/mcp`. Tell the user to pick their assistant/editor/app, copy the instructions shown there, replace `YOUR_SECRET` or `<PIXELLAB_SECRET>` with the actual Secret value, follow the app-specific instructions, then restart the app if needed.
+- Explain that REST/API setup is only needed when they are writing their own code or MCP is not available.
 - Use `<PIXELLAB_SECRET>` as the placeholder in prompts and config examples. Explain that it means the actual `Secret` value from the account page, made available locally as `PIXELLAB_SECRET`.
-- In PowerShell hidden-input examples, use:
-
-```powershell
-$secret = Read-Host "<PIXELLAB_SECRET>" -AsSecureString
-```
-
-Then say: "When PowerShell asks for `<PIXELLAB_SECRET>`, paste the actual Secret from your PixelLab account page. It will not be shown in the terminal."
+- Do not show Windows, macOS, Linux, shell, package-manager, SDK, or programming-language-specific setup commands unless the user named that OS/tool or asks for manual setup.
+- If an OS-specific hidden-input example is needed, tailor it to the user's OS and explain that `<PIXELLAB_SECRET>` means the actual Secret from their PixelLab account page.
 
 - For MCP examples, show:
 
@@ -98,19 +95,20 @@ https://api.pixellab.ai/mcp
 Authorization: Bearer <PIXELLAB_SECRET>
 ```
 
-Then say: "Configure your MCP host to fill `<PIXELLAB_SECRET>` from your local `PIXELLAB_SECRET` environment variable. If your host has a secret UI, save the value there under `PIXELLAB_SECRET`. Do not paste the real Secret into shared config files."
+Then say: "Set up your assistant/editor/app so `<PIXELLAB_SECRET>` comes from a private `PIXELLAB_SECRET` setting. If the app has a secret settings screen, save the value there under `PIXELLAB_SECRET`. Do not paste the real Secret into shared config files."
 
 ## MCP Configuration Guidance
 
-For MCP setup, stay host- and platform-agnostic unless the user named a host.
+For MCP setup, recommend PixelLab's official MCP setup page first unless the user explicitly asks for manual setup: `https://www.pixellab.ai/mcp`. Do not assume a specific assistant, editor, terminal, shell, or operating system.
 
 Good guidance:
 
-- Use the host's MCP settings UI or documented MCP config file.
-- Configure PixelLab MCP to read `PIXELLAB_SECRET` from the host environment or secret store.
-- If the host supports a secret store, save the value under `PIXELLAB_SECRET` instead of using a literal token.
+- Tell the user to pick their assistant/editor/app on PixelLab's MCP page and follow the exact command or instructions shown there.
+- If they need manual setup, use the app's MCP settings screen or documented MCP config file.
+- Configure PixelLab MCP to read `PIXELLAB_SECRET` from the app environment or secret store.
+- If the app supports a secret store, save the value under `PIXELLAB_SECRET` instead of using a literal token.
 - If a config file already contains a literal bearer token, suggest moving it into env/secret config; do not extract or print it.
-- After config changes, tell the user to restart or reload the MCP host when that host requires it.
+- After config changes, tell the user to restart or reload the assistant/editor when needed.
 
 Before writing config:
 
@@ -119,11 +117,11 @@ Before writing config:
 - Ask for confirmation.
 - Write only after explicit approval.
 
-If the user asks for a generic MCP snippet, provide a token-free template and note that field names vary by host. Prefer the official PixelLab MCP setup page for host-specific details.
+If the user asks for a generic MCP snippet, provide a token-free template and note that app settings vary. Prefer the official PixelLab MCP setup page for app-specific details.
 
 ## API Configuration Guidance
 
-For REST/API setup, tailor examples to the user's platform but keep the credential pattern stable.
+For REST/API setup, first say this is the backup/advanced path for users writing their own code. Do not assume an OS, shell, SDK, or programming language; tailor examples only after the user names one or asks for one.
 
 Safe examples may show:
 
@@ -132,18 +130,18 @@ Safe examples may show:
 - A no-credit check against balance or an official lightweight endpoint when the user approves a live check.
 - How MCP and API can reuse the same credential source.
 
-Do not hard-code token literals. Do not generate commands that would echo the secret. Avoid commands that persist secrets in shell history. When platform-specific persistent env setup is needed, prefer OS or host settings UI, documented secret stores, or user-scoped environment configuration over project files.
+Do not hard-code token literals. Do not generate commands that would echo the secret. Avoid commands that persist secrets in shell history. When platform-specific persistent env setup is needed, prefer app secret settings, documented secret stores, OS settings, or user-scoped environment configuration over project files.
 
 ## Prompt Before Writes
 
-Any setup action that writes files, environment settings, MCP host config, shell profiles, private PixelLab-only env files, package files, or project scripts needs confirmation first.
+Any setup action that writes files, environment settings, MCP app config, shell profiles, private PixelLab-only env files, package files, or project scripts needs confirmation first.
 
 Before asking, report:
 
-- Target surface: MCP, API, or both.
-- Exact destination: config file, host setting, env var, app file, or project file.
-- Secret handling: token-free placeholder, `PIXELLAB_SECRET` env var, or host secret setting named `PIXELLAB_SECRET`.
-- Reload step: whether a terminal, app, server, or MCP host must restart.
+- Target surface: MCP, API, or both. Recommend MCP first unless the user is writing direct API code.
+- Exact destination: config file, app setting, env var, app file, or project file.
+- Secret handling: token-free placeholder, `PIXELLAB_SECRET` env var, or app secret setting named `PIXELLAB_SECRET`.
+- Reload step: whether a terminal, app, server, or assistant/editor must restart.
 
 If the user only wants instructions, do not write anything.
 
@@ -167,7 +165,7 @@ After a live check:
 
 - Report success/failure, surface checked, and whether credentials were found.
 - If balance/usage is returned, summarize it without exposing raw auth headers or full response JSON.
-- If failed, report the likely layer: missing env var, MCP host not loaded, auth rejected, network failure, endpoint unavailable, or SDK/tool mismatch.
+- If failed, report the likely layer: missing env var, assistant/editor not reloaded, auth rejected, network failure, endpoint unavailable, or SDK/tool mismatch.
 
 ## What To Report
 
@@ -175,7 +173,7 @@ For setup help, report only what helps the user proceed:
 
 - Detected intent: MCP, API, both, or unknown.
 - Current readiness: ready, partially ready, not configured, blocked, or unknown.
-- Credential location type: env var, host secret, literal config value found, or not found. Never report the credential value.
+- Credential location type: env var, app secret setting, literal config value found, or not found. Never report the credential value.
 - Next safest step.
 - Any write you propose, with destination and token-handling approach.
 - Whether a restart/reload is needed.
@@ -191,18 +189,18 @@ For setup help, report only what helps the user proceed:
 - Do not write MCP config, env files, shell profiles, package files, or project code without explicit confirmation.
 - Do not scan broad credential/config directories.
 - Do not claim SDK support, MCP tool availability, pricing, limits, or current endpoint behavior without checking when those facts matter.
-- Do not require PixelLab Pip-specific agent behavior from hosts that only support generic MCP or REST.
+- Do not require PixelLab Pip-specific assistant behavior from apps that only support generic MCP or REST.
 
-## Agent- and Platform-Agnostic Flow
+## Agent- And OS-Agnostic Flow
 
 Use this default flow for natural-language setup mode:
 
-1. Identify whether the user wants MCP, API, or both.
+1. Identify whether the user wants MCP, API, or both. Recommend MCP first for normal assistant/editor use.
 2. Diagnose current readiness using available tools and only user-approved/specific config paths.
-3. Explain the safe credential model: one PixelLab bearer token stored as `PIXELLAB_SECRET` in the user environment or host secret settings.
-4. Offer token-free setup steps for the user's host/platform.
+3. Explain the safe credential model: one PixelLab bearer token stored as `PIXELLAB_SECRET` in the user environment or app secret settings.
+4. Offer token-free setup steps for the user's app/platform only after identifying it, or route to PixelLab's official MCP setup page when it is unknown.
 5. Ask before writing config or changing environment.
 6. Run only no-credit readiness checks after approval.
 7. Report outcome and the next concrete step.
 
-If host-specific details are unknown, give a generic MCP/REST pattern and route the user to `https://www.pixellab.ai/mcp` or `https://api.pixellab.ai/v2/docs` for the host- or endpoint-specific fields.
+If app-specific details are unknown, route the user to `https://www.pixellab.ai/mcp` first. Mention `https://api.pixellab.ai/v2/docs` only when they are writing direct API code.
