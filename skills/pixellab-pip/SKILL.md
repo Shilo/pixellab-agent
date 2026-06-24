@@ -119,6 +119,22 @@ Prompt enhancement is opt-out. For natural-language request parameters such as `
 
 Use REST `enhance-pixen-prompt` for Pixen image prompts, `enhance-character-v3-prompt` for character v3 prompts, and `enhance-animation-v3-prompt` for animation v3 actions with `first_frame` and optional `last_frame`. For other tools, enhance directly as the agent; do not force a nonmatching enhance endpoint.
 
+## Local Asset Assembly
+
+When turning PixelLab animation frames into a local preview GIF, treat transparent pixel art as a disposal-sensitive format. If using ImageMagick `magick`, put animation settings before the input frames so they apply to every frame, for example:
+
+```powershell
+magick -delay 12 -dispose Previous -loop 0 "frame-*.png" "preview.gif"
+```
+
+Use `-dispose Previous` by default for transparent sprite previews. `-dispose Background` is acceptable only after verifying the viewer/rendered output does not leave trails. Do not put `-delay`, `-dispose`, or `-loop` only after the input frames, because ImageMagick may emit frames with `Dispose: Undefined`, causing past transparent frames to accumulate visually.
+
+After creating a GIF preview from source PNG frames, verify it before reporting success:
+
+1. Inspect metadata with `magick identify -verbose preview.gif` and confirm each frame has the intended delay and a non-undefined disposal method.
+2. Coalesce the GIF back into frames with `magick preview.gif -coalesce "check-%02d.png"`.
+3. Compare coalesced frames to the source PNGs, for example `magick compare -metric AE source.png check.png null:`, and investigate any unexpected nonzero pixel differences.
+
 ## Do Not Use
 
 - Do not automate undocumented website/session endpoints such as root `/tilesets/create` with copied browser session tokens. Treat them as unsupported unless PixelLab documents them.
