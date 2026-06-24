@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-06-23.
 
-These docs explain the PixelLab surfaces, asset workflows, terminology, SDK boundaries, and auth rules that Pip needs in order to automate PixelLab correctly. They supplement the repository README; install, update, and plugin metadata stay there.
+These docs explain PixelLab tools, workflows, terminology, SDK boundaries, and auth rules that Pip needs in order to automate PixelLab correctly. They supplement the repository README; install, update, and plugin metadata stay there.
 
 For exact current endpoint schemas, tool lists, model/mode availability, pricing, and authentication behavior, verify against the official PixelLab docs:
 
@@ -17,9 +17,9 @@ For exact current endpoint schemas, tool lists, model/mode availability, pricing
 
 ## Contents
 
-- [PixelLab Surfaces And Services](pixellab/surfaces-and-services.md) - MCP, REST v2, website/editor, Aseprite, Pixelorama, SDK, and legacy v1 boundaries.
-- [PixelLab Asset Routing](pixellab/asset-routing.md) - how common asset requests map to PixelLab tools, endpoints, and workflows.
-- [PixelLab Terminology](pixellab/terminology.md) - public product labels, endpoint labels, and terms agents should not over-interpret.
+- [PixelLab Tools And Services](pixellab/surfaces-and-services.md) - where MCP, REST v2, website/editor, Aseprite, Pixelorama, SDKs, and legacy v1 fit.
+- [PixelLab Asset Requests](pixellab/asset-routing.md) - how common requests map to PixelLab tools, endpoints, and workflows.
+- [PixelLab Terminology](pixellab/terminology.md) - product labels, endpoint labels, and terms agents should not over-interpret.
 - [PixelLab SDK Compatibility](pixellab/sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
 - [PixelLab Auth And Security](pixellab/auth-and-security.md) - bearer-token handling and automation boundaries.
 - [PixelLab AI Skill Comparison](tools/pixellab-ai-skill-comparison.md) - feature comparison between Pip and the unofficial PixelLab AI Skill.

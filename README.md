@@ -2,7 +2,7 @@
 
 Meet PixelLab Pip: a tiny Pixel Pup who fetches the right route through PixelLab's MCP tools, REST v2 API, website/editor workflows, Aseprite, Pixelorama, and legacy v1.
 
-Pip is lightweight and practical under the collar: he maps plain-language asset requests to the right supported surface, keeps agents away from undocumented website/session endpoints, and helps untangle overlapping tool names, endpoint paths, model labels, and editor workflows.
+Pip is helpful and practical under the collar: he maps plain-language requests to the right PixelLab tool or workflow, keeps agents away from undocumented website/session endpoints, and helps untangle overlapping tool names, endpoint paths, model labels, and editor workflows.
 
 For [PixelLab.ai](https://www.pixellab.ai/).
 
@@ -10,7 +10,7 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 
 ## Table Of Contents
 
-- [What Pip Does](#what-pip-does)
+- [Features](#features)
 - [Install](#install)
 - [Usage](#usage)
 - [Authentication](#authentication)
@@ -20,21 +20,22 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 - [Other Tools](#other-tools)
 - [PixelLab Resources](#pixellab-resources)
 
-## What Pip Does
+## Features
 
 Use Pip when an agent needs to create, edit, animate, integrate, or troubleshoot PixelLab assets and workflows.
 
 | Feature | What Pip helps with |
 |---|---|
-| Asset routing | Maps plain-language requests to the right PixelLab surface for characters, objects, tilesets, tiles, maps, UI, backgrounds, image edits, animations, and VFX. |
-| MCP and REST v2 selection | Chooses hosted MCP for managed agent assets, REST v2 for direct API/code/batch control, website/editor flows for human-visible work, Aseprite or Pixelorama for editor workflows, and legacy v1 only when needed. |
-| Prompt and description preparation | Turns rough user wording, visible inputs, styles, palettes, and constraints into concise PixelLab-ready descriptions, using PixelLab enhance endpoints only when they match the route. |
+| Create and edit game art | Helps agents create characters, objects, tilesets, tiles, maps, UI, backgrounds, icons, image edits, animations, and VFX. |
+| Pick the right PixelLab tool | Chooses hosted MCP for managed agent assets, REST v2 for direct API/code/batch control, website/editor flows for visible work, Aseprite or Pixelorama for editor workflows, and legacy v1 only when needed. |
+| Answer PixelLab questions | Answers questions about PixelLab tools, endpoints, docs, setup, auth, SDKs, model labels, troubleshooting, and confusing feature names. |
+| Improve prompts and descriptions | Turns rough user wording, visible inputs, styles, palettes, and constraints into concise PixelLab-ready descriptions, using PixelLab enhance endpoints only when they match the task. |
 | Non-English request support | Translates or normalizes PixelLab-facing natural-language inputs to concise English while keeping confirmations, explanations, and reports in the user's language. |
-| Image and attachment handling | Classifies supplied files as edit targets, identity references, style references, concept images, masks, palettes, init/source images, or animation frames instead of guessing one generic role. |
+| Use images and attachments correctly | Classifies supplied files as edit targets, identity references, style references, concept images, masks, palettes, init/source images, or animation frames instead of guessing one generic role. |
 | Paperdoll and layered workflow guidance | Helps route layered character, outfit, equipment, isolated asset, and composited-output requests without pretending PixelLab returns layers where it does not. |
-| Safe auth and automation boundaries | Uses bearer-token and MCP secret setup, avoids copied website session tokens, and keeps agents away from undocumented website/session endpoints. |
+| Safer auth and automation | Uses bearer-token and MCP secret setup, avoids copied website session tokens, and keeps agents away from undocumented website/session endpoints. |
 | Current docs and SDK checks | Tells agents when to refresh official PixelLab docs, OpenAPI schemas, MCP docs, SDK coverage, auth setup, pricing, limits, model labels, or endpoint fields before making exact claims. |
-| Usage and result reporting | Reports the surface, tool or endpoint, prompt prep method, final natural-language parameters, key controls, IDs, output locations, async status, credit/balance delta when available, and verification status. |
+| Clear generation reports | Reports the PixelLab tool or endpoint used, prompt prep method, final natural-language parameters, key controls, IDs, output locations, async status, credit/balance delta when available, and verification status. |
 | PixelLab terminology support | Explains confusing labels such as `Pro`, `v3`, `new`, `create tiles`, `create tileset`, Pixen, PixFlux, BitForge, and PixPatch at the documented product level. |
 
 ## Install
@@ -119,7 +120,7 @@ Do not use copied website session tokens or undocumented website endpoints for a
 
 ## Documentation
 
-Supplemental PixelLab technical notes live in [docs/pixellab/](docs/pixellab/). They explain PixelLab surfaces, asset routing, terminology, SDK compatibility, and auth/security boundaries for agents that need deeper implementation context.
+Supplemental PixelLab technical notes live in [docs/pixellab/](docs/pixellab/). They explain PixelLab tools, workflows, terminology, SDK compatibility, and auth/security boundaries for agents that need deeper implementation context.
 
 ## Showcase
 
@@ -169,19 +170,19 @@ Runtime files:
 
 An **unofficial** asset workflow and API helper for pixel-art generation, conversion, rotation, animation, layered sprites, modular outfits/equipment, tilesets, UI assets, and prompt enhancement.
 
-Use PixelLab AI Skill for its recipe, manifest, and helper-script production workflow. Use Pip for concise, agent-agnostic PixelLab surface routing across MCP, REST v2, website/editor, Aseprite, Pixelorama, and legacy v1. Pip does not install or run PixelLab AI Skill's helper scripts.
+Use PixelLab AI Skill for its recipe, manifest, and helper-script production workflow. Use Pip for concise, agent-agnostic PixelLab tool selection across MCP, REST v2, website/editor, Aseprite, Pixelorama, and legacy v1. Pip does not install or run PixelLab AI Skill's helper scripts.
 
 ### [Ultimate PixelLab Prompt Generator](https://pixellabpromptgenerator.vercel.app/) (By TheSyntheticFeed)
 
 An **unofficial** browser tool for building PixelLab-style pixel-art prompts from deterministic option sets such as asset type, perspective, camera direction, effects, materials, art style, color, and palette. It also includes a no-API prompt enhancer and a shading/lighting reference guide.
 
-Use it when you want to manually craft or learn stronger PixelLab prompts before generation. Use Pip when you want an agent to route the request, choose the right PixelLab surface, handle auth boundaries, or provide API/MCP implementation guidance.
+Use it when you want to manually craft or learn stronger PixelLab prompts before generation. Use Pip when you want an agent to choose the right PixelLab tool, handle auth boundaries, or provide API/MCP implementation guidance.
 
 ### [Vibe Coding AI Toolkit](https://www.pixellab.ai/mcp) (By [PixelLab](https://pixellab.ai))
 
 PixelLab's MCP setup page for connecting PixelLab to AI coding assistants. It helps users configure direct MCP access so an agent can generate game-ready characters, animations, tilesets, and map objects inside coding workflows.
 
-Use the Vibe Coding AI Toolkit directly when you already know MCP is the right surface and want to configure PixelLab tools in a supported MCP client. Use Pip when you want an agent to decide whether MCP, REST v2, website/editor workflows, Aseprite, Pixelorama, legacy v1, or SDK/API docs are the right route.
+Use the Vibe Coding AI Toolkit directly when you already know MCP is the right tool and want to configure PixelLab tools in a supported MCP client. Use Pip when you want an agent to decide whether MCP, REST v2, website/editor workflows, Aseprite, Pixelorama, legacy v1, or SDK/API docs are the right route.
 
 ### [PixelLab API](https://www.pixellab.ai/pixellab-api) (By [PixelLab](https://pixellab.ai))
 
