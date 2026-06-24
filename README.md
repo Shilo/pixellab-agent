@@ -156,7 +156,7 @@ PowerShell:
 ```powershell
 New-Item -ItemType Directory -Force .agents\skills\pixellab-pip
 Copy-Item -Recurse -Force skills\pixellab-pip\* .agents\skills\pixellab-pip\
-# Then run in your agent chat: /pixellab-pip setup
+# Then run in Codex: $pixellab-pip setup
 ```
 
 macOS/Linux shell:
@@ -164,7 +164,7 @@ macOS/Linux shell:
 ```bash
 mkdir -p .agents/skills/pixellab-pip
 cp -R skills/pixellab-pip/. .agents/skills/pixellab-pip/
-# Then run in your agent chat: /pixellab-pip setup
+# Then run in Codex: $pixellab-pip setup
 ```
 
 ## Usage
@@ -174,6 +174,7 @@ Recommended explicit trigger:
 ```text
 /pixellab-pip
 @pixellab-pip
+$pixellab-pip
 ```
 
 If your agent app namespaces plugin skills, use the name it shows, such as `pixellab-pip:pixellab-pip`.
@@ -183,6 +184,7 @@ Example prompt:
 ```text
 /pixellab-pip setup
 @pixellab-pip setup
+$pixellab-pip setup
 /pixellab-pip make a cute knight character sprite
 ```
 
@@ -195,13 +197,14 @@ Implicit invocation should also work when an agent sees PixelLab/Pip context plu
 ```text
 /pixellab-pip setup
 @pixellab-pip setup
+$pixellab-pip setup
 ```
 
 Runs guided PixelLab MCP/API setup, diagnoses missing auth, and configures only what the user approves without reading or printing the secret value.
 
 ## MCP And API Setup
 
-PixelLab has two supported programmable setup paths:
+For new PixelLab automation, Pip primarily guides users toward two setup paths:
 
 | Path | Use it when | What it needs |
 |---|---|---|
@@ -238,12 +241,14 @@ Use your host's MCP settings UI when possible. If your host uses config files, p
       "url": "https://api.pixellab.ai/mcp",
       "transport": "http",
       "headers": {
-        "Authorization": "Bearer <secret reference or PIXELLAB_SECRET value at runtime>"
+        "Authorization": "Bearer <PIXELLAB_SECRET>"
       }
     }
   }
 }
 ```
+
+Use your host's environment-variable or secret syntax so `<PIXELLAB_SECRET>` is filled from the local `PIXELLAB_SECRET` value. Do not paste the real token into shared config files.
 
 For REST v2 API calls, read `PIXELLAB_SECRET` inside your code or deployment runtime and send it as:
 
@@ -251,13 +256,11 @@ For REST v2 API calls, read `PIXELLAB_SECRET` inside your code or deployment run
 Authorization: Bearer <PIXELLAB_SECRET value>
 ```
 
-Do not paste the token into chat, commit it, put it in examples, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. Pip can help check setup with `/pixellab-pip setup` or `@pixellab-pip setup`, but it should only inspect specific files or settings that you name and approve.
+Do not paste the token into chat, commit it, put it in examples, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. Pip can help check setup with `@pixellab-pip setup`, `$pixellab-pip setup`, or `/pixellab-pip setup`, but it should only inspect specific files or settings that you name and approve.
 
 ## Authentication
 
-PixelLab generation requires a PixelLab bearer token and may spend credits. This skill does not include or store that token.
-
-Get your secret token from the PixelLab [account page](https://www.pixellab.ai/account) after signing in, or follow PixelLab's [MCP setup page](https://www.pixellab.ai/mcp). Configure it locally as `PIXELLAB_SECRET` or through your agent app or MCP server's secret configuration. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Do not paste the token into chat.
+PixelLab generation requires a PixelLab bearer token and may spend credits. PixelLab Pip does not include, store, or print that token. For setup steps, see [MCP And API Setup](#mcp-and-api-setup).
 
 Do not use copied website session tokens or undocumented website endpoints for automation unless PixelLab documents them as supported.
 
