@@ -19,7 +19,7 @@ Classify the user's asset, API, or question intent first, then choose the suppor
    If tools are prefixed, such as `mcp__pixellab__create_character`, match by suffix.
 5. Refresh current facts when a needed tool/endpoint/field is missing or unclear, or when auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
 6. For consistency-sensitive work, summarize the user's identity, style, palette, view, and reference anchors. Ask up to three blocking questions before a credit-spending call.
-7. For any PixelLab text field, improve vague user wording into a clear endpoint-ready description unless the user opts out. Use a documented PixelLab enhance endpoint only when it fits the chosen route; otherwise enhance directly from the request and visible inputs.
+7. For PixelLab natural-language request parameters such as `description`, `action`, `*_description`, `item_descriptions`, `text`, or `color_palette`, improve vague user wording into endpoint-ready parameter values unless the user opts out. Use a documented PixelLab enhance endpoint only when it fits the chosen route; otherwise enhance directly from the request and visible inputs.
 8. Before live generation, confirm the PixelLab bearer token is configured without asking the user to paste it into chat.
 9. Act or answer. Ask a short clarification only for known collisions.
 
@@ -110,7 +110,7 @@ Do not invent provider internals where PixelLab docs are silent.
 
 ## Text Preparation
 
-Prompt enhancement is opt-out. For text fields such as `description`, `action`, terrain descriptions, edit descriptions, and UI prompts, produce the best concise PixelLab-ready text from the user's request and any visible inputs before calling a tool.
+Prompt enhancement is opt-out. For natural-language request parameters such as `description`, `style_description`, `negative_description`, `lower_description`, `upper_description`, `transition_description`, `edit_description`, `action`, `action_description`, `animation_description`, `item_descriptions`, `text`, and `color_palette`, produce the best concise PixelLab-ready value from the user's request and any visible inputs before calling a tool.
 
 Use REST `enhance-pixen-prompt` for Pixen image prompts, `enhance-character-v3-prompt` for character v3 prompts, and `enhance-animation-v3-prompt` for animation v3 actions with `first_frame` and optional `last_frame`. For other tools, enhance directly as the agent; do not force a nonmatching enhance endpoint.
 
@@ -154,7 +154,7 @@ For tasks, execute generation/editing only when the user clearly requested it an
 
 If no PixelLab bearer token is configured, stop before generation and tell the user to get the bearer token from `https://www.pixellab.ai/account` after signing in, or follow the PixelLab MCP setup page at `https://www.pixellab.ai/mcp`, then configure it locally in `PIXELLAB_SECRET` or through agent/MCP secret config. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. Never request the token value in chat.
 
-After any live PixelLab call, report the surface, tool or endpoint, text-prep method, final text fields used, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, credit/balance delta when exposed, and candidate/final status. Do not call an output final unless existence and explicitly requested constraints were verified. If usage is not exposed, say so. Do not paste raw base64 or full response JSON unless debugging exact schemas.
+After any live PixelLab call, report the surface, tool or endpoint, prompt/description prep method, final natural-language parameter values used, mode/model label if supplied, job/asset/result IDs, output paths or URLs, async polling/status when relevant, credit/balance delta when exposed, and candidate/final status. Do not call an output final unless existence and explicitly requested constraints were verified. If usage is not exposed, say so. Do not paste raw base64 or full response JSON unless debugging exact schemas.
 
 Use browser automation only for visible website/editor/Pixelorama assistance after explicit user permission. Ask again before login/session actions, spending credits, submitting generations, downloads, edits, or deletes. Never scrape session tokens or call undocumented website endpoints.
 
