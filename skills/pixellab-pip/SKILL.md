@@ -49,7 +49,7 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 | General image, sprite, icon-like standalone asset | REST v2. | `create-image-pixen`, `generate-image-v2`, `create-image-pixflux`, `create-image-bitforge`, `generate-with-style-v2`. |
 | Background, scene, environment, backdrop | REST v2 image generation; no direct hosted MCP background tool was documented. | Use normal image generation with a scene/background prompt. Do not assume `create-image-pixflux-background` means a scene-backdrop generator without checking current docs. |
 | UI, HUD, button, panel, health bar, menu | REST v2. | `generate-ui-v2`. Website UI library is a human/editor surface unless public lifecycle endpoints exist. |
-| Image edit, inpaint, mask, convert, resize, remove background | REST v2. | `inpaint`, `inpaint-v3`, `edit-image`, `edit-images-v2`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`. For image-to-pixel-art without a requested size, prefer Pro. For fixed output size within current `output_size` limits, use normal `image-to-pixelart`. If the requested size is outside those limits, use Pro, verify dimensions, and if they differ, warn the user and ask before using PixelLab `resize` or local nearest-neighbor/canvas resize/pad/crop. |
+| Image edit, inpaint, mask, convert, resize, remove background | REST v2. | `inpaint`, `inpaint-v3`, `edit-image`, `edit-images-v2`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`. |
 | Reduce colors / quantize palette | Website/editor/local image tooling. | No public REST v2/MCP reduce-colors endpoint was documented; use website docs or local tooling instead of inventing a route. |
 | Unzoom pixel art / remove upscaling | Aseprite or Pixelorama extension. | Website docs list this as editor-extension only; do not route to REST/MCP unless official docs add an endpoint. |
 | Try on garment/item on character | Website Try on for single-image experimental output; REST `transfer-outfit-v2` only for animation-frame outfit transfer. | Try on returns a composited image, not isolated paperdoll layers. |
@@ -83,7 +83,7 @@ Read only the relevant reference:
 - Browser fallback and website automation boundaries: `references/browser-fallback.md`.
 - Paperdolling and layered character workflows: `references/paperdolling.md`.
 - Tileset and tile-variant details: `references/tilesets.md`.
-- Image input roles for attachments, file paths, and endpoint fields: `references/image-inputs.md`.
+- Attachments, file paths, supplied image roles, endpoint fields, or fixed-size image-to-pixel-art: `references/image-inputs.md`.
 - Official PixelLab docs, MCP docs, REST docs, and web-refresh routing: `references/official-docs.md`.
 - Usage, balance, job, and result reporting: `references/usage-reporting.md`.
 
@@ -166,7 +166,7 @@ Use browser automation only for visible website/editor/Pixelorama assistance aft
 | "Generate a mossy platformer tileset from code." | REST v2 `create-tileset-sidescroller`; use MCP `create_sidescroller_tileset` if working in an MCP-enabled agent. |
 | "Create a title screen background." | REST v2 image generation with a scene/background prompt; verify the current endpoint and size support from docs. |
 | "Make HUD buttons and a health bar." | REST v2 `generate-ui-v2`. |
-| "Convert this image to pixel art and remove the background." | REST v2 `image-to-pixelart-pro`, then `remove-background`; use normal `image-to-pixelart` instead only for a requested fixed size within current `output_size` limits. |
+| "Convert this image to pixel art and remove the background." | REST v2 `image-to-pixelart-pro`, then `remove-background`. |
 | "Inpaint this masked area." | REST v2 `inpaint` or `inpaint-v3` after checking current docs and inputs. |
 | "Make an 8-direction treasure chest object." | MCP `create_8_direction_object`; REST v2 `create-8-direction-object` for code. |
 | "Make hex terrain tiles." | MCP `create_tiles_pro`, not top-down Wang tileset. |
