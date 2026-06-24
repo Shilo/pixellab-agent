@@ -14,6 +14,7 @@
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
+      "license": "MIT",
       "category": "Developer Tools"
     }
   ]

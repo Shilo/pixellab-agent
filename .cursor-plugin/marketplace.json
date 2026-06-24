@@ -10,6 +10,7 @@
     {
       "name": "pixellab-pip",
       "source": "./",
+      "license": "MIT",
       "description": "Routes PixelLab asset/API requests across MCP, REST v2, website/editor workflows, Aseprite, Pixelorama, and legacy v1."
     }
   ]
