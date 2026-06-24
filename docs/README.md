@@ -22,7 +22,7 @@ For exact current endpoint schemas, tool lists, model/mode availability, pricing
 - [PixelLab Terminology](pixellab/terminology.md) - product labels, endpoint labels, and terms agents should not over-interpret.
 - [PixelLab SDK Compatibility](pixellab/sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
 - [PixelLab Auth And Security](pixellab/auth-and-security.md) - bearer-token handling and automation boundaries.
-- [Showcase](showcase/) - examples of using Pip to route PixelLab requests, prepare prompts, generate assets, and document results.
+- [Showcase](showcase/) - examples of using Pip to route PixelLab requests, enhance prompts, generate assets, and document results.
 - [Official PixelLab MCP Service Comparison](tools/pixellab-mcp-service-comparison.md) - technical comparison between Pip and the official hosted MCP service.
 - [PixelLab AI Skill Comparison](tools/pixellab-ai-skill-comparison.md) - feature comparison between Pip and the unofficial PixelLab AI Skill.
 
