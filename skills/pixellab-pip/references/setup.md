@@ -18,6 +18,17 @@ For a standalone `setup` after skill invocation, treat the setup mode as `unknow
 
 `/pixellab-pip setup` behaves like a beginner-friendly wizard, not a static help page. Start from the next safest action, recommend MCP first, and ask only the shortest question needed to continue.
 
+When the assistant app exposes an interactive choice prompt, use it for setup-mode selection instead of a prose-only question. Claude Code may show its own interactive question UI. In Codex app, use the interactive user-input/request tool when it is available; otherwise ask in normal chat. Keep it optional so CLI/noninteractive agents still work.
+
+For setup-mode selection, prefer these choices:
+
+- MCP (recommended): Connect PixelLab tools directly to the assistant/editor.
+- API: Set up REST v2/API access for scripts, apps, backends, SDKs, or deployments.
+- Both: Configure MCP first, then reuse the same `PIXELLAB_SECRET` source for API code.
+- Manual: Open or link PixelLab's MCP setup page and stop.
+
+If a choice tool supports only three preset choices plus free-form input, show MCP (recommended), API, and Manual as the preset choices, and accept "both" from free-form input or ask a short follow-up when the user wants both.
+
 Supported wizard modes:
 
 - `mcp`: recommended default for AI assistants, editors, and MCP-compatible apps.
