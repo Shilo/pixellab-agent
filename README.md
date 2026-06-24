@@ -151,7 +151,23 @@ Manual install is useful for project-local setup or agent apps that support raw 
 .cursor/skills/pixellab-pip/SKILL.md
 ```
 
-Then run the setup command your assistant supports, such as `/pixellab-pip setup`, `@pixellab-pip setup`, or `$pixellab-pip setup`.
+PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force .agents\skills\pixellab-pip
+Copy-Item -Recurse -Force skills\pixellab-pip\* .agents\skills\pixellab-pip\
+# Then run in Codex: $pixellab-pip setup
+```
+
+macOS/Linux shell:
+
+```bash
+mkdir -p .agents/skills/pixellab-pip
+cp -R skills/pixellab-pip/. .agents/skills/pixellab-pip/
+# Then run in Codex: $pixellab-pip setup
+```
+
+Use `.claude/skills/pixellab-pip` or `.cursor/skills/pixellab-pip` instead if that is the skill directory your assistant reads.
 
 ## Usage
 

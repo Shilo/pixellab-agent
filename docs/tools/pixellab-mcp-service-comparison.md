@@ -43,6 +43,23 @@ Use the official MCP service when the assistant already has PixelLab MCP tools a
 | Security posture | Uses normal MCP client auth and PixelLab-managed tools. | Adds agent behavior rules: no pasted secrets, no token printing, no session-token scraping, no undocumented website calls, no credit-spending setup checks. |
 | Dependency | Requires an MCP-capable client with the PixelLab server configured. | Can still answer route/setup/API questions without MCP tools, but live MCP generation requires the official MCP service to be configured. |
 
+## Pip-Only Capabilities
+
+These are capabilities Pip provides that the official MCP service does not try to provide. They are not replacements for MCP tools; they are decision, setup, and safety behavior around those tools.
+
+| Pip capability | Why MCP does not cover it | Practical effect |
+|---|---|---|
+| Cross-surface routing | MCP exposes one official tool surface. It does not decide between MCP, REST v2, website/editor workflows, Aseprite, Pixelorama, SDKs, or legacy v1. | The agent can choose MCP for managed assets, REST/API for code and batch jobs, and website/editor flows for manual-only product surfaces. |
+| Beginner setup wizard | MCP setup pages provide client-specific snippets. They do not act as an interactive, agent-agnostic installer. | Pip can recommend MCP first, offer MCP/API/both/manual modes, preview changes, and ask before writing config. |
+| `PIXELLAB_SECRET` setup convention | MCP only requires a bearer auth header. It does not define a cross-agent user-facing secret name. | Pip gives users one stable secret name and avoids token values in chat, docs, and committed config. |
+| Credential safety policy | MCP clients decide how they store and pass secrets. | Pip instructs agents not to ask for pasted tokens, not to print token values, not to scan `.env*` broadly, and not to scrape website session tokens. |
+| Ambiguity handling | MCP tools execute structured calls; they do not resolve broad natural-language collisions by themselves. | Pip asks only for blocking distinctions such as tileset vs tile variant, whole map vs map object, or static effect vs animation. |
+| Prompt and parameter preparation | MCP docs describe parameters and examples. They do not standardize how agents rewrite rough user text. | Pip converts vague asset requests into PixelLab-ready English parameter values unless the user opts out. |
+| Supplied-image role classification | MCP tools accept tool-specific image inputs. | Pip classifies attachments as identity, style, target, mask, palette, source frame, reference, or other endpoint-specific roles before choosing a route. |
+| Unsupported-flow warnings | MCP docs warn not to treat MCP tools as REST endpoints. | Pip also warns against undocumented website endpoints, copied browser/session tokens, SDK parity assumptions, and website-only/editor-only flows. |
+| REST/API fallback policy | MCP docs mention REST v2 as another interface. | Pip defines when to leave MCP for REST v2: scripts, backends, batch jobs, exact endpoint control, generic image/UI/edit/remove-background tasks, and SDK/API integration. |
+| Output reporting contract | MCP returns tool results. | Pip tells the agent what to report after live calls: surface, tool/endpoint, final parameters, IDs, URLs/paths, polling status, usage when exposed, and verification state. |
+
 ## Recommended Relationship
 
 PixelLab Pip should treat the official MCP service as the preferred execution path for normal assistant/editor asset work. Pip adds value before and around the service call:
