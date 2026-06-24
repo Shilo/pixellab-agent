@@ -51,7 +51,7 @@ Use user wording to infer intent:
 ## Decision Tree
 
 1. Identify the desired mode from the user's words. If unclear, say MCP + API is recommended for normal assistant/editor use because it enables full MCP tools plus Pip's REST/API fallback, then ask which mode they want. A bare `setup` command is unclear even when the current app is detectable. The next question must be MCP + API/MCP only/API only/Manual, not a yes/no MCP preview or config-write question.
-   If you include a brief credential readiness note before mode selection, check only whether the live `PIXELLAB_SECRET` environment variable is visible to the current process. Do not inspect project-local secret files, broad config directories, or recursive paths. Project files such as `.env.local` or `.pixellab` do not configure MCP unless an explicit loader or wrapper reads them.
+   If you include a brief credential readiness note before mode selection, check only whether the live `PIXELLAB_SECRET` environment variable is visible to the current process. Do not inspect project-local secret files, broad config directories, or recursive paths. Project files such as `.env` or `.env.local` do not configure MCP unless an explicit loader or wrapper reads them.
 2. If mode is `manual`, link or open `https://www.pixellab.ai/mcp`, tell the user to choose their app there, and stop.
 3. If mode is `mcp` or `both`, detect the current assistant/editor/app when possible. If detection is unclear, ask which app they use or offer the manual website option.
 4. For known supported apps, tailor only to the named/detected app: Claude Code, Codex, Gemini CLI, Cursor, VS Code Agent Plugins, GitHub Copilot CLI, or generic MCP-compatible apps.
@@ -71,23 +71,23 @@ Tell the user to open `https://www.pixellab.ai/account` after signing in and cop
 
 Do not tell users to run secret-setting commands through an assistant chat, slash-command argument, Claude/Codex shell escape, or a Codex app integrated terminal with the literal Secret value. Commands typed into assistant UIs can appear in chat history, transcripts, debug logs, command history, terminal output, or tool output. Codex app terminal output can be read by Codex, so it is not a secret-entry UI.
 
-`setx`, `export`, PowerShell `$env:`, and `ENV=value command` are not forbidden. They are just lower-safety options when the command contains the literal Secret because shell history or process details may preserve it. Project-local files such as `.env.local` or `.pixellab` do not automatically inject environment variables into Codex, Claude, Pip, MCP clients, terminals, or the OS; they work only when a specific helper, dotenv loader, or wrapper reads them. When token setup is needed, list the options concisely in this order:
+`setx`, `export`, PowerShell `$env:`, and `ENV=value command` are not forbidden. They are just lower-safety options when the command contains the literal Secret because shell history or process details may preserve it. Project-local files such as `.env` or `.env.local` do not automatically inject environment variables into Codex, Claude, Pip, MCP clients, terminals, or the OS; they work only when a specific helper, dotenv loader, or wrapper reads them. When token setup is needed, list the options concisely in this order:
 
 1. App/editor secret settings or app secret store named `PIXELLAB_SECRET`.
 2. OS environment-variable UI for a user-scoped `PIXELLAB_SECRET`.
 3. Hidden local prompt or secret-store command that does not place the token in command text.
 4. Normal external terminal command, only if the user chooses it; show value placeholders such as `<paste-your-Secret-here>` and warn not to run it inside an assistant prompt, assistant shell escape, or Codex-readable integrated terminal.
-5. Project-local file such as `.env.local` or `.pixellab`, only for explicit loader or wrapper setups that read that file; do not present it as MCP-ready or Pip-ready by itself.
+5. Project-local file such as `.env` or `.env.local`, only for explicit loader or wrapper setups that read that file; do not present it as MCP-ready or Pip-ready by itself.
 
 Preferred storage order:
 
 1. Assistant/editor/app secret settings, app secret store, or user-scoped OS environment variable named `PIXELLAB_SECRET`.
 2. Hidden local prompt or app UI that writes user-scoped env/keychain/secret config.
-3. A project-local file such as `.env.local` or `.pixellab`, only when a specific loader or wrapper explicitly loads it. This is not a default MCP or Pip setup path.
+3. A project-local file such as `.env` or `.env.local`, only when a specific loader or wrapper explicitly loads it. This is not a default MCP or Pip setup path.
 
 Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcripts, copied website session tokens, and literal token values in config files unless the user explicitly chooses a manual fallback that requires one. Do not read existing `.env*` files unless the user names the exact file, explicitly approves inspection, and confirms the purpose is troubleshooting.
 
-If the user asks for `.env.local`, explain that it works only when a helper, dotenv loader, or wrapper reads it. It does not configure MCP, Codex, Claude, Pip, terminals, or the OS by itself. ClawHub `pixellab-ai` uses `.env.local` because its helper auto-loads it; Pip does not currently include that helper loader, so copying the file pattern alone is not enough. Do not inspect an existing `.env.local` unless the user names that exact file, explicitly approves inspection, and confirms the purpose is troubleshooting an existing setup. If the purpose is unclear, ask before inspecting. Never print or copy values from it. Before writing `PIXELLAB_SECRET` to any project-local file, explain the loader or wrapper that will read it, show a token-free preview, and get explicit approval.
+If the user asks for `.env` or `.env.local`, explain that it works only when a helper, dotenv loader, or wrapper reads it. It does not configure MCP, Codex, Claude, Pip, terminals, or the OS by itself. ClawHub `pixellab-ai` uses `.env.local` because its helper auto-loads it; Pip does not currently include that helper loader, so copying the file pattern alone is not enough. Do not inspect an existing `.env` or `.env.local` unless the user names that exact file, explicitly approves inspection, and confirms the purpose is troubleshooting an existing setup. If the purpose is unclear, ask before inspecting. Never print or copy values from it. Before writing `PIXELLAB_SECRET` to any project-local file, explain the loader or wrapper that will read it, show a token-free preview, and get explicit approval.
 
 Use one canonical env var in new examples:
 

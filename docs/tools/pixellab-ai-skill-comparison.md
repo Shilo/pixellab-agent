@@ -55,6 +55,12 @@ PixelLab AI Skill is more operational out of the box because its helper scripts 
 
 Pip intentionally avoids `.env*` files by default. Its setup flow should use `PIXELLAB_SECRET` through app secret settings, a secret store, or a user-scoped environment setting, and should inspect `.env*` only when the user names an exact file and explicitly approves inspection. This is less automatic today, but it is safer for mixed projects where `.env.local` may contain database URLs, cloud keys, or other private tokens.
 
+### How PixelLab AI Skill Loads `.env.local`
+
+PixelLab AI Skill's `.env.local` behavior is helper-driven. Its documented setup stores `PIXELLAB_API_KEY` in a repo-local `.env.local`, and its helper scripts auto-load that file before making REST calls. The assistant, terminal, operating system, and MCP client do not load `.env.local` by themselves.
+
+If Pip adopts a similar helper later, it should be an explicit loader/wrapper behavior: load only the PixelLab key it needs, prefer `PIXELLAB_SECRET`, never print loaded values, and continue treating app secret settings, secret stores, or user-scoped environment settings as the default path.
+
 ## PixelLab AI Skill Package Inventory
 
 The reviewed v1.5.1 package contains:

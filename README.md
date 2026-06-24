@@ -235,7 +235,7 @@ Token setup options, from safest default to more manual:
 2. OS user environment-variable UI for `PIXELLAB_SECRET`.
 3. A hidden local prompt or secret-store command that does not put the Secret in command text.
 4. A normal external terminal command such as `setx`, `export`, or PowerShell env setup if you accept shell-history/process-history tradeoffs.
-5. A project-local file such as `.env.local` or `.pixellab`, only when a specific helper, dotenv loader, or wrapper explicitly reads it. Project-local files do not configure MCP, Codex, Claude, Pip, your terminal, or the OS by themselves.
+5. A project-local file such as `.env` or `.env.local`, only when a specific helper, dotenv loader, or wrapper explicitly reads it. Project-local files do not configure MCP, Codex, Claude, Pip, your terminal, or the OS by themselves.
 
 Do not run literal-Secret commands through assistant prompt lines, Claude/Codex shell escapes, or a Codex-readable integrated terminal. `setx` and `export` are not forbidden; the risk is putting the actual Secret in command text that can be saved or exposed. If a Secret is pasted into chat or visible tool output, treat it as exposed and replace it before continuing setup.
 
