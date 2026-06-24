@@ -13,6 +13,7 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 - [Features](#features)
 - [Install](#install)
 - [Usage](#usage)
+- [Commands](#commands)
 - [Authentication](#authentication)
 - [Documentation](#documentation)
 - [Showcase](#showcase)
@@ -49,6 +50,7 @@ Ask your local coding agent:
 
 ```text
 Install PixelLab Pip from https://github.com/Shilo/pixellab-pip using the proper marketplace or plugin workflow for this agent. Prefer marketplace install/update over copying files.
+Then run `/pixellab-pip setup` or `@pixellab-pip setup`.
 ```
 
 ### Marketplace Install
@@ -62,6 +64,7 @@ Install:
 ```text
 /plugin marketplace add Shilo/pixellab-pip
 /plugin install pixellab-pip@pixellab-pip
+/pixellab-pip setup
 ```
 
 Update:
@@ -77,9 +80,9 @@ Install:
 
 ```text
 codex plugin marketplace add Shilo/pixellab-pip
+# Install pixellab-pip from /plugins or the Codex plugin directory.
+@pixellab-pip setup
 ```
-
-Then install `pixellab-pip` from `/plugins` or the Codex plugin directory.
 
 Update:
 
@@ -93,6 +96,7 @@ Install:
 
 ```text
 gemini extensions install https://github.com/Shilo/pixellab-pip
+/pixellab-pip setup
 ```
 
 Gemini uses `gemini-extension.json` for installation and `GEMINI.md` for invocation context. Both point back to the same skill contract in `skills/pixellab-pip/SKILL.md`.
@@ -110,6 +114,7 @@ Install:
 ```text
 copilot plugin marketplace add Shilo/pixellab-pip
 copilot plugin install pixellab-pip@pixellab-pip
+/pixellab-pip setup
 ```
 
 Update:
@@ -122,9 +127,17 @@ copilot plugin update pixellab-pip
 
 Use Cursor's plugin marketplace or team marketplace flow when available, or install the raw skill manually.
 
+```text
+/pixellab-pip setup
+```
+
 #### VS Code Agent Plugins
 
 Use **Chat: Install Plugin From Source** with this repo URL or VS Code's plugin marketplace flow.
+
+```text
+/pixellab-pip setup
+```
 
 ### Manual Skill Install
 
@@ -141,6 +154,7 @@ PowerShell:
 ```powershell
 New-Item -ItemType Directory -Force .agents\skills\pixellab-pip
 Copy-Item -Recurse -Force skills\pixellab-pip\* .agents\skills\pixellab-pip\
+# Then run in your agent chat: /pixellab-pip setup
 ```
 
 macOS/Linux shell:
@@ -148,6 +162,7 @@ macOS/Linux shell:
 ```bash
 mkdir -p .agents/skills/pixellab-pip
 cp -R skills/pixellab-pip/. .agents/skills/pixellab-pip/
+# Then run in your agent chat: /pixellab-pip setup
 ```
 
 ## Usage
@@ -170,6 +185,17 @@ Example prompt:
 ```
 
 Implicit invocation should also work when an agent sees PixelLab/Pip context plus setup or asset words such as "setup PixelLab", "configure PixelLab MCP", "connect the PixelLab API", "create an image", "make a sprite", "draw a character", "generate a tileset", "animate this", "edit this image", "use PixelLab MCP", "call the REST API", or "check PixelLab docs". Explicit invocation is still recommended when you want Pip used for sure.
+
+## Commands
+
+### Setup
+
+```text
+/pixellab-pip setup
+@pixellab-pip setup
+```
+
+Runs guided PixelLab MCP/API setup, diagnoses missing auth, and configures only what the user approves without reading or printing the secret value.
 
 ## Authentication
 

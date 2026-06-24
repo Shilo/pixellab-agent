@@ -37,11 +37,11 @@ Never ask the user to paste the bearer token into chat. Never use website/Supaba
 
 When checking MCP config files for credential setup, inspect only the specific config paths referenced by the user. Do not scan broad home/auth/config directories because tool output can leak secrets.
 
-Before writing environment settings, keychain/secret-store entries, MCP host config, `.env.local`, shell profiles, or project files, follow `references/setup.md`: explain the destination, show a token-free preview or secret reference, and get explicit approval.
+Before writing environment settings, keychain/secret-store entries, MCP host config, private PixelLab-only env files, shell profiles, or project files, follow `references/setup.md`: explain the destination, show a token-free preview or secret reference, and get explicit approval.
 
 Fallback order:
 
 1. User-scoped OS environment variable or MCP host secret/env config.
 2. Hidden local prompt that writes user-scoped env/keychain config.
-3. `.env.local` in a private, gitignored app directory.
-4. Avoid project `.env`, committed MCP config, generated docs, shell history, chat transcript, and copied browser session tokens.
+3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`.
+4. Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcript, and copied browser session tokens. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.

@@ -9,7 +9,7 @@ The intended first-run command is one short word after the skill trigger:
 @pixellab-pip setup
 ```
 
-Some hosts expose text after a slash command as arguments, while others treat it as normal prompt text. Treat the English word `setup` the same either way. Do not require flags, positional syntax, host-specific argument features, or translated one-word triggers.
+Some hosts expose text after a slash command as arguments, while others treat it as normal prompt text. Treat `setup` the same either way. Do not require flags, positional syntax, or host-specific argument features.
 
 ## Setup Intent
 
@@ -39,7 +39,7 @@ For MCP readiness, check:
 
 For API readiness, check:
 
-- Whether the runtime can read `PIXELLAB_SECRET` without printing the value.
+- Whether `PIXELLAB_SECRET` is present and non-empty without outputting, logging, measuring, or inspecting the value; only pass it directly to an approved no-credit auth check.
 - Whether the user wants shell, Python, JavaScript/TypeScript, or another platform example.
 - Whether network access to `https://api.pixellab.ai/v2` is available when a live check is requested.
 - Whether any installed SDK is actually present before recommending SDK-specific methods.
@@ -58,9 +58,9 @@ Preferred storage order:
 
 1. User-scoped OS environment variable or MCP host secret/env config using `PIXELLAB_SECRET`.
 2. Hidden local prompt or host UI that writes user-scoped env/keychain/secret config.
-3. `.env.local` in a private, gitignored app directory.
+3. A private `.pixellab` file, gitignored, containing only `PIXELLAB_SECRET`.
 
-Avoid project `.env`, committed MCP config, generated docs, shell history, chat transcripts, copied website session tokens, and literal `Authorization: Bearer ...` values in config files.
+Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcripts, copied website session tokens, and literal `Authorization: Bearer ...` values in config files. Do not read existing `.env*` files unless the user names the exact file and explicitly approves inspection.
 
 Use one canonical env var in new examples:
 
@@ -103,7 +103,7 @@ For REST/API setup, tailor examples to the user's platform but keep the credenti
 
 Safe examples may show:
 
-- Reading `PIXELLAB_SECRET` from the process environment.
+- Using `PIXELLAB_SECRET` from the process environment without outputting or inspecting the value.
 - Passing `Authorization: Bearer ...` from that environment value.
 - A no-credit check against balance or an official lightweight endpoint when the user approves a live check.
 - How MCP and API can reuse the same credential source.
@@ -112,7 +112,7 @@ Do not hard-code token literals. Do not generate commands that would echo the se
 
 ## Prompt Before Writes
 
-Any setup action that writes files, environment settings, MCP host config, shell profiles, `.env.local`, package files, or project scripts needs confirmation first.
+Any setup action that writes files, environment settings, MCP host config, shell profiles, private PixelLab-only env files, package files, or project scripts needs confirmation first.
 
 Before asking, report:
 
