@@ -12,22 +12,25 @@ $pixellab-pip setup
 
 Some apps expose text after a slash command as arguments, while others treat it as normal prompt text. Treat `setup` the same either way. Do not require flags, positional syntax, or app-specific argument features.
 
-For a standalone `setup` after skill invocation, treat the setup mode as `unknown` unless the user explicitly names an assistant/editor/app target or the prior conversation clearly established one. The current runtime app can be mentioned as the likely MCP target after the user chooses MCP, but it must not by itself skip the MCP/API/both/manual choice.
+For a standalone `setup` after skill invocation, treat the setup mode as `unknown` unless the user explicitly names an assistant/editor/app target or the prior conversation clearly established one. The current runtime app can be mentioned as the likely MCP target after the user chooses MCP, but it must not by itself skip the MCP/API/Manual choice.
 
 ## Setup Wizard Contract
 
 `/pixellab-pip setup` behaves like a beginner-friendly wizard, not a static help page. Start from the next safest action, recommend MCP first, and ask only the shortest question needed to continue.
 
-When the assistant app exposes an interactive choice prompt, use it for setup-mode selection instead of a prose-only question. Claude Code may show its own interactive question UI. In Codex app, use the interactive user-input/request tool when it is available; otherwise ask in normal chat. Keep it optional so CLI/noninteractive agents still work.
+When the assistant app exposes an interactive choice prompt, use it for setup-mode selection instead of a prose-only question. Claude Code may show its `AskUserQuestion` UI. In Codex app, use `request_user_input` when that tool is available; otherwise ask in normal chat. Keep it optional so CLI/noninteractive agents still work.
+
+For a bare setup command, mode selection is mandatory before any MCP/API-specific setup. Do not ask yes/no questions such as "Should I prepare a Codex MCP config preview?" before the user chooses MCP, API, or Manual. Do not inspect config, prepare write previews, or request write approval until the mode is chosen. A brief readiness note is allowed, but the next user-facing question must be the setup-mode choice.
 
 For setup-mode selection, prefer these choices:
 
 - MCP (recommended): Connect PixelLab tools directly to the assistant/editor.
 - API: Set up REST v2/API access for scripts, apps, backends, SDKs, or deployments.
-- Both: Configure MCP first, then reuse the same `PIXELLAB_SECRET` source for API code.
 - Manual: Open or link PixelLab's MCP setup page and stop.
 
-If a choice tool supports only three preset choices plus free-form input, show MCP (recommended), API, and Manual as the preset choices, and accept "both" from free-form input or ask a short follow-up when the user wants both.
+Use the same three initial choices in Claude Code, Codex app, and prose fallback. Do not show a different fourth "Both" button in agents that support more choices. If the user explicitly types or asks for "both", support `both` mode directly. Otherwise, after MCP or API setup is chosen, mention that the same `PIXELLAB_SECRET` can be reused for the other path if they want it later.
+
+If no interactive choice tool is available, ask this exact chat question: "Which setup do you want: MCP, API, or Manual?"
 
 Supported wizard modes:
 
@@ -35,7 +38,7 @@ Supported wizard modes:
 - `api`: only for users writing their own scripts, apps, SDK integrations, backends, batch jobs, runtimes, or deployments.
 - `both`: MCP first, then API reuse of the same `PIXELLAB_SECRET` source.
 - `manual`: open or link to `https://www.pixellab.ai/mcp`, tell the user to pick their app there, and stop. If opening a browser is unavailable, provide the link. Do not inspect, write, verify, or continue setup.
-- `unknown`: recommend MCP and ask one short choice question: MCP, API, both, or manual website setup.
+- `unknown`: recommend MCP and ask one short choice question: MCP, API, or manual website setup.
 
 Use user wording to infer intent:
 
@@ -46,7 +49,7 @@ Use user wording to infer intent:
 
 ## Decision Tree
 
-1. Identify the desired mode from the user's words. If unclear, say MCP is recommended for normal assistant/editor use and ask which mode they want. A bare `setup` command is unclear even when the current app is detectable.
+1. Identify the desired mode from the user's words. If unclear, say MCP is recommended for normal assistant/editor use and ask which mode they want. A bare `setup` command is unclear even when the current app is detectable. The next question must be MCP/API/Manual, not a yes/no MCP preview or config-write question.
 2. If mode is `manual`, link or open `https://www.pixellab.ai/mcp`, tell the user to choose their app there, and stop.
 3. If mode is `mcp` or `both`, detect the current assistant/editor/app when possible. If detection is unclear, ask which app they use or offer the manual website option.
 4. For known supported apps, tailor only to the named/detected app: Claude Code, Codex, Gemini CLI, Cursor, VS Code Agent Plugins, GitHub Copilot CLI, or generic MCP-compatible apps.
@@ -200,7 +203,7 @@ Keep setup wording friendly, action-oriented, agent-agnostic, and OS-agnostic by
 Good user-facing setup output:
 
 - "I recommend MCP first because it lets your assistant/editor use PixelLab tools directly."
-- "Which setup do you want: MCP, API, both, or Manual?"
+- "Which setup do you want: MCP, API, or Manual?"
 - "Manual means I will open PixelLab's MCP setup page, you pick your app there, and I stop."
 - "I will not ask you to paste the Secret here."
 - "Token setup options are app secret settings, OS environment-variable UI, a hidden prompt, a private `.pixellab` file, or a normal external terminal command if you accept shell-history tradeoffs."
