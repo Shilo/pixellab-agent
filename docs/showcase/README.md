@@ -2,13 +2,20 @@
 
 This folder documents real PixelLab Pip example workflows, including prompts, selected routes, outputs, and validation notes.
 
+## Generated Assets
+
+| Asset | Preview | Initial prompt |
+|---|---|---|
+| [Pip Mascot](pip.md) | ![Pip mascot idle animation](pip/pip.gif) | [`pip create a 64px character based on .pip-mascot.md`](pip.md#initial-request) |
+
 Each showcase should include:
 
-- The user prompt.
-- The route Pip chose.
-- The PixelLab surface, tool, or endpoint used.
-- Any important input images or constraints.
-- Output paths or URLs.
-- Validation notes, including image size, transparency, and balance/credit delta when exposed.
+- Initial request.
+- Source inputs or brief summaries.
+- Final prompts or natural-language parameters sent to PixelLab.
+- Route, PixelLab surface, tool, endpoint, and key controls.
+- Output files and showcase asset locations.
+- Local processing notes for cropping, spritesheets, GIFs, or other assembled files.
+- Validation notes that are useful to readers, such as image size, transparency, frame count, and display caveats.
 
 Do not store PixelLab tokens, cookies, private account data, or unpublished third-party assets here.

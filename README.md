@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="docs/showcase/pip.md"><img src="docs/showcase/pip/pip.gif" alt="Pip mascot idle animation" width="68"></a>
+</p>
+
 # PixelLab Pip
 
 Meet PixelLab Pip: a tiny Pixel Pup who fetches the right route through PixelLab's MCP tools, REST v2 API, website/editor workflows, Aseprite, Pixelorama, and legacy v1.
