@@ -1,0 +1,320 @@
+# Aseprite CLI Integration
+
+Read this only when the user explicitly asks for Aseprite handling, such as opening output in Aseprite, creating or updating an `.aseprite` file, importing PixelLab frames into Aseprite, making layers/frames/tags, exporting from Aseprite, or using the Aseprite CLI.
+
+This reference describes a low-risk integration path:
+
+```text
+PixelLab MCP or documented REST v2
+  -> verified local image/frame files
+  -> Aseprite CLI or Aseprite Lua script
+  -> `.aseprite`, PNG sequence, GIF, spritesheet, metadata, or visible Aseprite workspace
+```
+
+Do not use this route to automate the PixelLab Aseprite extension itself.
+
+## Positioning
+
+Use Aseprite as a local file and workspace tool after PixelLab has generated files through public automation surfaces.
+
+Good fit:
+
+- Open a generated PNG, GIF, sprite sheet, or frame sequence in Aseprite.
+- Create an `.aseprite` workspace from generated frames.
+- Open an existing `.aseprite` file and save a modified copy with generated assets added.
+- Put generated variants into named layers.
+- Put generated animation frames into numbered frames with tags and durations.
+- Export an `.aseprite` file to PNG frames, GIF, sprite sheet, or JSON metadata.
+- Inspect layers, tags, slices, or export metadata from an Aseprite file.
+- Convert palette/color mode when Aseprite's documented CLI supports the needed conversion.
+
+Poor fit:
+
+- Driving the PixelLab Aseprite extension UI.
+- Calling undocumented operation URLs used by the extension.
+- Reading extension credentials, request payloads, auth headers, private settings, or request history.
+- Controlling an already-open Aseprite document without a user-approved bridge.
+- Spending PixelLab credits from inside Aseprite through hidden automation.
+- Mouse, screenshot, or OCR automation as the default workflow.
+
+If the user wants exact PixelLab extension behavior such as extension-specific reduce-colors, unzoom, pixel correction, or in-editor placement, explain that the stable agent route is PixelLab MCP/REST plus Aseprite CLI workspace handling. Offer visible manual Aseprite use or a separately designed bridge only if they really need live editor behavior.
+
+## Trigger Conditions
+
+Use this reference only when Aseprite is part of the requested outcome. Examples:
+
+- "open this in Aseprite"
+- "make an Aseprite file"
+- "create an .aseprite workspace"
+- "add this to my existing .aseprite file"
+- "import these into this .aseprite project"
+- "import these frames into Aseprite"
+- "put each output on a layer"
+- "make frames/tags/durations"
+- "export this .aseprite as a sprite sheet"
+- "I prefer working in Aseprite"
+- "use Aseprite CLI"
+
+Do not trigger just because PixelLab generated local images. Most local preview work belongs in `local-asset-assembly.md`.
+
+## Safety Gates
+
+Before running Aseprite:
+
+1. Verify the executable path:
+
+   ```powershell
+   Get-Command aseprite -ErrorAction SilentlyContinue
+   ```
+
+   If that fails, search common install locations only when appropriate, or ask the user for the path.
+
+2. Show which files will be read and written.
+3. Ask before launching visible Aseprite.
+4. Ask before overwriting existing files.
+5. For existing `.aseprite` files, default to writing a copy such as `name-pixellab.aseprite`; modify the original only after explicit approval.
+6. Keep generated scripts and outputs inside the user's chosen output directory unless they approve another path.
+7. Treat extension startup errors as a diagnostic signal. Do not work around them by reading extension internals.
+
+Use `--batch` for noninteractive file conversion and export. Launch the GUI only when the user wants to continue editing manually.
+
+## CLI Patterns
+
+Prefer direct CLI commands when no custom sprite construction is needed.
+
+Check version:
+
+```powershell
+& $AsepritePath --version
+```
+
+Open a file visibly after user approval:
+
+```powershell
+& $AsepritePath "asset.png"
+```
+
+Export an `.aseprite` file as PNG frames:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --save-as "frame-{frame}.png"
+```
+
+Export a tagged animation as a GIF:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --tag "Walk" --save-as "walk.gif"
+```
+
+Export a sprite sheet plus JSON metadata:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --sheet "sheet.png" --data "sheet.json" --sheet-type rows
+```
+
+Export layers separately:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --split-layers --save-as "layer-{layer}-{frame}.png"
+```
+
+List layers, tags, or slices for inspection:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --list-layers
+& $AsepritePath -b "source.aseprite" --list-tags
+& $AsepritePath -b "source.aseprite" --list-slices
+```
+
+Run a Lua script with explicit parameters:
+
+```powershell
+& $AsepritePath -b --script "make-workspace.lua" --script-param output="character.aseprite" --script-param frames="frames.json"
+```
+
+Use Aseprite's filename formatting, `--tag`, `--frame-range`, `--layer`, `--split-layers`, `--split-tags`, and `--sheet-type` options instead of writing custom scripts when they cover the request.
+
+## Lua Script Patterns
+
+Use Lua when the task requires opening an existing `.aseprite` file, creating layers, frames, cels, tags, durations, or a new `.aseprite` workspace from generated images.
+
+Parameter access:
+
+```lua
+local output = app.params["output"]
+local first_frame = app.params["first_frame"]
+```
+
+Open an existing image:
+
+```lua
+local spr = app.open(first_frame)
+if not spr then
+  error("Could not open first frame: " .. tostring(first_frame))
+end
+```
+
+Open an existing `.aseprite` file:
+
+```lua
+local input = app.params["input"]
+local spr = app.open(input)
+if not spr then
+  error("Could not open Aseprite file: " .. tostring(input))
+end
+```
+
+Create a new sprite:
+
+```lua
+local spr = Sprite(64, 64, ColorMode.RGB)
+spr.filename = output
+```
+
+Create a named layer:
+
+```lua
+local layer = spr:newLayer()
+layer.name = "PixelLab"
+```
+
+Create an empty frame:
+
+```lua
+local frame = spr:newEmptyFrame()
+```
+
+Create a cel from an image:
+
+```lua
+local image = Image{ fromFile="frame-001.png" }
+spr:newCel(layer, frame, image, Point(0, 0))
+```
+
+Create an animation tag:
+
+```lua
+local tag = spr:newTag(1, #spr.frames)
+tag.name = "walk"
+```
+
+Set frame duration:
+
+```lua
+spr.frames[1].duration = 0.12
+```
+
+Save the workspace:
+
+```lua
+spr:saveAs(output)
+```
+
+Save a modified copy of an existing workspace:
+
+```lua
+spr:saveCopyAs(output)
+```
+
+Export a sprite sheet from a script:
+
+```lua
+app.command.ExportSpriteSheet{
+  ui=false,
+  askOverwrite=false,
+  type=SpriteSheetType.ROWS,
+  textureFilename="sheet.png",
+  dataFilename="sheet.json",
+  dataFormat=SpriteSheetDataFormat.JSON_HASH,
+}
+```
+
+Save a copy without changing the active sprite filename:
+
+```lua
+app.command.SaveFileCopyAs{
+  ui=false,
+  filename="preview.gif",
+}
+```
+
+Prefer script parameters over hard-coded paths so generated scripts are reusable and safe to review.
+
+## Common Workflows
+
+### Generate Then Open
+
+1. Generate the asset through PixelLab MCP or documented REST v2.
+2. Download or write the verified output file.
+3. Ask before launching GUI Aseprite.
+4. Open the file visibly:
+
+   ```powershell
+   & $AsepritePath "output.png"
+   ```
+
+### Generate Frames Then Create `.aseprite`
+
+1. Generate or collect frames locally.
+2. Verify dimensions and frame order.
+3. Write a small Lua assembly script or reuse one from the project if present.
+4. Run Aseprite in batch mode with `--script` and `--script-param`.
+5. Verify the `.aseprite` file exists.
+6. Optionally export a GIF or sheet for preview.
+
+### Generated Variants As Layers
+
+1. Put each generated variant in a stable local path.
+2. Create one sprite sized to the largest accepted canvas.
+3. Create one named layer per variant.
+4. Add one cel per layer at frame 1.
+5. Save as `.aseprite`.
+
+### Generated Animation As Frames
+
+1. Sort frames by numeric filename or explicit metadata.
+2. Create a new sprite from the first frame dimensions.
+3. Create one layer for the animation.
+4. Add each image as a cel on successive frames.
+5. Set duration from PixelLab metadata when available, otherwise use the user's requested FPS.
+6. Add tags such as `idle`, `walk`, `attack`, or the user's action name.
+7. Save `.aseprite`, then export GIF/sheet if requested.
+
+### Import Into Existing `.aseprite`
+
+1. Confirm the input `.aseprite` file, generated files to import, and intended placement.
+2. Default to a new output file instead of modifying the original.
+3. Open the existing file in a Lua script with `app.open(input)`.
+4. Inspect existing layer names, frame count, tags, canvas size, and color mode if placement depends on them.
+5. Create a clearly named layer or group for imported PixelLab output, such as `PixelLab - walk` or the user's requested name.
+6. Add generated stills as cels on a new layer at the requested frame, or add generated animation frames across new/existing frames.
+7. Add or update tags only when the user requested them or when the import represents a named animation.
+8. Save with `spr:saveCopyAs(output)` unless the user explicitly approved modifying the original.
+9. Verify the output copy with `--list-layers` and `--list-tags`.
+
+Use this workflow for file-level edits only. It can modify an existing project file on disk, but it is not live control of the already-open Aseprite editor session.
+
+### Existing `.aseprite` Export
+
+1. Confirm input file and requested output format.
+2. Use direct CLI for simple exports.
+3. Use script export only when layer/tag/frame selection needs custom logic.
+4. Verify output files and metadata exist.
+
+## Verification
+
+After Aseprite CLI work, verify the result before reporting success:
+
+- Check the expected output files exist.
+- For sprite sheets, check both image and JSON metadata when requested.
+- For GIFs, inspect frame count/delay/disposal if transparency matters; see `local-asset-assembly.md`.
+- For `.aseprite` files, run `--list-layers` and `--list-tags` when the task created layers or tags.
+- For existing-file imports, verify the output copy exists and the original was not changed unless the user approved in-place modification.
+- For exported PNG frames, count the output frames and compare against the requested frame count.
+- If Aseprite prints extension errors, report that Aseprite ran but an installed extension emitted startup errors. Do not print credentials or local extension internals.
+
+## Bridge Escalation
+
+Escalate beyond CLI integration only when the user needs repeated live-document operations that cannot be solved by file creation/open/import/export.
+
+A future bridge should be designed as a local editor-control MCP or command queue with explicit approval gates. It should expose curated Aseprite/editor actions, not PixelLab extension private endpoints, credentials, or raw request payloads.

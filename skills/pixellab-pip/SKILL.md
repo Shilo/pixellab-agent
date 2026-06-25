@@ -10,14 +10,14 @@ Classify the user's asset, API, or question intent first, then choose the suppor
 ## Workflow
 
 1. Classify the request:
-   `question | setup | bark | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | website/editor assistance`.
+   `question | setup | bark | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | website/editor assistance | aseprite_integration`.
    Treat a standalone `setup` word after an explicit skill invocation, such as `/pixellab-pip setup` or `@pixellab-pip setup`, as setup intent. If an app exposes structured arguments, use them only as another way to read the same natural-language intent.
    Treat a standalone `bark` word after an explicit skill invocation, with optional `on` or `off`, as bark intent. For bark intent, read `references/bark.md` and apply the persistent toggle contract.
 2. Classify the target asset or surface:
    `general_image | background | character | object | effect_vfx | ui | whole_map | map_image | map_object | top_down_tileset | sidescroller_tileset | isometric_tile | tile_variants | animation | existing_image`.
 3. Choose the surface:
    use PixelLab MCP for managed coding-agent assets, REST v2 for direct API/code/batch primitives, website/Aseprite/Pixelorama only as human/editor surfaces, and REST v1 only for legacy compatibility.
-   When the user mainly wants to keep working in Aseprite, prefer a low-maintenance file handoff: generate through PixelLab MCP or documented REST v2, save verified output files locally, then use Aseprite CLI/scripts only for opening, importing, converting, packaging, or exporting those files. This is an Aseprite handoff, not direct automation of the PixelLab Aseprite extension.
+   When the user explicitly asks for Aseprite handling, route to `references/aseprite-cli.md`; use PixelLab MCP/REST for generation and documented Aseprite CLI/Lua only for local workspace, existing-file import/export, packaging, or launch behavior.
    For setup intent, read `references/setup.md` and run the setup wizard contract: recommend MCP + API first, support MCP-only/API-only/manual modes, and change settings only after a token-free preview and explicit approval.
 4. Use MCP only if PixelLab MCP tools are available, either bare or prefixed. If MCP is unavailable, route to the matching REST v2 endpoint when one is documented. If MCP and REST v2 are both unavailable or fail, explain why before using any non-PixelLab fallback.
    If tools are prefixed, such as `mcp__pixellab__create_character`, match by suffix.
@@ -35,29 +35,11 @@ Classify the user's asset, API, or question intent first, then choose the suppor
 | REST v2 | Scripts, batch jobs, server integrations, exact endpoint control, generic images, backgrounds, UI, inpaint/edit, prompt enhancement, raw animation, rotate, resize, remove background, and API parity checks. | Guessing SDK methods without checking the installed SDK or current docs. |
 | Website / Map Workshop | Human product surface, full-map manual work, rich libraries, visible browser assistance, and website-only flows. | Programmatic use of copied browser session tokens or undocumented internal endpoints used by first-party surfaces. |
 | Aseprite | Local in-editor plugin workflows when the user is actively working inside Aseprite. | Treating private first-party editor integration endpoints as public REST/MCP contracts. |
-| Aseprite file handoff | Post-generation opening, import/export, sprite-sheet packaging, GIF/PNG conversion, palette conversion, and `.aseprite` workspace creation using documented Aseprite CLI/scripts after PixelLab MCP/REST has produced files. | Mouse/OCR UI automation, hidden control of the PixelLab Aseprite extension, or claiming extension-private operations are public APIs. |
+| Aseprite CLI integration | Explicit Aseprite handling such as opening output in Aseprite, creating or updating `.aseprite` workspaces, importing generated frames as layers/frames/tags, and exporting through documented Aseprite CLI/Lua after PixelLab MCP/REST has produced files. | Mouse/OCR UI automation, hidden control of the PixelLab Aseprite extension, or claiming extension-private operations are public APIs. |
 | Pixelorama / editor | Visible browser assistance for website editor workflows, including existing assets, save-back flows, and website-only manual flows after explicit permission. | Hidden automation, undocumented endpoint calls, public API assumptions, or any generation/save/download/edit/delete action without a second confirmation. |
 | REST v1 | Existing legacy code and old SDK compatibility. | New work unless the user explicitly needs v1. |
 
 Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2/...` paths.
-
-## Aseprite File Handoff
-
-Use this route only when it adds real workflow value: the user prefers Aseprite as the working surface, wants generated files opened or packaged there, or needs Aseprite-specific file export behavior. It is efficient because it relies on stable public PixelLab MCP/REST for generation and documented Aseprite CLI/Lua scripting for file handling, without depending on the PixelLab Aseprite extension's private integration protocol.
-
-Good fit:
-
-- Generate a character, object, tileset, background, UI, or animation with PixelLab MCP/REST, then open the result in Aseprite.
-- Convert verified frames into `.aseprite`, PNG sequence, GIF, or sprite sheet with Aseprite CLI/script support.
-- Import generated frames as layers/frames, set tags, durations, or export metadata with a small local Aseprite Lua script.
-
-Poor fit:
-
-- The user wants Claude/Codex to click through the PixelLab Aseprite extension UI.
-- The requested behavior exists only inside the PixelLab Aseprite extension, such as exact extension reduce-colors/unzoom/pixel-correction behavior, and no public REST/MCP route covers it.
-- The task needs live control of the user's already-open Aseprite document. That requires an explicit Aseprite bridge/MCP design, not this lightweight handoff.
-
-Before using Aseprite CLI/scripts, confirm Aseprite is installed or ask for its executable path, show the local files that will be opened/written, and ask before launching visible Aseprite or modifying existing files. Use Aseprite scripting for local file handling only; do not inspect or copy PixelLab extension credentials, do not scrape extension request payloads, and do not call undocumented extension endpoints.
 
 ## Intent Router
 
@@ -116,7 +98,8 @@ Read only the relevant reference:
 - Non-English or mixed-language user requests and response-language handling: `references/localization.md`.
 - Official PixelLab documentation, MCP documentation, REST documentation, and web-refresh routing: `references/official-pixellab-documentation.md`.
 - Usage, balance, job, and result reporting: `references/usage-reporting.md`.
-- Local animation preview GIFs, spritesheets, Aseprite file handoff, or ImageMagick/`magick` assembly from generated frames: `references/local-asset-assembly.md`.
+- Explicit Aseprite handling, `.aseprite` workspace creation/update, generated-frame import, Aseprite layers/frames/tags, or Aseprite CLI/Lua export/open behavior: `references/aseprite-cli.md`.
+- Local animation preview GIFs, spritesheets, or ImageMagick/`magick` assembly from generated frames: `references/local-asset-assembly.md`.
 
 Optional broader docs: in full plugin/repo installs, these paths resolve relative to this `SKILL.md`; raw skill installs may omit them. If runtime `references/` are not enough, read at most one matching file if it exists. If absent, continue with `references/official-pixellab-documentation.md` and current official PixelLab documentation; do not search or load the set.
 

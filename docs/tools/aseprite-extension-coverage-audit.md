@@ -29,16 +29,16 @@ Observed editor behavior, described without publishing internal source details:
 
 Practical implication: an agent such as Codex or Claude can already automate PixelLab through official MCP/REST and then import files into Aseprite, but it cannot reliably drive the current Aseprite extension directly without either UI automation or an added bridge.
 
-## Efficient Near-Term Path: File Handoff
+## Efficient Near-Term Path: Aseprite CLI Integration
 
-The most efficient near-term integration is not direct control of the PixelLab Aseprite extension. It is a file handoff:
+The most efficient near-term integration is not direct control of the PixelLab Aseprite extension. It is a constrained Aseprite CLI integration:
 
 ```text
 MCP-capable agent
   -> PixelLab MCP or documented REST v2 generation
   -> verified local image/frame files
-  -> Aseprite CLI or Lua script import/export
-  -> user continues editing in Aseprite
+  -> Aseprite CLI or Lua script workspace/import/export step
+  -> `.aseprite`, PNG sequence, GIF, sprite sheet, metadata, or visible Aseprite workspace
 ```
 
 This has practical value for users who prefer Aseprite over the website because it gets generated assets into their normal workspace without depending on private extension internals. It also has lower maintenance risk than a full Aseprite MCP bridge because the moving parts are public PixelLab MCP/REST behavior and documented Aseprite CLI/scripting behavior.
@@ -52,10 +52,19 @@ Recommended scope for Pip:
 
 - Generate with PixelLab MCP/REST first.
 - Save generated PNGs, frame sequences, GIF previews, ZIPs, or sprite sheets locally.
-- Use Aseprite only for file handling: open/import, arrange frames/layers, set tags/durations, convert to `.aseprite`, export sprite sheets/metadata, or launch the result for manual editing.
+- Use Aseprite only for file/workspace handling: open/import, create or update `.aseprite` files, arrange frames/layers, set tags/durations, export sprite sheets/metadata, or launch the result for manual editing.
+- Trigger this route only when the user explicitly asks for Aseprite handling, such as creating or updating an `.aseprite` file, importing frames into an existing project, arranging layers/tags, exporting through Aseprite, or continuing work in Aseprite.
 - Ask before launching visible Aseprite, overwriting files, or running a local script that writes outside the generated output folder.
+- For existing `.aseprite` projects, prefer writing a modified copy and require explicit approval before editing the original file in place.
 
 This route is not a replacement for an Aseprite MCP bridge. It does not solve live control of an already-open document, extension-only PixelLab operations, or interactive plugin dialogs. It is still worth adding to the agent skill because it answers the common user request "I want to work in Aseprite, not the website" with a stable, low-maintenance workflow.
+
+Implementation guidance for the agent skill:
+
+- Keep the main skill file as a router only. It should point explicit Aseprite requests to an Aseprite-specific reference file.
+- Put Aseprite mechanics in the reference file, including CLI command patterns, script patterns, safety gates, and verification.
+- Do not route every local asset assembly task through Aseprite. Generic GIF previews and spritesheet assembly can remain local image tooling unless the user asked for Aseprite.
+- Treat the phrase "handoff" as a user-experience description, not the integration architecture. The actual architecture is PixelLab generation followed by Aseprite CLI/Lua workspace integration.
 
 ## Possible Aseprite MCP Bridge
 
@@ -97,7 +106,7 @@ Bridge guardrails:
 - Prefer official PixelLab MCP/REST for pure agent asset generation when the user does not need the result placed into the live Aseprite document.
 - Keep Aseprite-specific commands scoped to the active editor session and visible user workflow.
 
-Efficiency judgment: build the lightweight file handoff into Pip first. Consider a dedicated Aseprite MCP bridge only if users need repeated live-document operations that cannot be handled by opening/importing generated files or by simple Aseprite CLI/scripts.
+Efficiency judgment: build the lightweight Aseprite CLI integration into Pip first. Consider a dedicated Aseprite MCP bridge only if users need repeated live-document operations that cannot be handled by opening/importing generated files or by simple Aseprite CLI/scripts.
 
 ## Evidence
 

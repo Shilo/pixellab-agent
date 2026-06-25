@@ -2,6 +2,8 @@
 
 Read this only when creating local preview files from generated PixelLab frames, such as animated GIFs, spritesheets, or other assembled animation artifacts.
 
+For Aseprite-specific opening, import/export, layers, frames, tags, `.aseprite` workspace creation, or Aseprite CLI/Lua behavior, read `aseprite-cli.md` instead.
+
 ## Transparent GIF Previews
 
 Transparent pixel art GIFs are disposal-sensitive: if each frame does not say how the previous frame should be cleared, some viewers accumulate old transparent-frame pixels and show trails.
@@ -38,10 +40,13 @@ Before reporting a GIF preview as complete:
    magick "preview.gif" -coalesce "check-%02d.png"
    ```
 
-3. Compare the coalesced frames to the source PNG frames. Unexpected nonzero differences mean the preview is not faithfully rendering the source frames.
+3. Compare every coalesced frame to the matching source PNG frame. Unexpected nonzero differences mean the preview is not faithfully rendering the source frames.
 
    ```powershell
-   magick compare -metric AE "frame-00.png" "check-00.png" null:
+   Get-ChildItem "frame-*.png" | ForEach-Object {
+     $id = $_.BaseName -replace '^frame-', ''
+     magick compare -metric AE $_.FullName "check-$id.png" null:
+   }
    ```
 
 If the preview is only for chat display, still run the verification. A preview that looks wrong can make a good PixelLab generation look broken.
