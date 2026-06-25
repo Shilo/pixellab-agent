@@ -221,9 +221,9 @@ $pixellab-pip bark
 /pixellab-pip bark off
 ```
 
-Toggles Pip's completion sound. Bark is on by default and persists in `skills/pixellab-pip/config.json` next to `SKILL.md` when the installed skill directory is writable. Pip only barks after a live PixelLab generation, edit, transform, conversion, background-removal, or animation job finishes successfully. It does not bark for setup, auth checks, balance/status checks, docs, failed or pending jobs, downloads alone, or local post-processing alone.
+Toggles Pip's completion sound. Bark is on by default and persists in `skills/pixellab-pip/pixellab-pip.json` next to `SKILL.md` when the installed skill directory is writable, with an exact user-config fallback only if skill-local persistence fails. Pip only barks after a live PixelLab generation, edit, transform, conversion, background-removal, or animation job finishes successfully. It does not bark for setup, auth checks, balance/status checks, docs, failed or pending jobs, downloads alone, or local post-processing alone.
 
-The current sound is the logical id `success`. Future custom audio can use files under `skills/pixellab-pip/assets/audio/`, including `.wav`, `.wave`, or `.mp4`, without changing the command shape.
+The current sound is hardcoded in the bundled helper as `skills/pixellab-pip/assets/bark.wav`. Running `bark` or `bark on` plays the sound immediately when bark ends up on, which doubles as a sound test. Future custom audio can support `.wav`, `.wave`, or `.mp4` without changing the command shape.
 
 ## MCP And API Setup
 
@@ -334,7 +334,10 @@ docs/
 skills/
   pixellab-pip/
     SKILL.md
-    config.json
+    pixellab-pip.json
+    assets/
+      bark.py
+      bark.wav
     references/
 ```
 
@@ -345,7 +348,9 @@ The root plugin files are thin wrappers for each agent app. The only runtime ski
 Runtime files:
 
 - `skills/pixellab-pip/SKILL.md` - the canonical skill file.
-- `skills/pixellab-pip/config.json` - optional user-local bark preference file, created only when bark is toggled.
+- `skills/pixellab-pip/pixellab-pip.json` - optional user-local bark preference file, created only when bark is toggled.
+- `skills/pixellab-pip/assets/bark.py` - best-effort local helper for deterministic bark config and sound playback.
+- `skills/pixellab-pip/assets/bark.wav` - bundled bark sound.
 - `skills/pixellab-pip/references/credentials.md` - PixelLab bearer-token setup, UI naming, and MCP auth-source reuse.
 - `skills/pixellab-pip/references/setup.md` - natural-language setup mode for MCP/API/auth after install.
 - `skills/pixellab-pip/references/bark.md` - persistent completion sound toggle and generation-finish rules.

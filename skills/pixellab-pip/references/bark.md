@@ -21,22 +21,27 @@ Some apps expose text after a slash command as arguments, while others treat it 
 
 ## Config
 
-Persist bark state in `config.json` next to this skill's `SKILL.md`:
+Persist bark state in `pixellab-pip.json` next to this skill's `SKILL.md`:
 
 ```json
 {
-  "bark": true,
-  "sound": "success"
+  "bark": true
 }
 ```
 
-No `config.json` means bark is enabled and the sound is `success`.
+No `pixellab-pip.json` means bark is enabled.
 
-Read and write only this skill-local `config.json` for bark state. Do not scan broad config, home, shell, credential, or project directories.
+Read and write only this skill-local `pixellab-pip.json` for bark state. If the skill directory is read-only, fall back to the exact user config path for the current OS:
 
-If `config.json` exists but is invalid JSON, preserve no invalid fields, treat bark as enabled for the current command, and overwrite it with the valid shape above when the user explicitly runs `bark`, `bark on`, or `bark off`. Do not rewrite config during normal generation completion.
+- Windows: `%APPDATA%\pixellab-pip\pixellab-pip.json`
+- macOS: `~/Library/Application Support/pixellab-pip/pixellab-pip.json`
+- Linux: `${XDG_CONFIG_HOME:-~/.config}/pixellab-pip/pixellab-pip.json`
 
-If `config.json` exists and contains extra fields, preserve them when changing `bark` or `sound` if the available file editing tools make that practical. If preserving extra fields is not practical, keep only `bark` and `sound`.
+Do not scan broad config, home, shell, credential, or project directories.
+
+If `pixellab-pip.json` exists but is invalid JSON, preserve no invalid fields, treat bark as enabled for the current command, and overwrite it with the valid shape above when the user explicitly runs `bark`, `bark on`, or `bark off`. Do not rewrite config during normal generation completion.
+
+If `pixellab-pip.json` exists and contains extra fields, preserve them when changing `bark` if the available file editing tools make that practical. If preserving extra fields is not practical, keep only `bark`.
 
 ## Bark Commands
 
@@ -44,14 +49,14 @@ If `config.json` exists and contains extra fields, preserve them when changing `
 - `bark on`: write `"bark": true`.
 - `bark off`: write `"bark": false`.
 
-Keep `sound` as `"success"` unless it already has another non-empty string value.
-
 After a successful write, respond briefly with the new state:
 
 - `Bark is on.`
 - `Bark is off.`
 
-If the write fails because the skill directory is read-only or filesystem writes are unavailable, say that bark could not be saved persistently. Do not claim the setting changed.
+If `bark` toggles bark on, or if `bark on` enables bark, immediately play the bark sound so the command also tests audio. If `bark` toggles bark off, or if `bark off` disables bark, do not play a bark sound.
+
+If both skill-local and user-config fallback writes fail, say that bark could not be saved persistently. Do not claim the setting changed.
 
 ## When To Play
 
@@ -76,10 +81,25 @@ Do not bark for:
 
 ## Sound
 
-Use `sound` as a logical sound id. For now, `success` means the current agent/app should use any available generic success completion sound.
+The bark sound path is not configurable. The bundled helper resolves it as `assets/bark.wav` inside the same skill directory as `SKILL.md`. Missing config must not prevent resolving the bark sound path.
 
-Use an available host, app, or MCP notification primitive only if one is exposed in the current tools. Match tools by their visible names and schemas, such as sound, notification, completion, or play-notification tools that accept a sound or type value. Pass the logical sound id `success` when supported.
+Use an available host, app, or MCP notification primitive first if one is exposed in the current tools. Match tools by their visible names and schemas, such as sound, notification, completion, or play-notification tools.
 
-Do not run OS-specific shell commands to play audio. Do not install audio tools or MCP servers during generation reporting. If no sound-capable primitive is available, fail quietly and continue the normal PixelLab report.
+If no host/app/MCP sound primitive is available and shell execution is available, run the bundled helper from the skill directory:
 
-Future bark audio assets may live under `assets/audio/` and may use `.wav`, `.wave`, or `.mp4`. Do not hard-code a file extension in the config.
+```text
+python assets/bark.py play
+```
+
+If `python` is unavailable, try:
+
+```text
+python3 assets/bark.py play
+py -3 assets/bark.py play
+```
+
+Use `py -3` only on Windows. Do not install Python or audio tools. The helper uses only standard library code and exits quietly if no compatible local player is available.
+
+Do not run ad hoc OS-specific shell commands to play audio outside the helper. Do not install audio tools or MCP servers during generation reporting. If neither a host sound primitive nor the helper can play sound, fail quietly and continue the normal PixelLab report.
+
+Future audio formats may include `.wav`, `.wave`, or `.mp4`, but the current deterministic bundled sound is `assets/bark.wav`.
