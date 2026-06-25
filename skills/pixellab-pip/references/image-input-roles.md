@@ -79,7 +79,8 @@ These image-editing and image-conversion routes are REST v2 routes unless curren
   - If fixed output size is requested and fits current `image-to-pixelart` `output_size` limits, use normal `image-to-pixelart`.
   - If requested size is outside current `output_size` limits, warn that Pro cannot guarantee exact dimensions before spending credits. If the user proceeds, use Pro, verify dimensions, then ask before PixelLab `resize` or local nearest-neighbor/canvas resize/pad/crop.
 - `resize`
-  - `image`: target image to resize.
+  - `reference_image`: target image to resize.
+  - Include the required `reference_image_size`, `target_size`, and `description` fields.
   - Use for PixelLab resizing only after checking current size limits and output behavior. For simple nearest-neighbor canvas padding/cropping, local tooling may be safer after user approval.
 - `remove-background`
   - `image`: target image whose background should be removed.

@@ -50,11 +50,11 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 | Isometric tile/block/floor | MCP `create_isometric_tile`. | `create-isometric-tile`. |
 | Tile variants / tiles pro | MCP `create_tiles_pro` for individual tile variants such as hex, octagon, square top-down, and isometric tiles. | `create-tiles-pro`, `tiles-pro/{tile_id}`. |
 | General image, sprite, icon-like standalone asset | REST v2. | `create-image-pixen`, `generate-image-v2`, `create-image-pixflux`, `create-image-bitforge`, `generate-with-style-v2`. |
-| Background, scene, environment, backdrop | REST v2 image generation; no direct hosted MCP background tool was documented. | Use normal image generation with a scene/background prompt. Do not assume `create-image-pixflux-background` means a scene-backdrop generator without checking current docs. |
+| Background, scene, environment, backdrop | REST v2 image generation; no direct hosted MCP background tool was documented. | Use the documented `create-image-pixflux-background` endpoint for background-image generation when REST v2 is the selected surface; verify current size and field support from official docs before writing exact code. |
 | UI, HUD, button, panel, health bar, menu | REST v2. | `generate-ui-v2`. Website UI library is a human/editor surface unless public lifecycle endpoints exist. |
 | Image edit, inpaint, mask, convert, resize, remove background | REST v2. | `inpaint`, `inpaint-v3`, `edit-image`, `edit-images-v2`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`. |
 | Reduce colors / quantize palette | Website/editor/local image tooling. | No public REST v2/MCP reduce-colors endpoint was documented; use website docs or local tooling instead of inventing a route. |
-| Unzoom pixel art / remove upscaling | Aseprite or Pixelorama extension. | Website docs list this as editor-extension only; do not route to REST/MCP unless official docs add an endpoint. |
+| Unzoom pixel art / remove upscaling | Aseprite or Pixelorama extension. | No public REST v2 or MCP Unzoom endpoint was documented; use local tooling only as a labeled non-PixelLab fallback after explaining the PixelLab route is extension-only. |
 | Try on garment/item on character | Website Try on for single-image experimental output; REST `transfer-outfit-v2` only for animation-frame outfit transfer. | Try on returns a composited image, not isolated paperdoll layers. |
 | Multi image combine references | Website experimental flow or closest documented REST image/edit route after verifying docs. | No direct public REST v2/MCP "multi image" route was documented. |
 | Reshape character proportions | Website Reshape or closest documented edit/character route after verifying docs. | Website docs require exactly 64x64 canvas; no public REST v2/MCP reshape endpoint was documented. |
@@ -175,7 +175,7 @@ Use browser automation only for visible website/editor/Pixelorama assistance aft
 | "Setup PixelLab." | Setup mode; diagnose MCP/API intent, credential readiness, and ask before config writes. |
 | "Make a wizard with idle and walk animations." | MCP `create_character`, then `animate_character`; if direction is unspecified, animate south/down first and ask before expanding to every direction. |
 | "Generate a mossy platformer tileset from code." | REST v2 `create-tileset-sidescroller`; use MCP `create_sidescroller_tileset` if working in an MCP-enabled agent. |
-| "Create a title screen background." | REST v2 image generation with a scene/background prompt; verify the current endpoint and size support from docs. |
+| "Create a title screen background." | REST v2 `create-image-pixflux-background`; verify current fields and size support from docs. |
 | "Make HUD buttons and a health bar." | REST v2 `generate-ui-v2`. |
 | "Convert this image to pixel art and remove the background." | REST v2 `image-to-pixelart-pro`, then `remove-background`. |
 | "Inpaint this masked area." | REST v2 `inpaint` or `inpaint-v3` after checking current docs and inputs. |
