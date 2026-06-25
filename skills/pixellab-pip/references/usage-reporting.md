@@ -16,6 +16,8 @@ After every live PixelLab call, report:
 - Balance/credit delta when exposed.
 - Candidate/final status. Call an output final only after the selected file exists locally or at the returned URL and any requested dimensions, transparency, frame count, or layer contract has been checked.
 
+After final success verification for a live PixelLab generation, edit, transform, conversion, background-removal, or animation job, apply the bark completion-sound contract in `references/bark.md`. Bark must run only for successful live PixelLab generation-style work, not for setup, auth checks, balance/status checks, docs, failures, pending jobs, downloads alone, or local post-processing alone.
+
 Use `get_balance` or REST `GET /balance` before and after nontrivial generation when available. If only balance is available, report the delta. If neither per-call usage nor balance is exposed, say usage was not exposed. Label estimates as estimates.
 
 If an async call times out or remains pending, keep the job or asset ID and use the matching status/get route or MCP getter. Do not resubmit a paid generation unless the user explicitly wants a fresh run.

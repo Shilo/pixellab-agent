@@ -42,6 +42,7 @@ Use Pip when an agent needs to create, edit, animate, integrate, or troubleshoot
 | Safer auth and automation | Uses bearer-token and MCP secret setup, avoids copied website session tokens, and keeps agents away from undocumented website/session endpoints. |
 | Current docs and SDK checks | Tells agents when to refresh official PixelLab docs, OpenAPI schemas, MCP docs, SDK coverage, auth setup, pricing, limits, model labels, or endpoint fields before making exact claims. |
 | Clear generation reports | Reports the PixelLab tool or endpoint used, prompt prep method, final natural-language parameters, key controls, IDs, output locations, async status, credit/balance delta when available, and verification status. |
+| Bark completion sound | Can play a generic success sound after PixelLab generation-style jobs finish, with a persistent on/off toggle. |
 | PixelLab terminology support | Explains confusing labels such as `Pro`, `v3`, `new`, `create tiles`, `create tileset`, Pixen, PixFlux, BitForge, and PixPatch at the documented product level. |
 | Agent-agnostic | Works with any agent that supports Agent Skills. |
 | Privacy-focused setup | Helps users connect PixelLab without exposing token values, dumping environment variables, or inspecting private `.env*` files. |
@@ -191,6 +192,8 @@ Example prompt:
 /pixellab-pip setup
 @pixellab-pip setup
 $pixellab-pip setup
+/pixellab-pip bark
+/pixellab-pip bark off
 /pixellab-pip make a cute knight character sprite
 ```
 
@@ -207,6 +210,20 @@ $pixellab-pip setup
 ```
 
 Runs the beginner-friendly PixelLab setup wizard. Pip recommends MCP + API for AI assistants/editors, can configure REST/API fallback for Pip with the same PixelLab Secret, and only changes settings after a token-free preview and explicit approval.
+
+### Bark
+
+```text
+/pixellab-pip bark
+@pixellab-pip bark
+$pixellab-pip bark
+/pixellab-pip bark on
+/pixellab-pip bark off
+```
+
+Toggles Pip's completion sound. Bark is on by default and persists in `skills/pixellab-pip/config.json` next to `SKILL.md` when the installed skill directory is writable. Pip only barks after a live PixelLab generation, edit, transform, conversion, background-removal, or animation job finishes successfully. It does not bark for setup, auth checks, balance/status checks, docs, failed or pending jobs, downloads alone, or local post-processing alone.
+
+The current sound is the logical id `success`. Future custom audio can use files under `skills/pixellab-pip/assets/audio/`, including `.wav`, `.wave`, or `.mp4`, without changing the command shape.
 
 ## MCP And API Setup
 
@@ -317,6 +334,7 @@ docs/
 skills/
   pixellab-pip/
     SKILL.md
+    config.json
     references/
 ```
 
@@ -327,8 +345,10 @@ The root plugin files are thin wrappers for each agent app. The only runtime ski
 Runtime files:
 
 - `skills/pixellab-pip/SKILL.md` - the canonical skill file.
+- `skills/pixellab-pip/config.json` - optional user-local bark preference file, created only when bark is toggled.
 - `skills/pixellab-pip/references/credentials.md` - PixelLab bearer-token setup, UI naming, and MCP auth-source reuse.
 - `skills/pixellab-pip/references/setup.md` - natural-language setup mode for MCP/API/auth after install.
+- `skills/pixellab-pip/references/bark.md` - persistent completion sound toggle and generation-finish rules.
 - `skills/pixellab-pip/references/browser-fallback.md` - permission rules for visible website/editor fallback.
 - `skills/pixellab-pip/references/paperdolling.md` - layered character and outfit workflow contract.
 - `skills/pixellab-pip/references/tilesets.md` - terrain/platformer/tile-variant routing details.

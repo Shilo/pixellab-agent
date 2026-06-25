@@ -1,6 +1,6 @@
 ---
 name: pixellab-pip
-description: Use for PixelLab or PixelLab Pip intents to setup, configure, connect, install, verify auth, create, generate, draw, make, edit, convert, animate, upscale, remove backgrounds, route, or troubleshoot pixel-art/game-asset workflows across MCP, REST/API v2, website/editor Pixelorama, Aseprite, and legacy v1. Trigger on PixelLab setup, MCP setup, API setup, PIXELLAB_SECRET, bearer-token auth, sprites, sprite sheets, characters, objects, tiles, tilesets, tilemaps, maps, UI, icons, backgrounds, palettes, image edits, animations, docs, endpoint/tool choice, SDK integration, troubleshooting, or vibe-coding. Use for generic asset wording only when the project/conversation implies PixelLab. Do not trigger for unrelated Python pip/package-manager requests or generic image/pixel-art requests with no PixelLab intent.
+description: Use for PixelLab or PixelLab Pip intents to setup, configure, connect, install, verify auth, create, generate, draw, make, edit, convert, animate, upscale, remove backgrounds, route, bark completion sounds, or troubleshoot pixel-art/game-asset workflows across MCP, REST/API v2, website/editor Pixelorama, Aseprite, and legacy v1. Trigger on PixelLab setup, MCP setup, API setup, PIXELLAB_SECRET, bearer-token auth, sprites, sprite sheets, characters, objects, tiles, tilesets, tilemaps, maps, UI, icons, backgrounds, palettes, image edits, animations, bark, docs, endpoint choice, SDK integration, troubleshooting, or vibe-coding. Use for generic asset wording only when the project/conversation implies PixelLab. Do not trigger for unrelated Python pip/package-manager requests or generic image/pixel-art requests with no PixelLab intent.
 ---
 
 # PixelLab Pip
@@ -10,8 +10,9 @@ Classify the user's asset, API, or question intent first, then choose the suppor
 ## Workflow
 
 1. Classify the request:
-   `question | setup | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | website/editor assistance`.
+   `question | setup | bark | create asset | edit/transform | animate | prompt_enhancement | integrate/code | check balance/status | troubleshoot docs/API | website/editor assistance`.
    Treat a standalone `setup` word after an explicit skill invocation, such as `/pixellab-pip setup` or `@pixellab-pip setup`, as setup intent. If an app exposes structured arguments, use them only as another way to read the same natural-language intent.
+   Treat a standalone `bark` word after an explicit skill invocation, with optional `on` or `off`, as bark intent. For bark intent, read `references/bark.md` and apply the persistent toggle contract.
 2. Classify the target asset or surface:
    `general_image | background | character | object | effect_vfx | ui | whole_map | map_image | map_object | top_down_tileset | sidescroller_tileset | isometric_tile | tile_variants | animation | existing_image`.
 3. Choose the surface:
@@ -85,6 +86,7 @@ Read only the relevant reference:
 - Bearer-token setup, PixelLab UI naming, and MCP auth reuse: `references/credentials.md`.
 - Natural-language setup mode for MCP/API/auth after install: `references/setup.md`.
 - Browser fallback and website automation boundaries: `references/browser-fallback.md`.
+- Persistent completion sound toggle: `references/bark.md`.
 - Paperdolling and layered character workflows: `references/paperdolling.md`.
 - Tileset and tile-variant details: `references/tilesets.md`.
 - Attachments, file paths, supplied image roles, endpoint fields, or fixed-size image-to-pixel-art: `references/image-inputs.md`.
@@ -161,6 +163,8 @@ For tasks, execute PixelLab generation/editing only when the user clearly reques
 If no PixelLab bearer token is configured, stop before PixelLab generation and offer the setup wizard. Tell the user to open `https://www.pixellab.ai/account` after signing in and copy the value labeled `Secret`, then store it locally as `PIXELLAB_SECRET` or in app secret settings; never ask them to paste it into chat. If the user chooses Manual setup, open or link `https://www.pixellab.ai/mcp`, tell them to pick their app there, and stop. PixelLab UI/docs may call the same value an API key, API token, or secret; for REST/MCP bearer auth, call it a bearer token. If the user requested an output asset and a local fallback is possible, offer it as a separate non-PixelLab fallback and wait for approval before creating files.
 
 After any live PixelLab call, report the surface, tool or endpoint, prompt/description prep method, final natural-language parameter values used, key result-affecting controls such as size/view/direction/mode/seed/frame count/image roles or asset IDs, job/asset/result IDs, output paths or URLs, async polling/status when relevant, credit/balance delta when exposed, and candidate/final status. Do not call an output final unless existence and explicitly requested constraints were verified. If usage is not exposed, say so. Do not paste secrets, raw files/base64, or full response JSON unless debugging exact schemas.
+
+When a live PixelLab generation, edit, transform, conversion, background-removal, or animation job finishes successfully, read `references/bark.md` and apply the bark completion-sound contract after final success verification.
 
 Use browser automation only for visible website/editor/Pixelorama assistance after explicit user permission. Ask again before login/session actions, spending credits, submitting generations, downloads, edits, or deletes. Never scrape session tokens or call undocumented website endpoints.
 
