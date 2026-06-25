@@ -40,6 +40,14 @@ MCP `create_map_object` may expose map-object-specific `background_image` or `in
 
 For supplied-image edits, image conversion, inpainting, resizing, background removal, and additive sprite effects on the same canvas, route to REST v2 unless current MCP docs or visible MCP tools expose a matching image-edit tool. Do not assume a REST endpoint has an MCP equivalent just because MCP is configured. If a future MCP tool appears, prefer the visible tool and update this reference.
 
+## Aseprite Extension Boundary
+
+The official Aseprite extension is an editor integration. Its Lua tools connect to unversioned root WebSocket routes such as `generate-image-new`, `generate-pixelart-flux`, `generate-multi-edit`, `quantize-image`, `unzoom-pixelart`, and `correct-pixelart`. Those names are not public REST v2 paths and are not MCP tools. Do not call them from Pip unless official docs later publish them as supported REST/MCP contracts.
+
+When an Aseprite workflow maps to current public REST v2, use the documented route instead, for example `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `edit-image`, `edit-images-v2`, `inpaint`, `inpaint-v3`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`, `animate-with-text-v3`, `animate-with-skeleton`, `estimate-skeleton`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `rotate`, `generate-8-rotations-v2/v3`, `create-tileset`, `create-tileset-sidescroller`, `create-isometric-tile`, and `create-tiles-pro`.
+
+For exact editor-only behavior such as quantize/reduce-colors, unzoom pixel art, pixel correction, old/root map-extension tools, and reshape, route to Aseprite/Pixelorama as visible editor surfaces or provide a clearly labeled local fallback when appropriate.
+
 ## What This Skill Adds
 
 `/pixellab-pip` does not replace official docs. It adds:
