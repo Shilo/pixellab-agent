@@ -19,10 +19,11 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 - [MCP And API Setup](#mcp-and-api-setup)
 - [Authentication](#authentication)
 - [Documentation](#documentation)
-- [Showcase](#showcase)
+- [Showcase ->](docs/showcase/README.md)
 - [Repository Layout](#repository-layout)
 - [Other Tools](#other-tools)
 - [PixelLab Resources](#pixellab-resources)
+- [Developer ->](docs/developer.md)
 - [License](#license)
 
 ## Features

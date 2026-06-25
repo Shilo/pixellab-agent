@@ -26,13 +26,31 @@ function Invoke-Codex {
     )
 
     Write-Host "> codex $($Arguments -join ' ')" -ForegroundColor DarkGray
-    $output = & codex @Arguments 2>&1
-    $exitCode = $LASTEXITCODE
-    $text = ($output | Out-String).Trim()
+    $stderrPath = [System.IO.Path]::GetTempFileName()
+    try {
+        $output = & codex @Arguments 2> $stderrPath
+        $exitCode = $LASTEXITCODE
+        $text = ($output | Out-String).Trim()
+        $rawErrorText = if (Test-Path -LiteralPath $stderrPath) {
+            Get-Content -LiteralPath $stderrPath -Raw
+        }
+        else {
+            ""
+        }
+        $errorText = if ($null -eq $rawErrorText) { "" } else { $rawErrorText.Trim() }
+    }
+    finally {
+        if (Test-Path -LiteralPath $stderrPath) {
+            Remove-Item -LiteralPath $stderrPath -Force -ErrorAction SilentlyContinue
+        }
+    }
 
     if ($exitCode -ne 0) {
         if ($text) {
             Write-Host $text
+        }
+        if ($errorText) {
+            Write-Host $errorText
         }
         throw "codex command failed with exit code $exitCode"
     }
@@ -227,6 +245,10 @@ function Select-MenuItem {
 }
 
 function Pause-BeforeExit {
+    if ([Console]::IsInputRedirected -or [Console]::IsOutputRedirected) {
+        return
+    }
+
     Write-Host ""
     Read-Host "Press Enter to exit" | Out-Null
 }
@@ -235,7 +257,8 @@ function Get-InstallState {
     param(
         [Parameter(Mandatory = $true)][string]$PluginName,
         [Parameter(Mandatory = $true)][string]$PluginSelector,
-        [Parameter(Mandatory = $true)][string]$RepoRoot
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$RemoteSource
     )
 
     $pluginList = Invoke-Codex -Arguments @("plugin", "list", "--json") -Json
@@ -270,6 +293,13 @@ function Get-InstallState {
     $hasCachebuster = $installedVersion -match '\+codex\.'
     $isLocalDev = $isLocalSource -and $hasCachebuster
     $isStaleLocalDev = $isLocalSource -and -not $hasCachebuster
+    $isProductionRemote = $false
+    if ((Test-JsonProperty -Object $installedMarketplace -Name "marketplaceSource") -and
+        $installedMarketplace.marketplaceSource.sourceType -eq "git") {
+        $installedRemoteSource = Get-RepositorySource -Repository ([string]$installedMarketplace.marketplaceSource.source)
+        $isProductionRemote = $installedRemoteSource -eq $RemoteSource
+    }
+
     $mode = if (-not $installedPlugin) {
         "not installed"
     }
@@ -279,8 +309,11 @@ function Get-InstallState {
     elseif ($isStaleLocalDev) {
         "development local (stale cache)"
     }
-    else {
+    elseif ($isProductionRemote) {
         "production remote"
+    }
+    else {
+        "unknown install"
     }
 
     [pscustomobject]@{
@@ -291,6 +324,7 @@ function Get-InstallState {
         Version = $installedVersion
         Mode = $mode
         IsLocal = $isLocalDev -or $isStaleLocalDev
+        IsProductionRemote = $isProductionRemote
     }
 }
 
@@ -360,7 +394,7 @@ function Invoke-Main {
     Write-Host "Plugin:   $pluginName"
     Write-Host ""
 
-    $state = Get-InstallState -PluginName $pluginName -PluginSelector $pluginSelector -RepoRoot $repoRoot
+    $state = Get-InstallState -PluginName $pluginName -PluginSelector $pluginSelector -RepoRoot $repoRoot -RemoteSource $remoteSource
     Write-InstallState -State $state -PluginName $pluginName
     Write-Host ""
 
@@ -369,6 +403,14 @@ function Invoke-Main {
             [pscustomobject]@{ Action = "install-local"; Label = "Install development local" },
             [pscustomobject]@{ Action = "install-remote"; Label = "Install production remote" },
             [pscustomobject]@{ Action = "uninstall"; Label = "Uninstall $pluginName (not installed)" },
+            [pscustomobject]@{ Action = "cancel"; Label = "Cancel" }
+        )
+    }
+    elseif ($state.Mode -eq "unknown install") {
+        $options = @(
+            [pscustomobject]@{ Action = "install-local"; Label = "Install development local" },
+            [pscustomobject]@{ Action = "install-remote"; Label = "Install production remote" },
+            [pscustomobject]@{ Action = "uninstall"; Label = "Uninstall unknown install" },
             [pscustomobject]@{ Action = "cancel"; Label = "Cancel" }
         )
     }
@@ -426,7 +468,7 @@ function Invoke-Main {
                 Write-Host ""
                 Write-Host "Updated $pluginName as development local." -ForegroundColor Green
             }
-            else {
+            elseif ($state.IsProductionRemote) {
                 if ($state.Marketplace -and
                     (Test-JsonProperty -Object $state.Marketplace -Name "marketplaceSource") -and
                     $state.Marketplace.marketplaceSource.sourceType -eq "git") {
@@ -436,6 +478,9 @@ function Invoke-Main {
                 Install-ProductionRemote -RemoteSource $remoteSource -PluginSelector $pluginSelector
                 Write-Host ""
                 Write-Host "Updated $pluginName as production remote." -ForegroundColor Green
+            }
+            else {
+                throw "Cannot update unknown install. Choose an install option to replace it, or uninstall it first."
             }
         }
         default {
