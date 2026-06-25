@@ -57,6 +57,61 @@ function Get-RepositorySource {
     return $Repository
 }
 
+function Get-CodexCachePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$MarketplaceName,
+        [Parameter(Mandatory = $true)][string]$PluginName,
+        [Parameter(Mandatory = $true)][string]$Version
+    )
+
+    return Join-Path $env:USERPROFILE ".codex\plugins\cache\$MarketplaceName\$PluginName\$Version"
+}
+
+function Get-CachebusterVersion {
+    param([Parameter(Mandatory = $true)][string]$Version)
+
+    $baseVersion = $Version.Split("+", 2)[0]
+    $stamp = [DateTime]::UtcNow.ToString("yyyyMMddHHmmss")
+    return "$baseVersion+codex.dev-$stamp"
+}
+
+function Write-Utf8NoBom {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Text
+    )
+
+    $encoding = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($Path, $Text, $encoding)
+}
+
+function Install-DevelopmentLocal {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$PluginSelector
+    )
+
+    $codexManifestPath = Join-Path $RepoRoot ".codex-plugin\plugin.json"
+    if (-not (Test-Path -LiteralPath $codexManifestPath)) {
+        throw "Could not find Codex plugin manifest: $codexManifestPath"
+    }
+
+    $originalManifestText = Get-Content -LiteralPath $codexManifestPath -Raw
+    try {
+        $codexManifest = $originalManifestText | ConvertFrom-Json
+        $codexManifest.version = Get-CachebusterVersion -Version ([string]$codexManifest.version)
+        $nextManifestText = ($codexManifest | ConvertTo-Json -Depth 50) + [Environment]::NewLine
+        Write-Utf8NoBom -Path $codexManifestPath -Text $nextManifestText
+
+        Write-Host "  Cachebuster: $($codexManifest.version)"
+        Invoke-Codex -Arguments @("plugin", "marketplace", "add", $RepoRoot, "--json") -Json | Out-Null
+        Invoke-Codex -Arguments @("plugin", "add", $PluginSelector, "--json") -Json | Out-Null
+    }
+    finally {
+        Write-Utf8NoBom -Path $codexManifestPath -Text $originalManifestText
+    }
+}
+
 function Test-JsonProperty {
     param(
         [AllowNull()]$Object,
@@ -127,10 +182,15 @@ $installedMarketplace = @($marketplaceList.marketplaces) |
 
 $installedPath = $null
 $marketplacePath = $null
+$installedVersion = $null
 
 if ((Test-JsonProperty -Object $installedPlugin -Name "source") -and
     (Test-JsonProperty -Object $installedPlugin.source -Name "path")) {
     $installedPath = Get-NormalizedPath ([string]$installedPlugin.source.path)
+}
+
+if ($installedPlugin) {
+    $installedVersion = [string]$installedPlugin.version
 }
 
 if ((Test-JsonProperty -Object $installedMarketplace -Name "marketplaceSource") -and
@@ -138,12 +198,19 @@ if ((Test-JsonProperty -Object $installedMarketplace -Name "marketplaceSource") 
     $marketplacePath = Get-NormalizedPath ([string]$installedMarketplace.marketplaceSource.source)
 }
 
-$isLocalDev = ($installedPath -eq $repoRoot) -or ($marketplacePath -eq $repoRoot)
+$isLocalSource = ($installedPath -eq $repoRoot) -or ($marketplacePath -eq $repoRoot)
+$hasCachebuster = $installedVersion -match '\+codex\.'
+$isLocalDev = $isLocalSource -and $hasCachebuster
+$isStaleLocalDev = $isLocalSource -and -not $hasCachebuster
 
 if ($installedPlugin) {
     Write-Host "Current install:"
     Write-Host "  Plugin ID:   $($installedPlugin.pluginId)"
     Write-Host "  Version:     $($installedPlugin.version)"
+    if ($installedVersion) {
+        $cachePath = Get-CodexCachePath -MarketplaceName $installedPlugin.marketplaceName -PluginName $pluginName -Version $installedVersion
+        Write-Host "  Cache path:  $cachePath"
+    }
     if ($installedPath) {
         Write-Host "  Source path: $installedPath"
     }
@@ -165,7 +232,15 @@ if ($installedMarketplace) {
     Write-Host "  Marketplace: $marketplaceSource"
 }
 
-$currentMode = if ($isLocalDev) { "development local" } else { "production remote" }
+$currentMode = if ($isLocalDev) {
+    "development local"
+}
+elseif ($isStaleLocalDev) {
+    "development local (stale cache)"
+}
+else {
+    "production remote"
+}
 Write-Host "  Mode:        $currentMode"
 
 Write-Host ""
@@ -173,10 +248,17 @@ Write-Host ""
 if ($isLocalDev) {
     $targetName = "production remote"
     $targetMarketplaceSource = $remoteSource
+    $targetKind = "production"
+}
+elseif ($isStaleLocalDev) {
+    $targetName = "development local refresh"
+    $targetMarketplaceSource = $repoRoot
+    $targetKind = "development"
 }
 else {
     $targetName = "development local"
     $targetMarketplaceSource = $repoRoot
+    $targetKind = "development"
 }
 
 if (-not (Confirm-Switch -Prompt "Switch $pluginName to ${targetName}?")) {
@@ -192,8 +274,13 @@ if ($installedMarketplace) {
     Invoke-Codex -Arguments @("plugin", "marketplace", "remove", $installedMarketplace.name, "--json") -Json | Out-Null
 }
 
-Invoke-Codex -Arguments @("plugin", "marketplace", "add", $targetMarketplaceSource, "--json") -Json | Out-Null
-Invoke-Codex -Arguments @("plugin", "add", $pluginSelector, "--json") -Json | Out-Null
+if ($targetKind -eq "development") {
+    Install-DevelopmentLocal -RepoRoot $targetMarketplaceSource -PluginSelector $pluginSelector
+}
+else {
+    Invoke-Codex -Arguments @("plugin", "marketplace", "add", $targetMarketplaceSource, "--json") -Json | Out-Null
+    Invoke-Codex -Arguments @("plugin", "add", $pluginSelector, "--json") -Json | Out-Null
+}
 
 Write-Host ""
 Write-Host "Switched $pluginName to $targetName." -ForegroundColor Green
