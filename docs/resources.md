@@ -1,6 +1,6 @@
 # Resources
 
-## Official PixelLab Links
+## Official PixelLab
 
 - [PixelLab.ai](https://www.pixellab.ai/) - PixelLab's official product homepage.
 - [Account page](https://www.pixellab.ai/account) - Sign in and get the PixelLab token used for REST/MCP bearer auth.
@@ -13,7 +13,7 @@
 - [REST v2 OpenAPI](https://api.pixellab.ai/v2/openapi.json) - Exact current REST v2 schemas for endpoint, field, enum, and response verification.
 - [PixelLab GitHub organization](https://github.com/pixellab-code) - Official PixelLab code and SDK organization.
 
-## Related Tools
+## Unofficial Tools
 
 ### [PixelLab AI Skill](https://clawhub.ai/uncmatteth/skills/pixellab-ai) (By [@uncmatteth](https://clawhub.ai/uncmatteth))
 

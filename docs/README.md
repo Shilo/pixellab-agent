@@ -18,9 +18,9 @@ These docs explain PixelLab tools, workflows, terminology, SDK boundaries, and a
 - [Official PixelLab MCP Service Comparison](tools/official-pixellab-mcp-service-comparison.md) - technical comparison between Pip and the official hosted MCP service.
 - [PixelLab AI Skill Comparison](tools/pixellab-ai-skill-comparison.md) - feature comparison between Pip and the unofficial PixelLab AI Skill.
 
-## Official PixelLab Links
+## Official PixelLab
 
-For exact current endpoint schemas, tool lists, model/mode availability, pricing, and authentication behavior, verify against [Resources](resources.md#official-pixellab-links).
+For exact current endpoint schemas, tool lists, model/mode availability, pricing, and authentication behavior, verify against [Resources](resources.md#official-pixellab).
 
 ## Publication Rules
 
