@@ -82,7 +82,7 @@ Use `--batch` for noninteractive file conversion and export. Launch the GUI only
 
 Prefer direct CLI commands when no custom sprite construction is needed.
 
-Option order matters. Aseprite processes many export filters against the next sprite opened on the command line. Put filters such as `--tag`, `--frame-range`, `--layer`, `--ignore-layer`, `--all-layers`, `--split-layers`, `--split-tags`, and `--split-slices` before the `.aseprite` file they apply to.
+Option order matters. Aseprite processes many export filters against the next sprite opened on the command line. Put filters such as `--tag`, `--frame-range`, `--layer`, `--ignore-layer`, `--all-layers`, `--split-layers`, `--split-tags`, and `--split-slices` before the `.aseprite` file they apply to. Put `--script-param name=value` before `--script script.lua` so the script can read `app.params`.
 
 Check version:
 
@@ -161,6 +161,12 @@ Convert to indexed color with optional dithering:
 & $AsepritePath -b "source.png" --dithering-algorithm none --color-mode indexed --save-as "source-indexed.png"
 ```
 
+For multi-frame sprites, use filename formatting such as `{frame}` or expect Aseprite to number the output files:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --color-mode indexed --save-as "indexed-{frame}.png"
+```
+
 Export a packed or padded sprite sheet:
 
 ```powershell
@@ -170,7 +176,7 @@ Export a packed or padded sprite sheet:
 Run a Lua script with explicit parameters:
 
 ```powershell
-& $AsepritePath -b --script "make-workspace.lua" --script-param output="character.aseprite" --script-param frames="frames.json"
+& $AsepritePath -b --script-param output="character.aseprite" --script-param frames="frames.json" --script "make-workspace.lua"
 ```
 
 Use Aseprite's filename formatting, `--tag`, `--frame-range`, `--layer`, `--ignore-layer`, `--split-layers`, `--split-tags`, `--sheet-type`, `--trim`, `--crop`, `--scale`, `--color-mode`, and padding options instead of writing custom scripts when they cover the request.
@@ -405,6 +411,7 @@ Use this workflow for file-level edits only. It can modify an existing project f
 After Aseprite CLI work, verify the result before reporting success:
 
 - Check the expected output files exist.
+- On launcher-based installs, the command can return before output files are fully visible on disk; wait briefly for expected files before declaring failure.
 - For sprite sheets, check both image and JSON metadata when requested.
 - For GIFs, inspect frame count/delay/disposal if transparency matters; see `local-asset-assembly.md`.
 - For `.aseprite` files, run `--list-layers` and `--list-tags` when the task created layers or tags.
