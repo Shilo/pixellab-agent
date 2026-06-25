@@ -52,19 +52,27 @@ def read_json(path: Path) -> dict[str, Any] | None:
         return None
 
 
+def normalize_bark(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return True
+
+
 def read_config() -> tuple[dict[str, Any], Path | None]:
+    invalid_source: Path | None = None
     for path in (SKILL_CONFIG, USER_CONFIG):
         if path.exists():
             data = read_json(path)
             if isinstance(data, dict):
                 return data, path
-            return {"bark": True}, path
-    return {"bark": True}, None
+            if invalid_source is None:
+                invalid_source = path
+    return {"bark": True}, invalid_source
 
 
 def bark_enabled() -> bool:
     data, _ = read_config()
-    return bool(data.get("bark", True))
+    return normalize_bark(data.get("bark", True))
 
 
 def write_config(enabled: bool) -> Path:
@@ -137,10 +145,11 @@ def play_sound() -> bool:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 check=False,
+                timeout=3,
             )
             if completed.returncode == 0:
                 return True
-        except OSError:
+        except (OSError, subprocess.TimeoutExpired):
             continue
 
     return False
@@ -179,7 +188,7 @@ def main() -> int:
             result["bark"] = bark_enabled()
         elif args.command == "status":
             data, source = read_config()
-            result["bark"] = bool(data.get("bark", True))
+            result["bark"] = normalize_bark(data.get("bark", True))
             result["config"] = str(source) if source else None
     except Exception as exc:
         result["ok"] = False
@@ -192,8 +201,14 @@ def main() -> int:
             print("Bark is on." if result["bark"] else "Bark is off.")
         elif args.command == "status":
             print("on" if result["bark"] else "off")
+        elif args.command == "play" and result["ok"] and result["bark"] and not result["played"]:
+            print("Bark sound did not play.")
 
-    return 0 if result["ok"] else 1
+    if not result["ok"]:
+        return 1
+    if args.command == "play" and result["bark"] and not result["played"]:
+        return 2
+    return 0
 
 
 if __name__ == "__main__":

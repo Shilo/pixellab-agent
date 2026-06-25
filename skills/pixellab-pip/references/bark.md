@@ -83,23 +83,42 @@ Do not bark for:
 
 The bark sound path is not configurable. The bundled helper resolves it as `assets/bark.wav` inside the same skill directory as `SKILL.md`. Missing config must not prevent resolving the bark sound path.
 
-Use an available host, app, or MCP notification primitive first if one is exposed in the current tools. Match tools by their visible names and schemas, such as sound, notification, completion, or play-notification tools.
-
-If no host/app/MCP sound primitive is available and shell execution is available, run the bundled helper from the skill directory:
+Run the bundled helper from the skill directory first:
 
 ```text
-python assets/bark.py play
+python assets/bark.py play --json
 ```
 
 If `python` is unavailable, try:
 
 ```text
-python3 assets/bark.py play
-py -3 assets/bark.py play
+python3 assets/bark.py play --json
+py -3 assets/bark.py play --json
 ```
 
-Use `py -3` only on Windows. Do not install Python or audio tools. The helper uses only standard library code and exits quietly if no compatible local player is available.
+Use `py -3` only on Windows. Do not install Python or audio tools. The helper uses only standard library code. Its JSON output includes `bark` and `played`; if `bark` is `true` and `played` is `false`, or if the helper exits with code `2`, use the native fallback below.
 
-Do not run ad hoc OS-specific shell commands to play audio outside the helper. Do not install audio tools or MCP servers during generation reporting. If neither a host sound primitive nor the helper can play sound, fail quietly and continue the normal PixelLab report.
+If the helper cannot load or run, fall back to a native success or alert sound that does not require the bundled WAV, an MP3, MCP, or any install step:
+
+- If an available host/app notification primitive clearly supports a native `success`, `done`, or `alert` sound, use that without passing a file path.
+- On Windows, an agent with shell access may run PowerShell's native system sound:
+
+  ```powershell
+  [System.Media.SystemSounds]::Asterisk.Play(); Start-Sleep -Milliseconds 500
+  ```
+
+- On macOS, an agent with shell access may use the native alert sound:
+
+  ```bash
+  osascript -e 'beep 1'
+  ```
+
+- On Linux or other POSIX-like shells, an agent with shell access may try the terminal bell:
+
+  ```bash
+  printf '\a'
+  ```
+
+Do not pass `assets/bark.wav` to host/app fallback tools. Do not install audio tools or sound servers during generation reporting. If neither the helper nor a native fallback can play sound, fail quietly and continue the normal PixelLab report. For later generation completions in the same conversation/session, do not keep retrying sound after a full helper-plus-native-fallback failure. Only try again if the user explicitly runs `bark` or `bark on` as a sound test, or in a new conversation/session.
 
 Future audio formats may include `.wav`, `.wave`, or `.mp4`, but the current deterministic bundled sound is `assets/bark.wav`.
