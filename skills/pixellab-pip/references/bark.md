@@ -39,7 +39,9 @@ Read and write only this skill-local `pixellab-pip.json` for bark state. If the 
 
 Do not scan broad config, home, shell, credential, or project directories.
 
-If `pixellab-pip.json` exists but is invalid JSON, preserve no invalid fields, treat bark as enabled for the current command, and overwrite it with the valid shape above when the user explicitly runs `bark`, `bark on`, or `bark off`. Do not rewrite config during normal generation completion.
+Skill-local config is authoritative whenever it can be written. The user config path is only a read fallback when no valid skill-local config exists, and a write fallback when skill-local persistence fails.
+
+If `pixellab-pip.json` exists but is invalid JSON and no valid fallback config exists, treat bark as enabled for the current command. When the user explicitly runs `bark`, `bark on`, or `bark off`, write the valid shape above to the skill-local config first; if that write fails, write the exact user-config fallback path. Do not rewrite config during normal generation completion.
 
 If `pixellab-pip.json` exists and contains extra fields, preserve them when changing `bark` if the available file editing tools make that practical. If preserving extra fields is not practical, keep only `bark`.
 
@@ -48,6 +50,14 @@ If `pixellab-pip.json` exists and contains extra fields, preserve them when chan
 - `bark`: read the persisted state, toggle it, and write the new state.
 - `bark on`: write `"bark": true`.
 - `bark off`: write `"bark": false`.
+
+When using the bundled helper to execute bark commands, pass the same command intent:
+
+```text
+python assets/bark.py bark
+python assets/bark.py on
+python assets/bark.py off
+```
 
 After a successful write, respond briefly with the new state:
 
@@ -83,20 +93,20 @@ Do not bark for:
 
 The bark sound path is not configurable. The bundled helper resolves it as `assets/bark.wav` inside the same skill directory as `SKILL.md`. Missing config must not prevent resolving the bark sound path.
 
-Run the bundled helper from the skill directory first:
+Run the bundled helper from the skill directory first. The helper always prints JSON:
 
 ```text
-python assets/bark.py play --json
+python assets/bark.py play
 ```
 
 If `python` is unavailable, try:
 
 ```text
-python3 assets/bark.py play --json
-py -3 assets/bark.py play --json
+python3 assets/bark.py play
+py -3 assets/bark.py play
 ```
 
-Use `py -3` only on Windows. Do not install Python or audio tools. The helper uses only standard library code. Its JSON output includes `bark` and `played`; if `bark` is `true` and `played` is `false`, or if the helper exits with code `2`, use the native fallback below.
+Use `py -3` only on Windows. Do not install Python or audio tools. The helper uses only standard library code and always prints JSON. Its output includes `bark` and `played`, and `status` may include `config` or `invalid_config`; if `bark` is `true` and `played` is `false`, or if the helper exits with code `2`, use the native fallback below.
 
 If the helper cannot load or run, fall back to a native success or alert sound that does not require the bundled WAV, an MP3, MCP, or any install step:
 

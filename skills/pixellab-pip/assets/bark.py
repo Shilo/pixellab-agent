@@ -14,7 +14,7 @@ import os
 import platform
 import shutil
 import subprocess
-import sys
+import tempfile
 import wave
 from pathlib import Path
 from typing import Any
@@ -42,7 +42,11 @@ def user_config_path() -> Path:
     return base / "pixellab-pip" / "pixellab-pip.json"
 
 
-USER_CONFIG = user_config_path()
+def safe_user_config_path() -> Path | None:
+    try:
+        return user_config_path()
+    except RuntimeError:
+        return None
 
 
 def read_json(path: Path) -> dict[str, Any] | None:
@@ -58,41 +62,63 @@ def normalize_bark(value: Any) -> bool:
     return True
 
 
-def read_config() -> tuple[dict[str, Any], Path | None]:
+def read_config() -> tuple[dict[str, Any], Path | None, Path | None]:
     invalid_source: Path | None = None
-    for path in (SKILL_CONFIG, USER_CONFIG):
+    user_config = safe_user_config_path()
+    paths = [SKILL_CONFIG]
+    if user_config is not None:
+        paths.append(user_config)
+
+    for path in paths:
         if path.exists():
             data = read_json(path)
             if isinstance(data, dict):
-                return data, path
+                return data, path, invalid_source
             if invalid_source is None:
                 invalid_source = path
-    return {"bark": True}, invalid_source
+    return {"bark": True}, None, invalid_source
 
 
 def bark_enabled() -> bool:
-    data, _ = read_config()
+    data, _, _ = read_config()
     return normalize_bark(data.get("bark", True))
 
 
+def write_text_atomic(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        "w",
+        encoding="utf-8",
+        dir=str(path.parent),
+        delete=False,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    ) as handle:
+        temp_path = Path(handle.name)
+        handle.write(content)
+    try:
+        temp_path.replace(path)
+    except Exception:
+        try:
+            temp_path.unlink(missing_ok=True)
+        finally:
+            raise
+
+
 def write_config(enabled: bool) -> Path:
-    existing, source = read_config()
+    existing, _, _ = read_config()
     existing["bark"] = bool(enabled)
     content = json.dumps(existing, indent=2, sort_keys=True) + "\n"
 
-    candidates = []
-    if source == USER_CONFIG:
-        candidates.append(USER_CONFIG)
-        candidates.append(SKILL_CONFIG)
-    else:
-        candidates.append(SKILL_CONFIG)
-        candidates.append(USER_CONFIG)
+    candidates = [SKILL_CONFIG]
+    user_config = safe_user_config_path()
+    if user_config is not None:
+        candidates.append(user_config)
 
     errors: list[str] = []
     for path in candidates:
         try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content, encoding="utf-8")
+            write_text_atomic(path, content)
             return path
         except OSError as exc:
             errors.append(f"{path}: {exc}")
@@ -157,8 +183,8 @@ def play_sound() -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="PixelLab Pip bark helper")
-    parser.add_argument("command", choices=["status", "toggle", "on", "off", "play"])
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("command", choices=["status", "bark", "toggle", "on", "off", "play"])
+    parser.add_argument("--json", action="store_true", help="deprecated; output is always JSON")
     args = parser.parse_args()
 
     result: dict[str, Any] = {
@@ -170,7 +196,7 @@ def main() -> int:
     }
 
     try:
-        if args.command == "toggle":
+        if args.command in {"bark", "toggle"}:
             result["bark"] = not bark_enabled()
             result["config"] = str(write_config(bool(result["bark"])))
             if result["bark"]:
@@ -187,22 +213,15 @@ def main() -> int:
                 result["played"] = play_sound()
             result["bark"] = bark_enabled()
         elif args.command == "status":
-            data, source = read_config()
+            data, source, invalid_source = read_config()
             result["bark"] = normalize_bark(data.get("bark", True))
             result["config"] = str(source) if source else None
+            result["invalid_config"] = str(invalid_source) if invalid_source else None
     except Exception as exc:
         result["ok"] = False
         result["error"] = str(exc)
 
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        if args.command in {"toggle", "on", "off"} and result["ok"]:
-            print("Bark is on." if result["bark"] else "Bark is off.")
-        elif args.command == "status":
-            print("on" if result["bark"] else "off")
-        elif args.command == "play" and result["ok"] and result["bark"] and not result["played"]:
-            print("Bark sound did not play.")
+    print(json.dumps(result, sort_keys=True))
 
     if not result["ok"]:
         return 1
