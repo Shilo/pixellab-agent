@@ -64,10 +64,16 @@ Before running Aseprite:
 1. Verify the executable path:
 
    ```powershell
-   Get-Command aseprite -ErrorAction SilentlyContinue
+   $AsepritePath = (Get-Command aseprite -ErrorAction SilentlyContinue).Source
+   if (-not $AsepritePath) {
+     $roots = @($env:ProgramFiles, ${env:ProgramFiles(x86)}) | Where-Object { $_ }
+     $AsepritePath = Get-ChildItem $roots -Recurse -Filter Aseprite.exe -ErrorAction SilentlyContinue |
+       Select-Object -First 1 -ExpandProperty FullName
+   }
+   if (-not $AsepritePath) { throw "Aseprite executable not found; ask the user for the path." }
    ```
 
-   If that fails, search common install locations only when appropriate, or ask the user for the path.
+   Search common install roots only when appropriate, or ask the user for the path. Do not scan private project folders unless the user points you there.
 
 2. Show which files will be read and written.
 3. Ask before launching visible Aseprite.
@@ -114,6 +120,12 @@ Export a sprite sheet plus JSON metadata:
 & $AsepritePath -b "source.aseprite" --sheet "sheet.png" --data "sheet.json" --sheet-type rows
 ```
 
+Write sprite sheet metadata to stdout for verification:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --sheet "sheet.png" --data "" --sheet-type rows
+```
+
 Export layers separately:
 
 ```powershell
@@ -124,6 +136,7 @@ List layers, tags, or slices for inspection:
 
 ```powershell
 & $AsepritePath -b --list-layers "source.aseprite"
+& $AsepritePath -b --list-layer-hierarchy "source.aseprite"
 & $AsepritePath -b --list-tags "source.aseprite"
 & $AsepritePath -b --list-slices "source.aseprite"
 ```
@@ -147,6 +160,12 @@ Export a frame range:
 & $AsepritePath -b --frame-range 1,6 "source.aseprite" --save-as "walk-{frame}.png"
 ```
 
+Use explicit filename formatting when game tooling expects stable names:
+
+```powershell
+& $AsepritePath -b --split-layers --split-tags "source.aseprite" --filename-format "{title}-{tag}-{layer}-{frame001}" --save-as ".png"
+```
+
 Scale, crop, or trim output:
 
 ```powershell
@@ -159,6 +178,7 @@ Convert to indexed color with optional dithering:
 
 ```powershell
 & $AsepritePath -b "source.png" --dithering-algorithm none --color-mode indexed --save-as "source-indexed.png"
+& $AsepritePath -b --palette "palette.png" "source.png" --color-mode indexed --save-as "source-paletted.png"
 ```
 
 For multi-frame sprites, use filename formatting such as `{frame}` or expect Aseprite to number the output files:
@@ -173,11 +193,33 @@ Export a packed or padded sprite sheet:
 & $AsepritePath -b --tag "Walk" "source.aseprite" --sheet "walk-sheet.png" --data "walk-sheet.json" --sheet-type packed --shape-padding 1 --border-padding 1 --trim --ignore-empty
 ```
 
+Use fixed sheet dimensions or duplicate merging when engine import rules require them:
+
+```powershell
+& $AsepritePath -b "source.aseprite" --sheet "sheet.png" --data "sheet.json" --sheet-type rows --sheet-columns 4 --inner-padding 1 --merge-duplicates
+```
+
+Export slices separately when the user organized hitboxes, UI pieces, or sub-assets as slices:
+
+```powershell
+& $AsepritePath -b --split-slices "source.aseprite" --save-as "slice-{slice}-{frame}.png"
+```
+
+Collapse to the first frame when a static icon is needed from an animated source:
+
+```powershell
+& $AsepritePath -b --oneframe "source.aseprite" --save-as "icon.png"
+```
+
 Run a Lua script with explicit parameters:
 
 ```powershell
-& $AsepritePath -b --script-param output="character.aseprite" --script-param frames="frames.json" --script "make-workspace.lua"
+$Output = "character.aseprite"
+$Frames = "frames.json"
+& $AsepritePath -b --script-param "output=$Output" --script-param "frames=$Frames" --script "make-workspace.lua"
 ```
+
+Pass each `--script-param` value as a single `name=value` argument. In PowerShell, build paths into variables first or quote the whole `name=$Value` string so expressions do not split the key and value into separate arguments.
 
 Use Aseprite's filename formatting, `--tag`, `--frame-range`, `--layer`, `--ignore-layer`, `--split-layers`, `--split-tags`, `--sheet-type`, `--trim`, `--crop`, `--scale`, `--color-mode`, and padding options instead of writing custom scripts when they cover the request.
 
@@ -234,6 +276,13 @@ local layer = spr:newLayer()
 layer.name = "PixelLab Extra"
 ```
 
+Create a group for imported output:
+
+```lua
+local group = spr:newGroup()
+group.name = "PixelLab Import"
+```
+
 Use the first existing frame, then create additional frames with explicit positions:
 
 ```lua
@@ -246,6 +295,13 @@ Create a cel from an image:
 ```lua
 local image = Image{ fromFile="frame-001.png" }
 spr:newCel(layer, frame, image, Point(0, 0))
+```
+
+Delete an unused default frame or layer only after replacement content exists:
+
+```lua
+spr:deleteFrame(1)
+spr:deleteLayer(layer)
 ```
 
 Create an animation tag:
@@ -336,6 +392,29 @@ end
 
 Prefer script parameters over hard-coded paths so generated scripts are reusable and safe to review.
 
+### Frame Manifest Contract
+
+For multi-frame imports, prefer a small JSON manifest instead of inventing arguments per script. Include only local paths and non-sensitive metadata:
+
+```json
+{
+  "canvas": { "width": 32, "height": 32 },
+  "placement": "origin",
+  "layers": [
+    {
+      "name": "PixelLab - walk",
+      "frames": [
+        { "path": "frame-001.png", "frame": 1, "duration": 0.12, "x": 0, "y": 0 },
+        { "path": "frame-002.png", "frame": 2, "duration": 0.12, "x": 0, "y": 0 }
+      ],
+      "tag": { "name": "walk", "from": 1, "to": 2 }
+    }
+  ]
+}
+```
+
+The script should sort by explicit `frame` value, verify each file exists, verify image dimensions before adding cels, set frame duration when provided, and create tags only from explicit manifest data or clear user intent.
+
 ## Common Workflows
 
 ### Generate Then Open
@@ -391,11 +470,14 @@ Prefer script parameters over hard-coded paths so generated scripts are reusable
 2. Default to a new output file instead of modifying the original.
 3. Open the existing file in a Lua script with `app.open(input)`.
 4. Inspect existing layer names, frame count, tags, canvas size, and color mode if placement depends on them.
-5. Create a clearly named layer or group for imported PixelLab output, such as `PixelLab - walk` or the user's requested name.
-6. Add generated stills as cels on a new layer at the requested frame, or add generated animation frames across new/existing frames.
-7. Add or update tags only when the user requested them or when the import represents a named animation.
-8. Save with `spr:saveCopyAs(output)` unless the user explicitly approved modifying the original.
-9. Verify the output copy with `--list-layers` and `--list-tags`.
+5. Compare generated image dimensions against the existing canvas before creating cels.
+6. If dimensions differ, do not silently crop, resize, or expand the canvas. Ask the user to choose: preserve origin and allow clipping, center on the current canvas, expand the canvas, resize generated art, or abort.
+7. Keep color mode unchanged unless the user asked for conversion or approved it after seeing the source and target modes.
+8. Create a clearly named layer or group for imported PixelLab output, such as `PixelLab - walk` or the user's requested name.
+9. Add generated stills as cels on a new layer at the requested frame, or add generated animation frames across new/existing frames.
+10. Add or update tags only when the user requested them or when the import represents a named animation.
+11. Save with `spr:saveCopyAs(output)` unless the user explicitly approved modifying the original.
+12. Verify the output copy with `--list-layers` and `--list-tags`.
 
 Use this workflow for file-level edits only. It can modify an existing project file on disk, but it is not live control of the already-open Aseprite editor session.
 

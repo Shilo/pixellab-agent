@@ -37,15 +37,18 @@ Before reporting a GIF preview as complete:
 2. Coalesce the GIF back into rendered frames.
 
    ```powershell
-   magick "preview.gif" -coalesce "check-%02d.png"
+   New-Item -ItemType Directory -Force "check-frames" | Out-Null
+   magick "preview.gif" -coalesce "check-frames/check-%04d.png"
    ```
 
-3. Compare every coalesced frame to the matching source PNG frame. Unexpected nonzero differences mean the preview is not faithfully rendering the source frames.
+3. Compare every coalesced frame to the matching source PNG frame by sorted order. Unexpected nonzero differences mean the preview is not faithfully rendering the source frames.
 
    ```powershell
-   Get-ChildItem "frame-*.png" | ForEach-Object {
-     $id = $_.BaseName -replace '^frame-', ''
-     magick compare -metric AE $_.FullName "check-$id.png" null:
+   $sourceFrames = @(Get-ChildItem "frame-*.png" | Sort-Object Name)
+   $checkFrames = @(Get-ChildItem "check-frames/check-*.png" | Sort-Object Name)
+   if ($sourceFrames.Count -ne $checkFrames.Count) { throw "Frame count mismatch" }
+   for ($i = 0; $i -lt $sourceFrames.Count; $i++) {
+     magick compare -metric AE $sourceFrames[$i].FullName $checkFrames[$i].FullName null:
    }
    ```
 
