@@ -19,4 +19,4 @@ Ask again before:
 - Private asset downloads.
 - Website edits or deletes.
 
-Never scrape DevTools/session tokens, call root website/session endpoints, or treat website auth as REST/MCP auth.
+Never scrape DevTools/session tokens, call undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension, or treat website auth as REST/MCP auth.

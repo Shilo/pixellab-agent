@@ -42,7 +42,7 @@ For supplied-image edits, image conversion, inpainting, resizing, background rem
 
 ## Aseprite Extension Boundary
 
-The official Aseprite extension is an editor integration. Its Lua tools connect to unversioned root WebSocket routes such as `generate-image-new`, `generate-pixelart-flux`, `generate-multi-edit`, `quantize-image`, `unzoom-pixelart`, and `correct-pixelart`. Those names are not public REST v2 paths and are not MCP tools. Do not call them from Pip unless official docs later publish them as supported REST/MCP contracts.
+The official Aseprite extension is an editor integration. Observed extension operation names include `generate-image-new`, `generate-pixelart-flux`, `generate-multi-edit`, `quantize-image`, `unzoom-pixelart`, and `correct-pixelart`. Treat those as undocumented internal endpoints used by first-party surfaces unless they appear in PixelLab's public REST v2 docs/OpenAPI or MCP docs as supported programmatic endpoints/tools. Do not cite extension source filenames, source layout, source contents, or internal request payloads in public documentation.
 
 When an Aseprite workflow maps to current public REST v2, use the documented route instead, for example `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `edit-image`, `edit-images-v2`, `inpaint`, `inpaint-v3`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`, `animate-with-text-v3`, `animate-with-skeleton`, `estimate-skeleton`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `rotate`, `generate-8-rotations-v2/v3`, `create-tileset`, `create-tileset-sidescroller`, `create-isometric-tile`, and `create-tiles-pro`.
 
@@ -53,7 +53,7 @@ For exact editor-only behavior such as quantize/reduce-colors, unzoom pixel art,
 `/pixellab-pip` does not replace official docs. It adds:
 
 - Intent routing across MCP, REST v2, website/editor, Aseprite, Pixelorama, and legacy v1.
-- Warnings about undocumented website/session endpoints.
+- Warnings about undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension.
 - A plain-language map from user asset goals to tools/endpoints.
 - Reference-image role disambiguation.
 - Paperdolling and tileset workflow contracts.

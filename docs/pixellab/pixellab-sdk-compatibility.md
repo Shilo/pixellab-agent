@@ -18,7 +18,7 @@ PixelLab publishes official SDK and tooling repositories under [pixellab-code](h
 
 | Situation | Recommended path |
 |---|---|
-| User asks for a PixelLab REST/API integration from scratch | Start from REST v2 docs/OpenAPI, then offer SDK code only after confirming coverage. |
+| User asks for a PixelLab REST v2/API integration from scratch | Start from REST v2 docs/OpenAPI, then offer SDK code only after confirming coverage. |
 | User already has PixelLab SDK code installed | Inspect the installed package or lockfile before choosing SDK method names. |
 | User needs an endpoint that appears in REST v2 but not the installed SDK | Call REST v2 directly. |
 | User asks for MCP setup or agent-managed assets | Use hosted MCP docs and tools, not SDK wrappers. |

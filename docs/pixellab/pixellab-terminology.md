@@ -31,4 +31,4 @@ Do not infer provider identity, proprietary model details, or backend ownership 
 - Classify the asset intent first.
 - Choose MCP, REST v2, or a visible editor workflow second.
 - Refresh official docs before exact schema, enum, pricing, model/mode, or SDK claims.
-- Avoid repeating internal or observed website strings as official API terminology unless PixelLab documents them publicly.
+- Avoid repeating internal or observed website strings as official API terminology unless they appear in PixelLab's public REST v2 docs/OpenAPI or MCP docs as supported programmatic endpoints/tools.

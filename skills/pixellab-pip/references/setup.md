@@ -1,6 +1,6 @@
 # Setup
 
-Use this reference when the user asks natural-language setup questions such as installing PixelLab Pip, connecting PixelLab to an assistant/editor/app, enabling MCP tools, using REST/API v2, fixing authentication, checking readiness, or deciding between MCP and API. This is a reference for the existing PixelLab Pip skill, not a separate skill.
+Use this reference when the user asks natural-language setup questions such as installing PixelLab Pip, connecting PixelLab to an assistant/editor/app, enabling MCP tools, using documented REST v2 fallback, fixing authentication, checking readiness, or deciding between MCP and API. In this setup guide, "API" means documented REST v2 fallback, not legacy v1, root website routes, or editor/internal operations. This is a reference for the existing PixelLab Pip skill, not a separate skill.
 
 The intended first-run command is one short word after the skill trigger:
 
@@ -24,9 +24,9 @@ For a bare setup command, mode selection is mandatory before any MCP/API-specifi
 
 For setup selection, prefer these choices:
 
-- MCP + API (recommended): Connect PixelLab tools directly to the assistant/editor and configure `PIXELLAB_SECRET` so Pip can use REST/API fallback.
-- MCP only: Connect PixelLab tools directly to the assistant/editor. Prefer app secret settings or an env/secret reference; use a literal-token MCP config only as an explicit user-chosen fallback when the app has no token-free option, and warn that it does not configure Pip REST/API fallback.
-- API only: Configure `PIXELLAB_SECRET` for Pip's REST/API fallback without adding MCP.
+- MCP + API (recommended): Connect PixelLab tools directly to the assistant/editor and configure `PIXELLAB_SECRET` so Pip can use documented REST v2 fallback.
+- MCP only: Connect PixelLab tools directly to the assistant/editor. Prefer app secret settings or an env/secret reference; use a literal-token MCP config only as an explicit user-chosen fallback when the app has no token-free option, and warn that it does not configure Pip REST v2 fallback.
+- API only: Configure `PIXELLAB_SECRET` for Pip's documented REST v2 fallback without adding MCP.
 - Manual: Open or link PixelLab's MCP setup page and stop.
 
 Use the same four initial choices in Claude Code, Codex app, and prose fallback. Treat user wording such as "both", "everything", or "recommended" as `both` mode. Do not hide API fallback behind a later follow-up when the user chose the recommended path.
@@ -35,9 +35,9 @@ If no interactive choice tool is available, ask this exact chat question: "Which
 
 Supported wizard modes:
 
-- `both`: recommended default for AI assistants, editors, and MCP-compatible apps. Configure MCP first, then confirm the same `PIXELLAB_SECRET` source is available for Pip's REST/API fallback.
+- `both`: recommended default for AI assistants, editors, and MCP-compatible apps. Configure MCP first, then confirm the same `PIXELLAB_SECRET` source is available for Pip's documented REST v2 fallback.
 - `mcp`: MCP-only setup for AI assistants, editors, and MCP-compatible apps.
-- `api`: configure `PIXELLAB_SECRET` so PixelLab Pip can use REST/API fallback when MCP tools are unavailable, incomplete, or insufficient for the request.
+- `api`: configure `PIXELLAB_SECRET` so PixelLab Pip can use documented REST v2 fallback when MCP tools are unavailable, incomplete, or insufficient for the request.
 - `manual`: open or link to `https://www.pixellab.ai/mcp`, tell the user to pick their app there, and stop. If opening a browser is unavailable, provide the link. Do not inspect, write, verify, or continue setup.
 - `unknown`: recommend MCP + API and ask one short choice question: MCP + API, MCP only, API only, or Manual.
 
@@ -50,14 +50,14 @@ Use user wording to infer intent:
 
 ## Decision Tree
 
-1. Identify the desired mode from the user's words. If unclear, say MCP + API is recommended for normal assistant/editor use because it enables full MCP tools plus Pip's REST/API fallback, then ask which mode they want. A bare `setup` command is unclear even when the current app is detectable. The next question must be MCP + API/MCP only/API only/Manual, not a yes/no MCP preview or config-write question.
+1. Identify the desired mode from the user's words. If unclear, say MCP + API is recommended for normal assistant/editor use because it enables full MCP tools plus Pip's documented REST v2 fallback, then ask which mode they want. A bare `setup` command is unclear even when the current app is detectable. The next question must be MCP + API/MCP only/API only/Manual, not a yes/no MCP preview or config-write question.
    If you include a brief credential readiness note before mode selection, check only whether the live `PIXELLAB_SECRET` environment variable is visible to the current process. Do not inspect project-local secret files, broad config directories, or recursive paths. Project files such as `.env` or `.env.local` do not configure MCP unless an explicit loader or wrapper reads them.
 2. If mode is `manual`, link or open `https://www.pixellab.ai/mcp`, tell the user to choose their app there, and stop.
 3. If mode is `mcp` or `both`, detect the current assistant/editor/app when possible. If detection is unclear, ask which app they use or offer the manual website option.
 4. For known supported apps, tailor only to the named/detected app: Claude Code, Codex, Gemini CLI, Cursor, VS Code Agent Plugins, GitHub Copilot CLI, or generic MCP-compatible apps.
 5. If the user names an unknown app, do not guess config paths or syntax. Link or open `https://www.pixellab.ai/mcp`, tell the user to pick their app there, and stop unless they explicitly provide the exact settings screen, config path, or documented MCP format they want you to use.
 6. Explain what exact setting or likely config path would be inspected before inspecting it. Do not scan broad home, auth, shell history, keychain, credential, config, project, or repository directories.
-7. Explain the credential model: PixelLab account `Secret` stored locally as `PIXELLAB_SECRET`, preferably in app secret settings, app secret store, or a user-level environment setting. In MCP-only mode, a user-chosen hardcoded MCP config can work for MCP auth, but it does not make `PIXELLAB_SECRET` available for Pip's REST/API fallback.
+7. Explain the credential model: PixelLab account `Secret` stored locally as `PIXELLAB_SECRET`, preferably in app secret settings, app secret store, or a user-level environment setting. In MCP-only mode, a user-chosen hardcoded MCP config can work for MCP auth, but it does not make `PIXELLAB_SECRET` available for Pip's REST v2 fallback.
 8. If a write is needed, show a token-free preview with `PIXELLAB_SECRET` placeholders or secret references only, then get explicit approval before changing anything.
 9. Tell the user to restart or reload the assistant/editor/app only when the chosen app requires it or tools do not appear after setup.
 10. Verify only after the user approves a no-credit check. For MCP, use exposed PixelLab `get_balance` when available. For API, use REST `GET /balance`.
@@ -105,7 +105,7 @@ In setup previews, `<PIXELLAB_SECRET>` means a private local secret reference, n
 
 ## MCP Wizard
 
-Recommend MCP + API first for normal assistant/editor/app use. MCP connects PixelLab tools directly to the app without requiring the user to write API code, and API fallback lets Pip use documented REST/API routes when MCP tools are unavailable, incomplete, or insufficient.
+Recommend MCP + API first for normal assistant/editor/app use. MCP connects PixelLab tools directly to the app without requiring the user to write API code, and API fallback lets Pip use documented REST v2 endpoints when MCP tools are unavailable, incomplete, or insufficient.
 
 MCP setup must be agent-agnostic and OS-agnostic until the assistant/editor/app is detected or named. Do not assume a specific assistant/editor, operating system, shell, language runtime, package manager, or config path.
 
@@ -157,7 +157,7 @@ If the app is unknown, route to Manual: open or link `https://www.pixellab.ai/mc
 
 ## API Wizard
 
-Use API setup only when the user chooses API only, MCP + API, or clearly asks to enable PixelLab Pip's REST/API fallback. Say this configures the same PixelLab Secret so Pip can call documented REST/API routes when MCP tools are unavailable, incomplete, or insufficient. It is not a setup path for the user's frameworks, scripts, backends, SDK projects, deployment platforms, or app code.
+Use API setup only when the user chooses API only, MCP + API, or clearly asks to enable PixelLab Pip's REST v2 fallback. Say this configures the same PixelLab Secret so Pip can call documented REST v2 endpoints when MCP tools are unavailable, incomplete, or insufficient. It is not a setup path for the user's frameworks, scripts, backends, SDK projects, deployment platforms, or app code.
 
 If MCP is unavailable for the user's assistant/editor/app and they did not ask for API fallback, offer Manual, a user-run hardcoded-token command when the app supports it, or ask for a different MCP-compatible app/config path.
 
@@ -210,14 +210,14 @@ Required setup output:
 - In the same sentence or bullet as that link, tell the user to sign in and copy the value labeled `Secret`.
 - Tell the user to store that Secret locally as `PIXELLAB_SECRET`, without pasting it into chat.
 - If a Secret was pasted into chat/tool output, or the response says to replace/rotate/treat a Secret as exposed, include the same account link and tell the user to copy a new value labeled `Secret`.
-- If the response proposes or reports MCP config while `PIXELLAB_SECRET` is still missing, include both next steps: configure/register MCP and separately set `PIXELLAB_SECRET` from the account page. Exception: if the user explicitly chose MCP-only with a literal-token MCP config, say that MCP can work but Pip REST/API fallback remains unavailable until `PIXELLAB_SECRET` is configured.
+- If the response proposes or reports MCP config while `PIXELLAB_SECRET` is still missing, include both next steps: configure/register MCP and separately set `PIXELLAB_SECRET` from the account page. Exception: if the user explicitly chose MCP-only with a literal-token MCP config, say that MCP can work but Pip REST v2 fallback remains unavailable until `PIXELLAB_SECRET` is configured.
 - If setup writes or registers MCP successfully but the Secret is still missing from the current session, say PixelLab is registered but not ready for live use until `PIXELLAB_SECRET` is set and the app is reloaded.
 - If refusing an unsafe secret-discovery path such as scanning home directories, scanning `.env*`, using browser/session tokens, or entering secrets in an assistant-visible command, include the account link as the safe alternative for getting the value labeled `Secret`.
 - If the user asks for no writes and setup/auth is still incomplete, keep the response instruction-only but still include the account link and `PIXELLAB_SECRET` storage step.
 
 Good user-facing setup output:
 
-- "I recommend MCP + API because it lets your assistant/editor use PixelLab tools directly and gives Pip a REST/API fallback."
+- "I recommend MCP + API because it lets your assistant/editor use PixelLab tools directly and gives Pip a documented REST v2 fallback."
 - "Which setup do you want: MCP + API (recommended), MCP only, API only, or Manual?"
 - "Manual means I will open PixelLab's MCP setup page, you pick your app there, and I stop."
 - "Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`. Do not paste it here."
@@ -231,7 +231,7 @@ Client-specific output notes:
 - Codex MCP registered: report the registered MCP endpoint, then say whether `PIXELLAB_SECRET` is visible in this session. If it is missing, link `https://www.pixellab.ai/account` and tell the user to copy `Secret`, store it as `PIXELLAB_SECRET`, and restart/reload Codex before live use.
 - Claude Code MCP blocked fallback: include the account page step before any user-run hardcoded-token command option, because the user must copy `Secret` from the account page to use that option.
 - API-only and MCP + API setup: include the account page step unless `PIXELLAB_SECRET` is already present.
-- MCP-only setup: if a token-free env/secret reference is available, prefer it. If the user chooses a literal-token MCP config, warn that it only configures MCP and does not make `PIXELLAB_SECRET` available for Pip REST/API fallback.
+- MCP-only setup: if a token-free env/secret reference is available, prefer it. If the user chooses a literal-token MCP config, warn that it only configures MCP and does not make `PIXELLAB_SECRET` available for Pip REST v2 fallback.
 - Manual setup: link `https://www.pixellab.ai/mcp` for app instructions and also link `https://www.pixellab.ai/account` for the `Secret` if auth/token setup is part of the user's request.
 
 Compact output templates:
@@ -239,8 +239,8 @@ Compact output templates:
 - Codex MCP preview with missing Secret: "Codex can register PixelLab MCP with a token-free config that references `PIXELLAB_SECRET`: [command]. Before live use, open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`. Do not paste it here. Should I run the MCP registration command?"
 - Codex MCP registered but missing Secret: "PixelLab MCP is registered in Codex, but it is not ready for live use because `PIXELLAB_SECRET` is not visible in this session. Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, store it locally as `PIXELLAB_SECRET`, then restart/reload Codex."
 - Claude Code token-free MCP blocked: "I cannot safely auto-write Claude Code HTTP MCP auth without a verified token-free header path. Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET` if you want token-free options later. Your choices are: open `https://www.pixellab.ai/mcp`, run the placeholder command yourself in an external terminal, or discuss a wrapper workaround."
-- API-only or MCP + API setup with missing Secret: "Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`. Then Pip can use the same Secret for REST/API fallback when MCP tools are unavailable or insufficient."
-- MCP-only with user-chosen hardcoded token: "This can make MCP work, but it stores the raw Secret in local MCP config or shell history and does not configure `PIXELLAB_SECRET` for Pip REST/API fallback. Replace `<paste-your-Secret-here>` yourself in an external terminal; do not paste it here."
+- API-only or MCP + API setup with missing Secret: "Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`. Then Pip can use the same Secret for documented REST v2 fallback when MCP tools are unavailable or insufficient."
+- MCP-only with user-chosen hardcoded token: "This can make MCP work, but it stores the raw Secret in local MCP config or shell history and does not configure `PIXELLAB_SECRET` for Pip REST v2 fallback. Replace `<paste-your-Secret-here>` yourself in an external terminal; do not paste it here."
 - Pasted Secret: "I cannot use a Secret pasted here. Treat it as exposed and replace it. Open `https://www.pixellab.ai/account`, sign in, copy a new value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`; do not paste it into chat."
 - Unsafe secret scan or session token: "I will not scan broad secret locations or use browser/session tokens. Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`; do not paste it here."
 - No writes while auth is incomplete: "I will not write anything. Open `https://www.pixellab.ai/account`, sign in, copy the value labeled `Secret`, and store it locally as `PIXELLAB_SECRET`; I can show token-free setup previews only."
@@ -270,7 +270,7 @@ Use live checks only when the user asks to verify readiness or when a setup flow
 Preferred checks:
 
 - MCP: use `get_balance` if available, because it verifies MCP auth without generating assets.
-- REST/API: call `GET /balance` with `Authorization: Bearer <env value>` if the user approves a live API check.
+- REST v2: call `GET /balance` with `Authorization: Bearer <env value>` if the user approves a live API check.
 - Tool availability: list or identify PixelLab MCP tools without making generation calls.
 
 Before a live check:
@@ -306,7 +306,7 @@ For setup help, report only what helps the user proceed:
 - Do not present literal-token shell commands as the safest default for manual setup; list safer secret UIs, secret stores, or hidden prompts first.
 - Do not use website/Supabase/browser session tokens for REST or MCP.
 - Do not scrape browser storage or session cookies.
-- Do not call undocumented website endpoints as setup verification.
+- Do not call undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension as setup verification.
 - Do not run credit-spending generation/edit endpoints during setup checks.
 - Do not write MCP config, env files, shell profiles, package files, project code, or deployment settings without explicit confirmation. In setup mode, avoid user project files unless a named loader or wrapper will read them.
 - Do not scan broad credential/config directories.

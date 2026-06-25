@@ -1,6 +1,6 @@
 # Credentials
 
-Read this for PixelLab bearer-token setup, PixelLab UI naming, or reusing MCP auth for PixelLab Pip REST/API fallback.
+Read this for PixelLab bearer-token setup, PixelLab UI naming, or reusing MCP auth for PixelLab Pip REST v2 fallback.
 
 PixelLab uses one account-level bearer token for public REST v2 and PixelLab MCP. End-user setup should store that token in `PIXELLAB_SECRET`. PixelLab UI and examples may call the same value an API key, API token, or secret; when discussing REST/MCP authentication, use the technical term `bearer token`.
 
@@ -35,9 +35,9 @@ In setup previews, `<PIXELLAB_SECRET>` means a private local secret reference. I
 
 If PixelLab MCP is already configured, reuse its credential source when safe:
 
-- If the MCP config uses `PIXELLAB_SECRET`, Pip's REST/API fallback can use the same env var.
+- If the MCP config uses `PIXELLAB_SECRET`, Pip's REST v2 fallback can use the same env var.
 - If the MCP config uses an app secret setting or secret store named `PIXELLAB_SECRET`, tell the user to make that same `PIXELLAB_SECRET` source visible to the assistant/editor/app session where Pip runs.
-- If the MCP config contains a literal `Authorization: Bearer ...` value, do not extract, print, or copy it. It can support MCP-only auth, but it does not configure Pip REST/API fallback. Suggest moving it to env/secret config when the user wants MCP + API or API-only readiness.
+- If the MCP config contains a literal `Authorization: Bearer ...` value, do not extract, print, or copy it. It can support MCP-only auth, but it does not configure Pip REST v2 fallback. Suggest moving it to env/secret config when the user wants MCP + API or API-only readiness.
 
 Never ask the user to paste the bearer token into chat. Never print, echo, log, summarize, measure, transform, validate, or use token values from chat or config output. If a token appears in chat or tool output, do not repeat it; tell the user to treat it as exposed and replace it before continuing setup. Never use website/Supabase session tokens for REST or MCP.
 
@@ -60,4 +60,4 @@ Fallback order:
 3. A project-local file such as `.env` or `.env.local`, only when a specific loader or wrapper explicitly loads it. This is not a default MCP or Pip setup path.
 4. Avoid existing `.env*` files, committed MCP config, generated docs, shell history, chat transcript, and copied browser session tokens. Do not read existing `.env*` files unless the user names the exact file, explicitly approves inspection, and confirms the purpose is troubleshooting.
 
-Pip does not use `.env` or `.env.local` for MCP setup or REST/API fallback unless an explicit loader or wrapper is configured. ClawHub `pixellab-ai` uses `.env.local` because its helper auto-loads it; Pip does not currently include that helper loader, so copying the file pattern alone is not enough. If the user asks for `.env` or `.env.local`, explain that it works only when a helper, dotenv loader, or wrapper reads it, and it does not configure MCP or Pip by itself. Before writing `PIXELLAB_SECRET` to any project-local file, explain the loader or wrapper that will read it, show a token-free preview, and get explicit approval. Inspect an existing `.env` or `.env.local` only for troubleshooting when the user names that exact file, explicitly approves inspection, and confirms the purpose is troubleshooting an existing setup. If the purpose is unclear, ask before inspecting. Never print or copy values from it.
+Pip does not use `.env` or `.env.local` for MCP setup or REST v2 fallback unless an explicit loader or wrapper is configured. ClawHub `pixellab-ai` uses `.env.local` because its helper auto-loads it; Pip does not currently include that helper loader, so copying the file pattern alone is not enough. If the user asks for `.env` or `.env.local`, explain that it works only when a helper, dotenv loader, or wrapper reads it, and it does not configure MCP or Pip by itself. Before writing `PIXELLAB_SECRET` to any project-local file, explain the loader or wrapper that will read it, show a token-free preview, and get explicit approval. Inspect an existing `.env` or `.env.local` only for troubleshooting when the user names that exact file, explicitly approves inspection, and confirms the purpose is troubleshooting an existing setup. If the purpose is unclear, ask before inspecting. Never print or copy values from it.

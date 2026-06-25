@@ -14,4 +14,4 @@ Follow that routing contract and read only the relevant files under:
 skills/pixellab-pip/references/
 ```
 
-Prefer documented MCP and REST v2 surfaces. Do not automate undocumented website/session endpoints or ask users to paste bearer tokens into chat.
+Prefer documented MCP and REST v2 surfaces. Do not automate undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension, and do not ask users to paste bearer tokens into chat.

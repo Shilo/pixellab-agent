@@ -73,7 +73,7 @@ Runtime files:
 - `skills/pixellab-pip/assets/bark.py` - best-effort local helper for deterministic bark config and sound playback.
 - `skills/pixellab-pip/assets/bark.wav` - bundled bark sound.
 - `skills/pixellab-pip/references/credentials.md` - PixelLab bearer-token setup, UI naming, and MCP auth-source reuse.
-- `skills/pixellab-pip/references/setup.md` - natural-language setup for MCP/API/auth after install.
+- `skills/pixellab-pip/references/setup.md` - natural-language setup for MCP, documented REST v2 fallback, and auth after install.
 - `skills/pixellab-pip/references/bark.md` - persistent completion sound toggle and generation-finish rules.
 - `skills/pixellab-pip/references/browser-fallback.md` - permission rules for visible website/editor fallback.
 - `skills/pixellab-pip/references/paperdolling.md` - layered character and outfit workflow contract.

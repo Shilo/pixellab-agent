@@ -16,7 +16,7 @@ These docs explain PixelLab tools, workflows, terminology, SDK boundaries, and a
 - [PixelLab SDK Compatibility](pixellab/pixellab-sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
 - [PixelLab Terminology](pixellab/pixellab-terminology.md) - product labels, endpoint labels, and terms agents should not over-interpret.
 - [Official PixelLab MCP Service Comparison](tools/official-pixellab-mcp-service-comparison.md) - technical comparison between Pip and the official hosted MCP service.
-- [PixelLab Aseprite Extension Coverage Audit](tools/aseprite-extension-coverage-audit.md) - comparison of official Aseprite WebSocket tools with Pip's MCP/REST/editor routing.
+- [PixelLab Aseprite Extension Coverage Audit](tools/aseprite-extension-coverage-audit.md) - comparison of official Aseprite editor workflows with Pip's MCP/REST/editor routing.
 - [PixelLab AI Skill Comparison](tools/pixellab-ai-skill-comparison.md) - feature comparison between Pip and the unofficial PixelLab AI Skill.
 
 ## Official PixelLab
@@ -28,7 +28,7 @@ For exact current endpoint schemas, tool lists, model/mode availability, pricing
 These docs intentionally avoid:
 
 - Copied credentials, session tokens, cookies, JWTs, or private account data.
-- Instructions for automating undocumented website session endpoints.
+- Instructions for automating undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension.
 - Local machine paths or user-specific filesystem details.
 - Provider/internal model claims not documented in public PixelLab sources.
 - Informal, mocking, or critical language about PixelLab.

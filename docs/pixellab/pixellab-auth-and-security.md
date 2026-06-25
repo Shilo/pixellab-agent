@@ -20,7 +20,7 @@ PixelLab UI/docs may use terms such as API key, API token, bearer token, or secr
 
 ## Website Session Boundary
 
-Website login sessions and public REST/MCP bearer tokens are separate auth contexts. Do not copy browser session tokens into scripts or use them for automation.
+Website login sessions and public REST/MCP bearer tokens are separate auth contexts. Do not copy browser session tokens into scripts or use them for automation. Do not automate undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension unless they appear in PixelLab's public REST v2 docs/OpenAPI or MCP docs as supported programmatic endpoints/tools.
 
 When a requested workflow appears to require a website-only action, route to:
 
