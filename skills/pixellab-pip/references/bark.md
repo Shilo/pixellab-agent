@@ -134,5 +134,3 @@ If the helper cannot load or run, fall back to a native success or alert sound t
   ```
 
 Do not pass `assets/bark.wav` to host/app fallback tools. Do not install audio tools or sound servers during generation reporting. If neither the helper nor a native fallback can play sound, fail quietly and continue the normal PixelLab report. For later generation completions in the same conversation/session, do not keep retrying sound after a full helper-plus-native-fallback failure. Only try again if the user explicitly runs `bark` or `bark on` as a sound test, or in a new conversation/session.
-
-Future audio formats may include `.wav`, `.wave`, or `.mp4`, but the current deterministic bundled sound is `assets/bark.wav`.
