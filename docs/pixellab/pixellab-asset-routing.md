@@ -60,8 +60,8 @@ When images are supplied, infer each file's role from the request and the select
 
 For detailed execution rules used by the skill, see:
 
-- [Tile and tileset routing](../../skills/pixellab-pip/references/tilesets.md)
-- [Paperdolling and layered character workflows](../../skills/pixellab-pip/references/paperdolling.md)
-- [Image input roles](../../skills/pixellab-pip/references/image-inputs.md)
-- [Usage and result reporting](../../skills/pixellab-pip/references/usage-reporting.md)
-- [Official docs refresh rules](../../skills/pixellab-pip/references/official-docs.md)
+- [Tilesets](../../skills/pixellab-pip/references/tilesets.md)
+- [Paperdolling](../../skills/pixellab-pip/references/paperdolling.md)
+- [Image Input Roles](../../skills/pixellab-pip/references/image-inputs.md)
+- [Usage Reporting](../../skills/pixellab-pip/references/usage-reporting.md)
+- [Official PixelLab Docs](../../skills/pixellab-pip/references/official-docs.md)

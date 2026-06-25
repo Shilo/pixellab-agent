@@ -97,11 +97,11 @@ Read only the relevant reference:
 
 Optional broader docs: in full plugin/repo installs, these paths resolve relative to this `SKILL.md`; raw skill installs may omit them. If runtime `references/` are not enough, read at most one matching file if it exists. If absent, continue with `references/official-docs.md` and current official PixelLab docs; do not search or load the set.
 
-- Surface boundaries and service selection: `../../docs/pixellab/surfaces-and-services.md`.
-- Plain-language asset routing: `../../docs/pixellab/asset-routing.md`.
-- Product/model/mode terminology: `../../docs/pixellab/terminology.md`.
-- SDK-vs-REST compatibility: `../../docs/pixellab/sdk-compatibility.md`.
-- Bearer-token, session, and security boundaries: `../../docs/pixellab/auth-and-security.md`.
+- Surface boundaries and service selection: `../../docs/pixellab/pixellab-surfaces-and-services.md`.
+- Plain-language asset routing: `../../docs/pixellab/pixellab-asset-routing.md`.
+- Product/model/mode terminology: `../../docs/pixellab/pixellab-terminology.md`.
+- SDK-vs-REST compatibility: `../../docs/pixellab/pixellab-sdk-compatibility.md`.
+- Bearer-token, session, and security boundaries: `../../docs/pixellab/pixellab-auth-and-security.md`.
 
 ## Model And Mode Terms
 

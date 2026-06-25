@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="docs/showcase/pip.md"><img src="docs/showcase/pip/pip.gif" alt="Pip mascot idle animation" width="68"></a>
+  <a href="docs/showcase/pip-mascot.md"><img src="docs/showcase/pip/pip.gif" alt="Pip mascot idle animation" width="68"></a>
 </p>
 
 # PixelLab Pip
@@ -19,7 +19,8 @@ For [PixelLab.ai](https://www.pixellab.ai/).
 - [Showcase ↗](docs/showcase/README.md)
 - [Developer ↗](docs/developer.md)
 - [Resources ↗](docs/resources.md)
-- [More Docs ↗](docs/README.md)
+- [More Documentation ↗](docs/README.md)
+- [MIT License ↗](LICENSE)
 
 ## Features
 
@@ -238,7 +239,7 @@ Open the PixelLab [account page](https://www.pixellab.ai/account) after signing 
 PIXELLAB_SECRET
 ```
 
-Never paste the Secret into chat, commit it, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. For deeper setup, auth, and service-boundary details, see [More Docs ↗](docs/README.md) and [PixelLab Auth And Security ↗](docs/pixellab/auth-and-security.md).
+Never paste the Secret into chat, commit it, print it in logs, copy browser session tokens, or ask an agent to scan `.env*`, shell history, home directories, or environment dumps. For deeper setup, auth, and service-boundary details, see [More Documentation ↗](docs/README.md) and [PixelLab Auth And Security ↗](docs/pixellab/pixellab-auth-and-security.md).
 
 ## Showcase
 

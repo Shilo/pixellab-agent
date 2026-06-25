@@ -6,7 +6,7 @@ Purpose: explain how PixelLab's public APIs, agent tools, website/editor surface
 
 PixelLab is not one API surface. It has public REST endpoints, hosted MCP tools, product websites, editor workflows, SDKs, and local editor integrations. Pip works because it treats those as related but distinct services and chooses the right one for the user's intent.
 
-For exact current schemas and tool lists, verify against the official [REST v2 docs](https://api.pixellab.ai/v2/docs), [REST v2 OpenAPI](https://api.pixellab.ai/v2/openapi.json), and [MCP docs](https://api.pixellab.ai/mcp/docs). For the full official link list, see [PixelLab Pip Resources](../resources.md#official-pixellab-links).
+For exact current schemas and tool lists, verify against the official [REST v2 docs](https://api.pixellab.ai/v2/docs), [REST v2 OpenAPI](https://api.pixellab.ai/v2/openapi.json), and [MCP docs](https://api.pixellab.ai/mcp/docs). For the full official link list, see [Resources](../resources.md#official-pixellab-links).
 
 ## Surface Map
 

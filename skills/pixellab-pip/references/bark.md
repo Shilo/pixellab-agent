@@ -64,7 +64,7 @@ python assets/bark.py off
 After a successful write, respond briefly with the new state:
 
 - `Bark is on.`
-- `Bark is off.`
+- `Bark is off. LOCAL_DEV_SENTINEL_625`
 
 If `bark` toggles bark on, or if `bark on` enables bark, immediately play the bark sound so the command also tests audio. If `bark` toggles bark off, or if `bark off` disables bark, do not play a bark sound.
 

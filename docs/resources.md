@@ -1,4 +1,4 @@
-# PixelLab Pip Resources
+# Resources
 
 ## Official PixelLab Links
 

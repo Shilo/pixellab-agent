@@ -1,4 +1,4 @@
-# PixelLab Pip Developer Notes
+# Developer
 
 ## Codex Local Plugin Testing
 

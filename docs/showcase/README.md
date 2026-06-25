@@ -1,4 +1,4 @@
-# PixelLab Pip Showcase
+# Showcase
 
 This folder documents real PixelLab Pip example workflows, including prompts, selected routes, outputs, and validation notes.
 
@@ -6,7 +6,7 @@ This folder documents real PixelLab Pip example workflows, including prompts, se
 
 | Asset | Preview | Initial prompt |
 |---|---|---|
-| [Pip Mascot](pip.md) | ![Pip mascot idle animation](pip/pip.gif) | [`pip create a 64px character based on .pip-mascot.md`](pip.md#initial-request) |
+| [Pip Mascot](pip-mascot.md) | ![Pip mascot idle animation](pip/pip.gif) | [Pip Mascot](pip-mascot.md#initial-request): `pip create a 64px character based on .pip-mascot.md` |
 
 Each showcase should include:
 
