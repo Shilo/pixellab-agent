@@ -184,11 +184,17 @@ Then refresh and check status again:
 - `.\dev-tools\manage-pixellab-doc-cache.ps1 -Action refresh`
 - `.\dev-tools\manage-pixellab-doc-cache.ps1 -Action status`
 
+Do not stop just because `refresh` or `status` returns nonzero. Interpret expected watcher exits this way:
+- `0`: refresh completed without skill-relevant drift.
+- `1`: refresh/status is incomplete or one or more sources failed; inspect the report and do not update claims from failed sources.
+- `2`: refresh completed and detected skill-relevant drift; inspect the report and update only affected files.
+- `3`: refresh detected skill-relevant drift, but one or more sources failed; inspect the report and update only from successfully refreshed sources.
+
 After the post-refresh status, inspect:
 - .local/pixellab-doc-watch/manifest.json
 - the latest report named in manifest.last_report
 - the matching .local/pixellab-doc-watch/changes/<timestamp>.json
-- the matching .local/pixellab-doc-watch/snapshots/<timestamp>/ files, including previous/ when present
+- the matching .local/pixellab-doc-watch/snapshots/<timestamp>/ files for changed or reportable sources, including previous/ when present
 
 Goal:
 Determine whether the new PixelLab REST/MCP/docs refresh changes any public routing, endpoint/tool availability, schemas, parameters, prompt limits, polling behavior, result shapes, auth/setup guidance, or surface boundaries.
