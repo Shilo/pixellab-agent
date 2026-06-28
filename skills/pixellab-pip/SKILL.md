@@ -33,7 +33,7 @@ Classify the user's asset, API, or question intent first, then choose the suppor
 
 | Surface | Use for | Avoid |
 |---|---|---|
-| Hosted MCP | Workflows that need managed PixelLab assets with IDs, polling, downloads, list/get/delete helpers, and project/sandbox/agent helpers. | Raw image/edit/UI primitives that MCP does not expose, or any MCP call when PixelLab MCP tools are unavailable. |
+| Hosted MCP | Workflows that need managed PixelLab assets with IDs, polling, downloads, list/get/delete helpers, and project/sandbox/agent helpers, including MCP `create_ui_asset` when visible. | Raw image/edit primitives that MCP does not expose, REST-only UI controls such as `style_image` or `project_id`, or any MCP call when PixelLab MCP tools are unavailable. |
 | REST v2 | Scripts, batch jobs, server integrations, exact endpoint control, generic images, backgrounds, UI, inpaint/edit, prompt enhancement, raw animation, rotate, resize, remove background, and API parity checks. | Guessing SDK methods without checking the installed SDK or current docs. |
 | Website / Map Workshop | Human product surface, full-map manual work, rich libraries, visible browser assistance, and website-only flows. | Programmatic use of copied browser session tokens or undocumented internal endpoints used by first-party surfaces. |
 | Aseprite | Local in-editor plugin workflows when the user is actively working inside Aseprite. | Treating private first-party editor integration endpoints as public REST/MCP contracts. |
@@ -55,7 +55,7 @@ Hosted MCP tool names are not REST endpoints. Do not curl MCP tool names as `/v2
 | Tile variants / tiles pro | MCP `create_tiles_pro` for individual tile variants such as hex, octagon, square top-down, and isometric tiles. | `create-tiles-pro`, `tiles-pro/{tile_id}`. |
 | General image, sprite, icon-like standalone asset | REST v2. | `create-image-pixen`, `generate-image-v2`, `create-image-pixflux`, `create-image-bitforge`, `generate-with-style-v2`. |
 | Background, scene, environment, backdrop | REST v2 image generation; no direct hosted MCP background tool was documented. | Use the documented `create-image-pixflux-background` endpoint for background-image generation when REST v2 is the selected surface; verify current size and field support from official docs before writing exact code. |
-| UI, HUD, button, panel, health bar, menu | REST v2. | `generate-ui-v2`. Website UI library is a human/editor surface unless public lifecycle endpoints exist. |
+| UI, HUD, button, panel, health bar, menu | Prefer REST v2 `/create-ui-asset` for structured/saved UI assets, panels, windows, HUD pieces, shape `pieces`, named `elements`, `style_image`, `project_id`, or exact schema control. Use MCP `create_ui_asset` when the user is in an MCP-first workflow and the visible tool has the needed fields. Use REST `/generate-ui-v2` for loose/raw UI images such as a standalone button, slot, bar, or dialogue-box image, especially when `concept_image` should guide the design. | `create-ui-asset` for structured UI assets; `generate-ui-v2` for loose UI images. Do not route shape-piece/layout requests to `generate-ui-v2`. Website UI libraries are human/editor surfaces unless public lifecycle endpoints exist. |
 | Image edit, inpaint, mask, convert, resize, remove background | REST v2. | `inpaint`, `inpaint-v3`, `edit-image`, `edit-images-v2`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`. |
 | Fitted paperdoll addition on an existing character image | Treat as an `existing_image` edit anchored on the base character frame, then read `references/paperdolling.md` before choosing layer/composite outputs. At this level, keep fitted additions character-anchored, distinguish editor-native layers from separate transparent image layer files, and prompt with character identity, direction, target body region, placement, rotation/facing, occlusion, and preservation rules. | Do not use `create_map_object` or standalone object generation for fitted paperdoll layers unless the user explicitly asks for an unattached prop. Public REST/MCP image edits are not editor layer workflows; only call a result a layer after the paperdoll reference's verification rules pass. |
 | Style reference or consistent-style image creation | REST v2. | Use `generate-with-style-v2`, `generate-image-v2` style/reference fields, or documented image-model style fields as appropriate after checking current docs. |
@@ -112,6 +112,7 @@ Optional broader docs: in full plugin/repo installs, these paths resolve relativ
 - Product/model/mode terminology: `../../docs/pixellab/pixellab-terminology.md`.
 - SDK-vs-REST compatibility: `../../docs/pixellab/pixellab-sdk-compatibility.md`.
 - Bearer-token, session, and security boundaries: `../../docs/pixellab/pixellab-auth-and-security.md`.
+- UI generation, UI asset, shape-piece, and MCP-vs-REST UI routing details: `../../docs/pixellab-ui-generation-surfaces-research.md`.
 
 ## Model And Mode Terms
 
@@ -189,7 +190,8 @@ Use browser automation only for visible website/editor/Pixelorama assistance aft
 | "Make a wizard with idle and walk animations." | MCP `create_character`, then `animate_character`; if direction is unspecified, animate `south` (down-facing) first and ask before expanding to every direction. |
 | "Generate a mossy platformer tileset from code." | REST v2 `create-tileset-sidescroller`; use MCP `create_sidescroller_tileset` if working in an MCP-enabled agent. |
 | "Create a title screen background." | REST v2 `create-image-pixflux-background`; verify current fields and size support from docs. |
-| "Make HUD buttons and a health bar." | REST v2 `generate-ui-v2`. |
+| "Make HUD buttons and a health bar." | REST v2 `create-ui-asset` when the user wants a saved/structured UI asset or layout; REST v2 `generate-ui-v2` when they want a loose raw UI image. |
+| "Make a 512x256 UI panel with a portrait circle and three buttons." | REST v2 `create-ui-asset` with `pieces`/`elements`; MCP `create_ui_asset` only when MCP-first and its visible schema has the needed fields. |
 | "Convert this image to pixel art and remove the background." | REST v2 `image-to-pixelart-pro`, then `remove-background`. |
 | "Inpaint this masked area." | REST v2 `inpaint` or `inpaint-v3` after checking current docs and inputs. |
 | "Add a wind dash effect to this runner sprite." | REST v2 `edit-image`; preserve the runner as the target image and add the effect to the same canvas. |

@@ -44,11 +44,21 @@ MCP `create_map_object` may expose map-object-specific `background_image` or `in
 
 For supplied-image edits, image conversion, inpainting, resizing, background removal, and additive sprite effects on the same canvas, route to REST v2 unless current MCP docs or visible MCP tools expose a matching image-edit tool. Do not assume a REST endpoint has an MCP equivalent just because MCP is configured. If a future MCP tool appears, prefer the visible tool and update this reference.
 
+## UI Asset Boundary
+
+Current public UI automation has two REST routes and one MCP-managed asset route:
+
+- REST `POST /create-ui-asset`: structured/saved UI asset generation. Use this as the default when an agent can call REST and needs `pieces`, `elements`, `style_image`, `project_id`, exact OpenAPI schemas, or backend integration.
+- MCP `create_ui_asset`: managed UI asset generation when the tool is visible in an MCP-capable host. Use it for MCP-first workflows when the visible schema has the needed overlapping fields such as `description`, size, `pieces`, `elements`, `color_palette`, `no_background`, `seed`, or `name`.
+- REST `POST /generate-ui-v2`: loose/raw UI image generation. Use it for standalone UI art such as buttons, bars, slots, or dialogue boxes, especially when `concept_image` should guide the design. It does not expose `pieces` or `elements`.
+
+Do not assume MCP `create_ui_asset` and REST `create-ui-asset` are pixel-identical for the same prompt and seed. Treat them as the same workflow family with overlapping controls, while REST currently exposes the fuller documented schema.
+
 ## Aseprite Extension Boundary
 
 The official Aseprite extension is an editor integration. Observed extension operation names include `generate-image-new`, `generate-pixelart-flux`, `generate-multi-edit`, `quantize-image`, `unzoom-pixelart`, and `correct-pixelart`. Treat those as undocumented internal endpoints used by first-party surfaces unless they appear in PixelLab's public REST v2 docs/OpenAPI or MCP docs as supported programmatic endpoints/tools. Do not cite extension source filenames, source layout, source contents, or internal request payloads in public documentation.
 
-When an Aseprite workflow maps to current public REST v2, use the documented route instead, for example `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `edit-image`, `edit-images-v2`, `inpaint`, `inpaint-v3`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`, `animate-with-text-v3`, `animate-with-skeleton`, `estimate-skeleton`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `rotate`, `generate-8-rotations-v2/v3`, `create-tileset`, `create-tileset-sidescroller`, `create-isometric-tile`, and `create-tiles-pro`.
+When an Aseprite workflow maps to current public REST v2, use the documented route instead, for example `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `create-ui-asset`, `edit-image`, `edit-images-v2`, `inpaint`, `inpaint-v3`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`, `animate-with-text-v3`, `animate-with-skeleton`, `estimate-skeleton`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `rotate`, `generate-8-rotations-v2/v3`, `create-tileset`, `create-tileset-sidescroller`, `create-isometric-tile`, and `create-tiles-pro`.
 
 For exact editor-only behavior such as quantize/reduce-colors, unzoom pixel art, pixel correction, old/root map-extension tools, and reshape, route to Aseprite/Pixelorama as visible editor surfaces or provide a clearly labeled local fallback when appropriate.
 

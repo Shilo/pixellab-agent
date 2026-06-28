@@ -13,7 +13,7 @@ Do not globally cap every prompt at 500 characters. The common pattern is:
 - 2000 characters for many primary `description` fields.
 - 1000 characters for managed character/object state edit descriptions and object animation descriptions.
 - 500 characters for raw animation `action` fields, single-image edit descriptions, some style/reference descriptions, and remove-background text.
-- 200 characters for `generate-ui-v2.color_palette`.
+- 200 characters for UI `color_palette` fields such as `generate-ui-v2.color_palette` and `create-ui-asset.color_palette`.
 
 If a call fails because a natural-language field is too long, trim that field without changing intent, mention the trim, and retry the same route.
 
@@ -32,6 +32,8 @@ If a call fails because a natural-language field is too long, trim that field wi
 | `POST /create-character-v3` | `description` | 2000 |
 | `POST /create-character-with-4-directions` | `description` | 2000 |
 | `POST /create-character-with-8-directions` | `description` | 2000 |
+| `POST /create-ui-asset` | `color_palette` | 200 |
+| `POST /create-ui-asset` | `description` | 2000 |
 | `POST /edit-animation-v2` | `description` | 2000 |
 | `POST /edit-image` | `description` | 500 |
 | `POST /edit-images-v2` | `description` | 2000 |

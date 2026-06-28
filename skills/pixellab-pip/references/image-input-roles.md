@@ -16,6 +16,7 @@ When images are visible to the agent, inspect them and write task-relevant facts
 | "Use this exact character" | Identity/character reference | Preserve the existing character identity and rotate, animate, or derive states from it. | `reference_image` in `create-character-v3`; `reference_image` with `method=rotate_character` in `create-character-pro`; `directions` in 4/8-direction character routes. |
 | "Make it look like this" | Style reference | Copy visual style, pixel size, palette feel, rendering, or tile shape, not the exact subject identity. | `style_image`, `style_images`, `reference_image` in `create-character-pro` style methods. |
 | "Use this rough design" | Concept image | Use the image as a design idea or sketch; text can reinterpret it. | `concept_image` in `generate-ui-v2`; `concept_image` with `method=create_from_concept` in `create-character-pro`. |
+| "Use this UI style" | UI style reference | Copy visual styling for a structured UI asset, not necessarily the layout. | `style_image` in `create-ui-asset`; if the user needs layout guidance instead, use `concept_image` in `generate-ui-v2` or shape `pieces`/`elements` in `create-ui-asset`. |
 | "Start from this and transform it" | Init/source image | The supplied image is the starting state to modify, not merely inspiration. | `init_image` in PixFlux, BitForge, and map object routes. |
 | "Edit/convert this image" | Target image | This is the image being edited, converted, resized, pixelated, or inpainted. | `image` in `edit-image`, `image-to-pixelart`, `image-to-pixelart-pro`; `edit_images` in `edit-images-v2`; `inpainting_image` for BitForge/inpaint targets; pair with `mask_image` only when the user supplies an edit-area mask. |
 | "Add an effect/trail/aura to this sprite" | Target image | The supplied image is the canvas to preserve and augment. Add the requested VFX to the existing sprite/image rather than generating a separate object, unless the user explicitly asks for a reusable layer or isolated effect asset. | `image` in `edit-image`; `edit_images` in `edit-images-v2` for multi-image edits. |
@@ -46,7 +47,12 @@ These image-editing and image-conversion routes are REST v2 routes unless curren
 - `generate-ui-v2`
   - `concept_image`: optional UI design/layout guide.
   - `color_palette`: text color palette guidance.
-  - If the user asks to use an image as UI "style", clarify whether it should guide layout/concept or only palette, because no generic UI `style_image` field was documented.
+- `create-ui-asset`
+  - `style_image`: optional PNG/JPEG style reference for a structured UI asset.
+  - `pieces`: optional shape template for `rounded_rect`, `circle`, and `polygon` layout geometry.
+  - `elements`: optional named UI element scaffold such as `button`, `icon_button`, `toolbar`, `tab`, `panel`, `window`, `health_bar`, `avatar`, `triangle`, `pentagon`, `hexagon`, or `octagon`.
+  - `color_palette`: text color palette guidance.
+  - Use this route instead of `generate-ui-v2` when the user asks for exact shapes, saved UI assets, elements, panel/window/HUD layouts, or style-image guidance.
 - `create-character-v3`
   - `reference_image`: south-facing character image to rotate into 8 directions. If omitted, PixelLab first generates from text.
   - `outline` and `detail` are ignored when `reference_image` is provided.
@@ -105,6 +111,7 @@ Ask one short question when the same file could be more than one role:
 - "Should this image define the exact subject/character, only the style, or just the color palette?"
 - "Is this the image to edit, or a reference for what the edit should look like?"
 - "For this character image, should PixelLab rotate this exact character, use it as a style guide, or treat it as concept art?"
+- "For this UI image, should it guide the layout/concept, visual style, or only the color palette?"
 - "For animation, is this the first frame, last frame, or a style/reference image?"
 
 Never guess between identity, style, concept, edit target, palette, and frame roles when credit-spending generation depends on it.
