@@ -4,7 +4,7 @@ Last reviewed: 2026-06-28.
 
 Purpose: capture live-generation findings for fantasy RPG skill icon and item icon requests so `pixellab-pip` can route future "skill icon", "ability icon", "spell icon", "action bar icon", and similar requests with better defaults.
 
-This spike is based on live PixelLab generations and human visual review. The current human-ranked winner is REST v2 `POST /generate-image-v2` ("Create S-XL image (Pro)") for complete 8x8 finished skill icon sheets.
+This spike is based on live PixelLab generations and human visual review. The current human-ranked winner is REST v2 `POST /generate-image-v2` ("Create S-XL image (Pro)") for complete 8x8 finished skill icon sheets, despite the winning run still violating the strict borderless target with a subtle dark card-edge treatment.
 
 ## Target Asset Definition
 
@@ -36,6 +36,7 @@ Why:
 Known downside:
 
 - It tends to add a subtle 1px dark border/card-slot treatment around each icon even when instructed not to. Future prompts should emphasize "borderless art only", "no black outline around cell edges", "no separating cell lines", and "background continues to cell edges".
+- The likely cause is training-prior vocabulary: `skill icons`, `game UI`, `strict grid`, `cell`, and `spritesheet` often imply action-bar slots. Reframe the sheet as a `borderless spritesheet mosaic`, say the grid is invisible, and avoid `UI`, `button`, `slot`, `card`, and `frame` wording unless the user wants those elements.
 
 Use `create_tiles_pro` as an experimental alternative when the user wants a tile-like set or when Pro image generation keeps failing semantic style, but do not treat it as the default for finished skill icon sheets yet.
 
@@ -54,6 +55,10 @@ Use these phrases for skill icon prompts:
 - `No borders, no frames, no UI slots, no rounded corners, no gutters, no decorative dividers`
 - `No black outline around each cell`
 - `No separating lines between icons`
+- `Invisible grid only`
+- `Borderless spritesheet mosaic`
+- `Do not draw separator lines, seams, perimeter strokes, boxes, card edges, icon slots, frames, borders, or outlines around square areas`
+- `Background artwork must reach all four edges and all four corners and touch neighboring artwork directly`
 
 Avoid these phrases unless the user explicitly wants them:
 
@@ -65,6 +70,8 @@ Avoid these phrases unless the user explicitly wants them:
 - `button`
 - `frame`
 - `border`
+- `card`
+- `game UI`
 
 Even negative mentions of `rune` and `glyph` helped only when paired with "do not use"; positive use of those words can drift into text-like marks.
 
@@ -73,6 +80,14 @@ Even negative mentions of `rune` and `glyph` helped only when paired with "do no
 ### REST `POST /generate-image-v2`
 
 Observed as "Create S-XL image (Pro)" / generic Pro image generation.
+
+Tested parameters:
+
+- Endpoint: REST v2 `POST /generate-image-v2`
+- `image_size`: `{ "width": 256, "height": 256 }`
+- `no_background`: `false`
+- Best human-ranked seed so far: `24062805`
+- Border-reduction trial seed: `24062806`
 
 Best use:
 
@@ -118,10 +133,35 @@ Winning trial verification:
 
 - Output file: `generated/fantasy_skill_icons_create_image_pro_trial/create_image_pro_skill_icons_pictorial_8x8_32px.png`
 - Dimensions: `256x256`
-- Alpha: fully opaque, `alpha_min=1`, `alpha_max=1`
-- Cropped cell hashes: 64 exact-unique cells
+- Alpha: fully opaque. Report alpha as `alpha_min=255`, `alpha_max=255` when using 8-bit alpha, or explicitly say `normalized alpha=1.0` if using normalized tooling.
+- Cropped cell hashes: 64 pixel-hash-unique cells. This proves non-identical pixel data, not semantic uniqueness.
 - Usage: 20 generations
 - Main issue: subtle black border around each icon cell.
+
+Border-reduction trial:
+
+```json
+{
+  "endpoint": "POST https://api.pixellab.ai/v2/generate-image-v2",
+  "body": {
+    "description": "Complete borderless 8x8 pixel-art spritesheet mosaic of 64 unique fantasy RPG ability pictograms. Exact canvas 256x256. Invisible grid only: 8 columns, 8 rows, each adjacent square area exactly 32x32, packed edge-to-edge, no spacing, no gaps, no overlap, no cropped art.\n\nEach 32x32 area is a full-bleed opaque miniature fantasy painting with a large clear centered ability symbol. The painted background must reach all four edges and all four corners and touch neighboring artwork directly. Do not draw the grid. Do not draw separator lines, seams, perimeter strokes, boxes, card edges, icon slots, frames, borders, outlines around square areas, or dark edge pixels along the 32x32 boundaries. Square fully painted corners, never rounded.\n\nPictorial symbols only: flames, ice, lightning, shields, hands, daggers, arrows, skulls, leaves, spirits, portals, stars, wings, claws, weapons, masks, potions, beams, aura effects, waves, stones, vines, eyes, chains, hearts, crowns, hammers, hooks, moons, suns. Large readable symbols, integrated into the background, not enclosed in UI.\n\nNo text, letters, words, numbers, labels, captions, handwriting, decorative script, fake writing, runes, glyphs, alphabet-like marks, watermark, transparent pixels, alpha, blank pixels. Varied abilities: elements, healing, protection, stealth, curses, nature, summoning, movement, crafting, survival, resurrection, treasure sense, weapon attacks, mind, time, gravity, poison, holy, shadow, blood, mana, rage, tracking, mining, fishing, cooking, alchemy, lockpicking, leadership, taunt, cleanse, traps, phoenix, dragon breath. Palette: sapphire blue, ember orange, moonlit violet, emerald green, gold highlights.",
+    "image_size": {
+      "width": 256,
+      "height": 256
+    },
+    "no_background": false,
+    "seed": 24062806
+  }
+}
+```
+
+Border-reduction trial verification:
+
+- Output file: `generated/fantasy_skill_icons_create_image_pro_borderless_trial/create_image_pro_skill_icons_borderless_8x8_32px.png`
+- Dimensions: `256x256`
+- Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
+- Cropped cell hashes: 64 pixel-hash-unique cells; semantic uniqueness still needs visual review.
+- Visual result: reduced the obvious 1px card-grid border compared with the previous winning run, but many symbols still use dark pixel outlines and boundary-edge pixels remain darker than the sheet average. Treat this as an improvement, not a solved no-border guarantee.
 
 ### REST `POST /create-image-pixen`
 
@@ -129,6 +169,11 @@ Best use:
 
 - Fast one-shot experiments for full icon sheets.
 - Cases where the user wants a simpler, flatter icon style.
+
+Tested parameters:
+
+- Endpoint: REST v2 `POST /create-image-pixen`
+- Target: one-shot 8x8, `256x256`, 64 fantasy skill icons.
 
 Pros:
 
@@ -153,6 +198,14 @@ Best use:
 - Possible fallback when the user wants 16-icon batches or tile-like ability icons.
 - Style exploration before a final Pro image generation prompt.
 
+Tested parameters:
+
+- Tool: MCP `create_tiles_pro`
+- `tile_type`: `square_topdown`
+- `tile_view`: `top-down`
+- `tile_size`: `32`
+- `outline_mode`: `segmentation`
+
 Pros:
 
 - Produced outputs that looked much more like actual skill icons than object generation.
@@ -167,7 +220,7 @@ Cons:
 - It is still tile-system prompted; output can inherit tile/cutout behavior.
 - Raw outputs often contain transparent pixels/corners despite "no transparency" wording.
 - Numbered per-tile prompts and `rune`/`glyph` language can create text-like marks.
-- A full-sheet REST `edit-images-v2` pass can fix opacity, but costs another generation batch and may not improve art quality.
+- A full-sheet REST `edit-images-v2` pass was observed to fix opacity in one 4x4 source sheet, but verify afterward; it costs another generation batch and may not improve art quality.
 
 Best prompt additions:
 
@@ -181,7 +234,7 @@ Best prompt additions:
 Best use:
 
 - Sheet-level cleanup after a promising generation.
-- Filling transparency after `create_tiles_pro` or another route.
+- Filling transparency after `create_tiles_pro` or another route, when the source art is already good.
 - Preserving a grid while fixing opacity/background fill.
 
 Pros:
@@ -198,7 +251,7 @@ Cons:
 
 Recommendation:
 
-- Use sheet-level edit, not per-tile edit, when the sheet is already visually good but has opacity/background issues.
+- Use sheet-level edit, not per-tile edit, when the sheet is already visually good but has opacity/background issues. Treat this as observed cleanup, not a reliable rescue path; always verify opacity and visual quality afterward.
 
 ### MCP `create_1_direction_object`
 
@@ -206,6 +259,13 @@ Best use:
 
 - Standalone transparent item/object icons.
 - Pickups, props, inventory items, weapons, materials, furniture, and other object-like assets.
+
+Tested parameters:
+
+- Tool: MCP `create_1_direction_object`
+- `size`: `32`
+- `view`: `sidescroller`
+- `item_descriptions`: 64 unique fantasy skill/icon descriptions.
 
 Pros:
 
@@ -287,6 +347,8 @@ Draft routing rule:
 
 > For finished skill/ability/spell/action-bar icon sheets, prefer REST `generate-image-v2` over object generation, Pixen, and tiles-pro. Use strict prompt wording for pictorial symbols only, no text-like marks, fully opaque painted cells, and no borders/frames/UI slots. Verify dimensions, alpha, grid structure, visual text artifacts, and cell-edge borders before calling the output final. Use `create_tiles_pro` only as an experimental/fallback style route, and use sheet-level `edit-images-v2` only for opacity/background cleanup on an already-good sheet.
 
+Avoid routing finished skill icon sheets to UI routes merely because the user says `action bar` or `hotbar`; use UI routes only when the user asks for the slot/button/container itself.
+
 ## Verification Checklist
 
 Always verify:
@@ -294,7 +356,8 @@ Always verify:
 - Output dimensions match the requested sheet size.
 - Sheet divides exactly into requested cell dimensions.
 - Alpha is fully opaque when the user requests backgrounded/no transparency.
-- Cropped cells are unique by hash when uniqueness is required.
+- Cropped cells are unique by hash when uniqueness is required; this checks pixel uniqueness only.
+- Human visual check for semantic uniqueness when each icon must represent a distinct skill concept.
 - Human visual check for text-like marks.
 - Human visual check for borders, frames, gutters, rounded corners, or slot styling.
 - Human visual check that central symbols are readable at 32px.
@@ -308,4 +371,3 @@ For border detection, metadata is not enough. A 1px black border can be fully op
 - Can `create-ui-asset` or MCP `create_ui_asset` be coerced into borderless icon-art sheets, or are they inherently panel/slot oriented?
 - Does `generate-with-style-v2` using the current winner as style reference preserve clarity while removing borders?
 - For production 64-icon sheets, is it better to generate one full sheet, four 4x4 sheets, or individual icons when exact per-icon semantics matter?
-
