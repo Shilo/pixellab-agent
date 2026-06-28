@@ -12,11 +12,15 @@ Default sources:
 
 - `https://api.pixellab.ai/v2/openapi.json`
 - `https://api.pixellab.ai/v2/llms.txt`
+- `https://api.pixellab.ai/v2/docs`
+- `https://api.pixellab.ai/v2/redoc`
 - `https://api.pixellab.ai/mcp/docs`
 - `https://www.pixellab.ai/docs`
 - `https://www.pixellab.ai/mcp`
 
 The watcher stores raw files and normalized summaries. The normalized summaries are designed to surface skill-relevant drift such as added REST paths, added MCP tools, schema-name changes, prompt-limit fields, official links, and source hash changes.
+
+For REST v2 endpoint truth, treat `https://api.pixellab.ai/v2/openapi.json` as primary. The interactive docs at `https://api.pixellab.ai/v2/docs` and ReDoc at `https://api.pixellab.ai/v2/redoc` are documentation shells that currently load `/v2/openapi.json`. The `llms.txt` file is useful as an agent-readable index and parity cross-check, but it should not replace OpenAPI for exact endpoint, field, enum, required-property, response, or prompt-limit tracking.
 
 ## Cache Layout
 
@@ -46,6 +50,16 @@ After initialization, the local-only cache looks like this:
 From the `pixellab-pip` repository root:
 
 ```powershell
+.\dev-tools\manage-pixellab-doc-cache.ps1
+```
+
+The Windows menu wrapper hides the init option after the cache has a `manifest.json`.
+
+For noninteractive use, pass `-Action init`, `-Action refresh`, or `-Action status`.
+
+For direct CLI use:
+
+```powershell
 python dev-tools/pixellab-doc-watch.py init
 ```
 
@@ -60,6 +74,14 @@ The private Git repository, if used, lives inside `.local/pixellab-doc-watch/.gi
 ## Refresh And Compare
 
 From the `pixellab-pip` repository root:
+
+```powershell
+.\dev-tools\manage-pixellab-doc-cache.ps1
+```
+
+Choose `Refresh and compare docs`.
+
+For direct CLI use:
 
 ```powershell
 python dev-tools/pixellab-doc-watch.py refresh
@@ -133,6 +155,7 @@ Common files to update:
 - Do not place PixelLab bearer tokens, website session tokens, cookies, or private account data in the cache.
 - Do not use cached website internals as public API contracts.
 - Treat `https://api.pixellab.ai/v2/openapi.json` as the REST schema source of truth.
+- Treat `https://api.pixellab.ai/v2/llms.txt` as an LLM-friendly REST index and parity check, not as the only API documentation source.
 - Treat `https://api.pixellab.ai/mcp/docs` as the public MCP tool inventory source of truth.
 
 ## Troubleshooting

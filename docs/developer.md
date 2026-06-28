@@ -36,6 +36,22 @@ codex debug prompt-input '@pixellab-pip bark off'
 
 `development local` should show this repository as the source and a version containing `+codex.dev-`. `production remote` should show the GitHub marketplace source and the normal release version.
 
+## PixelLab Docs Drift Checks
+
+PixelLab's public REST and MCP documentation can change independently of this repository. Before updating routing, endpoint, schema, prompt-limit, or MCP-tool claims, refresh the local-only documentation cache:
+
+```powershell
+.\dev-tools\manage-pixellab-doc-cache.ps1
+```
+
+The menu offers `Initialize local docs cache` only before the cache has a manifest. Once initialized, it offers refresh and status actions. For direct CLI use, run `python dev-tools/pixellab-doc-watch.py refresh`.
+
+For noninteractive use, pass `-Action init`, `-Action refresh`, or `-Action status`.
+
+The watcher keeps downloaded upstream docs under `.local/pixellab-doc-watch/`, which is ignored by Git. It treats REST OpenAPI as the API source of truth, checks `llms.txt` for parity, tracks the `/v2/docs` and `/v2/redoc` documentation shells, and tracks MCP docs as the MCP tool inventory source.
+
+Fresh checkout and maintenance instructions live in [PixelLab Documentation Watch Cache](pixellab-doc-watch-cache.md).
+
 ## Repository Layout
 
 ```text

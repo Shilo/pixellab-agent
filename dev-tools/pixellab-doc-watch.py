@@ -29,6 +29,18 @@ SOURCE_DEFS = [
         "raw_name": "rest-llms.txt",
     },
     {
+        "id": "rest_docs_shell",
+        "url": "https://api.pixellab.ai/v2/docs",
+        "kind": "html_text",
+        "raw_name": "rest-docs.html",
+    },
+    {
+        "id": "rest_redoc_shell",
+        "url": "https://api.pixellab.ai/v2/redoc",
+        "kind": "html_text",
+        "raw_name": "rest-redoc.html",
+    },
+    {
         "id": "mcp_docs",
         "url": "https://api.pixellab.ai/mcp/docs",
         "kind": "mcp_docs",
@@ -309,6 +321,17 @@ def write_sources_file(cache_dir: Path) -> None:
     sources_path = cache_dir / "sources.json"
     if not sources_path.exists():
         write_json(sources_path, SOURCE_DEFS)
+        return
+    existing = read_json(sources_path, [])
+    existing_ids = {source.get("id") for source in existing if isinstance(source, dict)}
+    merged = list(existing)
+    changed = False
+    for source in SOURCE_DEFS:
+        if source["id"] not in existing_ids:
+            merged.append(source)
+            changed = True
+    if changed:
+        write_json(sources_path, merged)
 
 
 def load_sources(cache_dir: Path) -> list[dict[str, str]]:
