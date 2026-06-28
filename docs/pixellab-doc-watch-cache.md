@@ -111,7 +111,15 @@ By default, `refresh` exits with code `2` when normalized skill-relevant changes
 
 Some agent shells display any nonzero process exit generically. For manual verification, trust the command output and manifest fields: `Changes detected.` plus `last_refresh_had_failures: false` means the refresh succeeded and found drift.
 
-Inspect the latest local state with:
+Inspect the latest local state with the wrapper:
+
+```powershell
+.\dev-tools\manage-pixellab-doc-cache.ps1 -Action status
+```
+
+The wrapper prints the machine-readable status JSON, then adds plain-English guidance for incomplete caches, failed refreshes, detected drift, old caches, and clean caches.
+
+For direct machine-readable status:
 
 ```powershell
 python dev-tools/pixellab-doc-watch.py status

@@ -154,6 +154,109 @@ function Write-CacheState {
     }
 }
 
+function Test-JsonProperty {
+    param(
+        [Parameter(Mandatory = $true)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    return $Object.PSObject.Properties.Name -contains $Name
+}
+
+function Get-LatestCacheCompleteness {
+    param([Parameter(Mandatory = $true)][string]$CacheRoot)
+
+    $sourcesPath = Join-Path $CacheRoot "sources.json"
+    $missing = @()
+    if (-not (Test-Path -LiteralPath $sourcesPath)) {
+        return [pscustomobject]@{
+            IsComplete = $false
+            Missing = @("sources.json")
+        }
+    }
+
+    $sources = Get-Content -LiteralPath $sourcesPath -Raw | ConvertFrom-Json
+    foreach ($source in $sources) {
+        $rawPath = Join-Path $CacheRoot "latest\raw\$($source.raw_name)"
+        $normalizedPath = Join-Path $CacheRoot "latest\normalized\$($source.id).json"
+        if (-not (Test-Path -LiteralPath $rawPath)) {
+            $missing += "latest/raw/$($source.raw_name)"
+        }
+        if (-not (Test-Path -LiteralPath $normalizedPath)) {
+            $missing += "latest/normalized/$($source.id).json"
+        }
+    }
+
+    [pscustomobject]@{
+        IsComplete = $missing.Count -eq 0
+        Missing = $missing
+    }
+}
+
+function Write-StatusGuidance {
+    param(
+        [Parameter(Mandatory = $true)][string]$CacheRoot,
+        [Parameter(Mandatory = $true)]$State
+    )
+
+    Write-Host ""
+    Write-Host "Status guidance:" -ForegroundColor Cyan
+
+    if (-not $State.IsInitialized) {
+        Write-Host "- Cache is not initialized. Choose init, or choose refresh to initialize and fetch docs in one step."
+        return
+    }
+
+    $manifest = $State.Manifest
+    $completeness = Get-LatestCacheCompleteness -CacheRoot $CacheRoot
+    if (-not $completeness.IsComplete) {
+        Write-Host "- Cache is incomplete. Choose refresh before using it for PixelLab routing or Skill updates." -ForegroundColor Yellow
+        foreach ($missingPath in $completeness.Missing | Select-Object -First 6) {
+            Write-Host "  Missing: $missingPath"
+        }
+        if ($completeness.Missing.Count -gt 6) {
+            Write-Host "  Missing: ...and $($completeness.Missing.Count - 6) more."
+        }
+        return
+    }
+
+    if (-not (Test-JsonProperty -Object $manifest -Name "last_refreshed_at")) {
+        Write-Host "- Cache has been initialized but not refreshed yet. Choose refresh to download the current PixelLab docs." -ForegroundColor Yellow
+        return
+    }
+
+    if ((Test-JsonProperty -Object $manifest -Name "last_refresh_had_failures") -and $manifest.last_refresh_had_failures) {
+        Write-Host "- Last refresh was partial. Choose refresh again; do not update routing claims from a failed source unless that source fetched successfully." -ForegroundColor Yellow
+        if (Test-JsonProperty -Object $manifest -Name "last_report") {
+            Write-Host "- Review the partial report: .local/pixellab-doc-watch/$($manifest.last_report)"
+        }
+        return
+    }
+
+    if ((Test-JsonProperty -Object $manifest -Name "last_change_detected") -and $manifest.last_change_detected) {
+        Write-Host "- Last successful refresh detected skill-relevant PixelLab documentation drift." -ForegroundColor Yellow
+        if (Test-JsonProperty -Object $manifest -Name "last_report") {
+            Write-Host "- Open the report and review the Agent Skill impact checklist: .local/pixellab-doc-watch/$($manifest.last_report)"
+        }
+        Write-Host "- Update only the affected Skill/docs files, then refresh again when you want to confirm the current upstream state."
+        return
+    }
+
+    $refreshedAt = [datetime]::MinValue
+    if ([datetime]::TryParse($manifest.last_refreshed_at, [ref]$refreshedAt)) {
+        $age = [datetime]::UtcNow - $refreshedAt.ToUniversalTime()
+        if ($age.TotalDays -ge 7) {
+            Write-Host "- Cache is complete, but it is $([math]::Floor($age.TotalDays)) days old. Choose refresh before making current PixelLab endpoint or MCP-tool claims." -ForegroundColor Yellow
+            return
+        }
+    }
+
+    Write-Host "- Cache is complete and the last refresh found no skill-relevant drift."
+    if (Test-JsonProperty -Object $manifest -Name "last_report") {
+        Write-Host "- Latest report: .local/pixellab-doc-watch/$($manifest.last_report)"
+    }
+}
+
 function Find-PythonCommand {
     foreach ($candidate in @("python", "py")) {
         if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) {
@@ -258,6 +361,8 @@ function Invoke-Main {
         }
         "status" {
             Invoke-DocWatch -RepoRoot $repoRoot -Arguments @("status")
+            $state = Get-CacheState -CacheRoot $cacheRoot
+            Write-StatusGuidance -CacheRoot $cacheRoot -State $state
         }
         default {
             throw "Unknown action: $($selection.Action)"
