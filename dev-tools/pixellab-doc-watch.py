@@ -519,10 +519,11 @@ def refresh(cache_dir: Path, timeout: int, snapshot_mode: str, private_git: bool
         previous = read_json(latest_path)
         delta = source_delta(previous, normalized)
         changes["sources"][source["id"]] = delta
-        changed = delta["status"] != "unchanged"
+        changed = delta["status"] not in ("unchanged", "raw_changed")
+        reportable = delta["status"] != "unchanged"
         any_changed = any_changed or changed
-        if snapshot_mode == "always" or (snapshot_mode == "changed" and changed):
-            if changed:
+        if snapshot_mode == "always" or (snapshot_mode == "changed" and reportable):
+            if reportable:
                 save_previous_snapshot(cache_dir, run_stamp, source)
             save_snapshot(cache_dir, run_stamp, source, raw, normalized)
         update_latest(cache_dir, source, raw, normalized)
@@ -546,6 +547,8 @@ def refresh(cache_dir: Path, timeout: int, snapshot_mode: str, private_git: bool
     print(f"Refreshed PixelLab docs cache: {cache_dir}")
     print(f"Report: {report_path}")
     if any_failed:
+        if any_changed:
+            print("Changes were detected in successfully fetched sources, but the refresh is incomplete.")
         print("One or more sources failed to refresh. Existing latest cache entries were kept for failed sources.")
         return 1
     print("Changes detected." if any_changed else "No changes detected.")

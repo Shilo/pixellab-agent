@@ -107,7 +107,7 @@ The refresh command:
 
 When a source changes, the timestamped snapshot contains the newly fetched content plus a `previous/` subfolder copied from the prior `latest/` cache for that source. Compare those two folders when you need to inspect the actual before/after content.
 
-By default, `refresh` exits with code `2` when changes are detected, `0` when nothing changed, and `1` when one or more sources could not be fetched. Use `--exit-zero` for manual checks where any completed refresh should count as success; fetch failures still appear in the generated report.
+By default, `refresh` exits with code `2` when normalized skill-relevant changes are detected, `0` when nothing changed or only raw bytes changed, and `1` when one or more sources could not be fetched. Use `--exit-zero` for manual checks where a completed changed-docs refresh should count as success; fetch failures still exit `1` and appear in the generated report.
 
 Some agent shells display any nonzero process exit generically. For manual verification, trust the command output and manifest fields: `Changes detected.` plus `last_refresh_had_failures: false` means the refresh succeeded and found drift.
 
@@ -127,7 +127,9 @@ Start with the report summary table. Important signals:
 - MCP tools added or removed: inspect MCP routing and fallback rules.
 - Schemas added or removed: inspect request/response guidance and prompt-limit docs.
 - `llms.txt` links added or removed: inspect SDK, ReDoc, and official-repo references.
-- `raw_changed`: the upstream file bytes changed but the watcher's normalized skill-relevant summary did not. Inspect manually if the source matters for a current task.
+- `raw_changed`: the upstream file bytes changed but the watcher's normalized skill-relevant summary did not. This is report-only and does not make `refresh` exit `2`. Inspect manually if the source matters for a current task.
+
+The normalized OpenAPI summary is a routing and schema-drift heuristic, not a full compatibility proof. When exact response bodies, nested inline request schemas, or subtle field behavior matter, inspect `latest/raw/rest-openapi.json` or the relevant snapshot directly.
 
 Every report includes an Agent Skill impact checklist. Review the listed files when a change affects routing, fields, limits, or public support status.
 
