@@ -300,32 +300,83 @@ Possible future use:
 
 Status:
 
-- Not yet evaluated in this spike.
+- Evaluated once for finished 8x8 skill icon sheets.
 
-Hypothesis:
+Tested parameters:
 
-- It may understand action-bar/UI icon semantics, but it may also increase the risk of UI slots, borders, frames, rounded corners, or button-like styling.
-- It should be tested after this spike because the current winning issue is exactly a UI-like border.
+- Endpoint: REST v2 `POST /generate-ui-v2`
+- `image_size`: `{ "width": 256, "height": 256 }`
+- `no_background`: `false`
+- `seed`: `24062810`
+- `color_palette`: `sapphire blue, ember orange, moonlit violet, emerald green, gold`
+- Prompt: same rich-background hybrid skill-icon prompt used for the latest `generate-image-v2` comparison.
 
-Recommended test:
+Observed result:
 
-- Raw 8x8 skill icon sheet prompt with "borderless art only", `no_background=false`, exact `256x256`.
-- Compare text artifacts, cell borders, and symbol clarity against `generate-image-v2`.
+- Output file: `generated/fantasy_skill_icons_generate_ui_trial/generate_ui_v2_skill_icons_8x8_32px.png`
+- Dimensions: `256x256`
+- Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
+- Cropped cell hashes: 64 pixel-hash-unique cells; semantic uniqueness still needs visual review.
+
+Pros:
+
+- Strong "actual game icon sheet" feel.
+- Rich color and high visual density.
+- Good symbol variety and readability.
+- Boundary-edge luminance was close to sheet average in the test, suggesting it did not rely on one uniform dark grid line as heavily as some prior attempts.
+
+Cons:
+
+- Still produced small slot-border/card-edge behavior around many icons.
+- Some tiny text-like or glyph-like noise appeared.
+- Tended toward many small detailed icons, which can hurt clarity at 32px compared with the best `generate-image-v2` runs.
+
+Recommendation:
+
+- Keep as an experimental runner-up when the user wants authentic game UI icon-sheet feel.
+- Do not default to it for strict no-border/no-text skill icon sheets until prompt wording is improved.
 
 ### REST `POST /create-ui-asset` and MCP `create_ui_asset`
 
 Status:
 
-- Not yet evaluated for skill icon sheets in this spike.
+- MCP `create_ui_asset` evaluated once for finished 8x8 skill icon sheets using 64 square `pieces` with skill labels.
 
-Hypothesis:
+Tested parameters:
 
-- Structured UI asset routes are likely useful for panels, buttons, icon buttons, toolbars, and action bars.
-- They may be a poor default for borderless skill icon artwork because they are explicitly UI-asset/panel oriented and may encourage frames, slots, and rounded rectangles.
+- Tool: MCP `create_ui_asset`
+- `width`: `256`
+- `height`: `256`
+- `no_background`: `false`
+- `seed`: `24062809`
+- `pieces`: 64 `rounded_rect` regions, each `64x64` in the virtual 512x512 editor grid, mapping to 32x32 output regions.
+- `radius`: `0` on every piece.
+- `label`: one skill concept per piece, such as `fireball`, `ice shards`, `lightning bolt`, `holy heal`, `shield wall`, and so on.
 
-Recommended test:
+Observed result:
 
-- Try only after `generate-ui-v2`, and treat as a UI-slot/action-bar test rather than a pure icon-art test.
+- Output file: `generated/fantasy_skill_icons_create_ui_asset_mcp_trial/mcp_create_ui_asset_skill_icons_pieces_8x8_32px.png`
+- UI asset ID: `81bf98ef-4309-4c38-90a3-d39fb8d6ade3`
+- Dimensions: `256x256`
+- Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
+- Cropped cell hashes: 64 pixel-hash-unique cells; semantic uniqueness still needs visual review.
+
+Pros:
+
+- Followed the 8x8 structure very cleanly.
+- Per-piece labels improved semantic targeting compared with generic prompts.
+- Symbols were readable and distinct.
+
+Cons:
+
+- Strongly pushed the result toward framed icon buttons/slots, even with radius `0` and explicit no-border wording.
+- Result felt more like a UI action-bar asset than pure borderless skill-icon art.
+- Piece labels are useful as metadata, but may increase text/glyph risk unless the prompt says labels must not be drawn.
+
+Recommendation:
+
+- Use for action-bar slots, icon buttons, UI containers, or when per-icon label control matters more than pure borderless art.
+- Do not default to MCP `create_ui_asset` for strict borderless skill icon sheets.
 
 ## Item Icon Guidance
 
@@ -367,7 +418,7 @@ For border detection, metadata is not enough. A 1px black border can be fully op
 ## Open Questions
 
 - Can prompt wording eliminate the 1px border in `generate-image-v2`, or is it a model habit for icon sheets?
-- Does REST `generate-ui-v2` produce cleaner borderless skill icons or more UI-slot artifacts?
-- Can `create-ui-asset` or MCP `create_ui_asset` be coerced into borderless icon-art sheets, or are they inherently panel/slot oriented?
+- Can REST `generate-ui-v2` be prompt-optimized to remove slot-border and text-like artifacts while preserving its authentic game-icon feel?
+- Can `create-ui-asset` or MCP `create_ui_asset` be coerced into borderless icon-art sheets after a first test showed strong framed icon-button behavior?
 - Does `generate-with-style-v2` using the current winner as style reference preserve clarity while removing borders?
 - For production 64-icon sheets, is it better to generate one full sheet, four 4x4 sheets, or individual icons when exact per-icon semantics matter?

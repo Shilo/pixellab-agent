@@ -58,6 +58,8 @@ The following variants were tested first-frame-only:
 | Prompt | Observed behavior |
 |---|---|
 | `idle` | No external puff/arcs, but the character raised the arm/club and did not loop back to the source pose. |
+| `idle loop` | No external puff/arcs, but the character raised the arm/club into a clear gesture and did not loop back to the source pose. |
+| Image-grounded `idle loop` wording | No external puff/arcs and much less gesture drift than bare `idle loop`, but the last frame still was not pixel-identical to the source pose. |
 | `slow blink` | No external puff/arcs, but the character drifted into larger arm/club gestures and did not loop back to the source pose. |
 
 ## Teeth Hypothesis
@@ -89,6 +91,7 @@ This explains why:
 - The artifacts appeared mostly in middle frames.
 - Prompt-only fixes did not reliably work.
 - First-frame-only runs removed the external marks but drifted into larger body gestures and did not close the loop.
+- Concise, image-grounded first-frame-only wording reduced drift compared with a bare `idle loop` prompt, but still did not produce a true closed loop.
 
 ## Practical Routing Guidance
 
@@ -110,8 +113,9 @@ For clean idle loops, prefer one of these workflows:
 
 1. Generate first-frame-only candidates and inspect for body drift.
 2. Use only the earliest clean frames before any gesture grows too large, then assemble a local ping-pong loop from those frames.
-3. If an interpolation candidate is otherwise good, remove only disconnected external artifact pixels with a conservative alpha/component cleanup pass.
-4. Verify every frame visually and with a contact sheet before reporting success.
+3. Prefer concise image-grounded first-frame-only wording over bare labels such as `idle` or `idle loop` when testing for low-drift candidates.
+4. If an interpolation candidate is otherwise good, remove only disconnected external artifact pixels with a conservative alpha/component cleanup pass.
+5. Verify every frame visually and with a contact sheet before reporting success.
 
 Local assembly and verification may include:
 
@@ -181,4 +185,3 @@ Recommended answer/report wording after live attempts:
 - Whether an official template-based idle animation on a managed character avoids these artifacts better than raw `animate-with-text-v3`.
 - Whether smaller frame counts, different canvas padding, or pre-masked source images reduce artifact frequency.
 - Whether a two-step route, such as first-frame-only generation followed by local ping-pong assembly, should become the default for tiny idle loops.
-
