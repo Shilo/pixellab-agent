@@ -8,6 +8,7 @@ import datetime as dt
 import hashlib
 import json
 import re
+import shutil
 import subprocess
 import sys
 import urllib.request
@@ -307,8 +308,23 @@ def source_delta(previous: Any, current: dict[str, Any]) -> dict[str, Any]:
     if current["kind"] == "openapi":
         delta["paths"] = list_delta(list(previous.get("paths", {}).keys()), list(current.get("paths", {}).keys()))
         delta["schemas"] = list_delta(list(previous.get("schemas", {}).keys()), list(current.get("schemas", {}).keys()))
+        shared_paths = sorted(set(previous.get("paths", {})) & set(current.get("paths", {})))
+        modified_paths = [
+            path for path in shared_paths
+            if previous.get("paths", {}).get(path) != current.get("paths", {}).get(path)
+        ]
+        if modified_paths:
+            delta["modified_paths"] = modified_paths
+        shared_schemas = sorted(set(previous.get("schemas", {})) & set(current.get("schemas", {})))
+        modified_schemas = [
+            name for name in shared_schemas
+            if previous.get("schemas", {}).get(name) != current.get("schemas", {}).get(name)
+        ]
+        if modified_schemas:
+            delta["modified_schemas"] = modified_schemas
     elif current["kind"] == "mcp_docs":
         delta["tools"] = list_delta(previous.get("tools", []), current.get("tools", []))
+        delta["code_identifiers"] = list_delta(previous.get("code_identifiers", []), current.get("code_identifiers", []))
     elif current["kind"] == "llms":
         delta["method_paths"] = list_delta(previous.get("method_paths", []), current.get("method_paths", []))
         delta["links"] = list_delta(previous.get("links", []), current.get("links", []))
@@ -323,12 +339,21 @@ def write_sources_file(cache_dir: Path) -> None:
         write_json(sources_path, SOURCE_DEFS)
         return
     existing = read_json(sources_path, [])
-    existing_ids = {source.get("id") for source in existing if isinstance(source, dict)}
-    merged = list(existing)
-    changed = False
+    existing_by_id = {
+        source.get("id"): source
+        for source in existing
+        if isinstance(source, dict) and source.get("id")
+    }
+    custom_sources = [
+        source for source in existing
+        if isinstance(source, dict)
+        and source.get("id")
+        and source.get("id") not in {default["id"] for default in SOURCE_DEFS}
+    ]
+    merged = list(SOURCE_DEFS) + custom_sources
+    changed = len(merged) != len(existing)
     for source in SOURCE_DEFS:
-        if source["id"] not in existing_ids:
-            merged.append(source)
+        if existing_by_id.get(source["id"]) != source:
             changed = True
     if changed:
         write_json(sources_path, merged)
@@ -345,6 +370,21 @@ def save_snapshot(cache_dir: Path, run_stamp: str, source: dict[str, str], raw: 
     (snap / "normalized").mkdir(parents=True, exist_ok=True)
     (snap / "raw" / source["raw_name"]).write_bytes(raw)
     write_json(snap / "normalized" / f"{source['id']}.json", normalized)
+
+
+def save_previous_snapshot(cache_dir: Path, run_stamp: str, source: dict[str, str]) -> None:
+    previous_raw = cache_dir / "latest" / "raw" / source["raw_name"]
+    previous_normalized = cache_dir / "latest" / "normalized" / f"{source['id']}.json"
+    if not previous_raw.exists() and not previous_normalized.exists():
+        return
+
+    snap = cache_dir / "snapshots" / run_stamp / "previous"
+    if previous_raw.exists():
+        (snap / "raw").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(previous_raw, snap / "raw" / source["raw_name"])
+    if previous_normalized.exists():
+        (snap / "normalized").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(previous_normalized, snap / "normalized" / f"{source['id']}.json")
 
 
 def update_latest(cache_dir: Path, source: dict[str, str], raw: bytes, normalized: dict[str, Any]) -> None:
@@ -370,8 +410,14 @@ def render_report(run_stamp: str, generated_at: str, cache_dir: Path, changes: d
             notes.append(f"REST paths +{len(change['paths']['added'])}/-{len(change['paths']['removed'])}")
         if "schemas" in change:
             notes.append(f"schemas +{len(change['schemas']['added'])}/-{len(change['schemas']['removed'])}")
+        if "modified_paths" in change:
+            notes.append(f"modified REST paths {len(change['modified_paths'])}")
+        if "modified_schemas" in change:
+            notes.append(f"modified schemas {len(change['modified_schemas'])}")
         if "tools" in change:
             notes.append(f"MCP tools +{len(change['tools']['added'])}/-{len(change['tools']['removed'])}")
+        if "code_identifiers" in change:
+            notes.append(f"MCP identifiers +{len(change['code_identifiers']['added'])}/-{len(change['code_identifiers']['removed'])}")
         if "method_paths" in change:
             notes.append(f"LLMS method paths +{len(change['method_paths']['added'])}/-{len(change['method_paths']['removed'])}")
         if change["status"] == "fetch_failed":
@@ -394,13 +440,22 @@ def render_report(run_stamp: str, generated_at: str, cache_dir: Path, changes: d
     lines.extend(["", "## Details", ""])
     for source_id, change in changes["sources"].items():
         lines.extend([f"### `{source_id}`", "", f"Status: `{change['status']}`", ""])
-        for key in ("paths", "schemas", "tools", "method_paths", "links"):
+        for key in ("paths", "schemas", "tools", "code_identifiers", "method_paths", "links"):
             if key not in change:
                 continue
             for side in ("added", "removed"):
                 items = change[key][side]
                 if items:
                     lines.append(f"{key} {side}:")
+                    lines.extend(f"- `{item}`" for item in items[:100])
+                    if len(items) > 100:
+                        lines.append(f"- ... {len(items) - 100} more")
+                    lines.append("")
+        for key in ("modified_paths", "modified_schemas"):
+            if key in change:
+                items = change[key]
+                if items:
+                    lines.append(f"{key}:")
                     lines.extend(f"- `{item}`" for item in items[:100])
                     if len(items) > 100:
                         lines.append(f"- ... {len(items) - 100} more")
@@ -467,6 +522,8 @@ def refresh(cache_dir: Path, timeout: int, snapshot_mode: str, private_git: bool
         changed = delta["status"] != "unchanged"
         any_changed = any_changed or changed
         if snapshot_mode == "always" or (snapshot_mode == "changed" and changed):
+            if changed:
+                save_previous_snapshot(cache_dir, run_stamp, source)
             save_snapshot(cache_dir, run_stamp, source, raw, normalized)
         update_latest(cache_dir, source, raw, normalized)
 
@@ -500,8 +557,22 @@ def status(cache_dir: Path) -> int:
     if not manifest:
         print(f"No cache manifest found at {cache_dir}")
         return 1
+    sources = load_sources(cache_dir)
+    latest_files = {}
+    latest_complete = True
+    for source in sources:
+        raw_exists = (cache_dir / "latest" / "raw" / source["raw_name"]).exists()
+        normalized_exists = (cache_dir / "latest" / "normalized" / f"{source['id']}.json").exists()
+        latest_files[source["id"]] = {
+            "raw_exists": raw_exists,
+            "normalized_exists": normalized_exists,
+        }
+        latest_complete = latest_complete and raw_exists and normalized_exists
+    manifest = dict(manifest)
+    manifest["latest_complete"] = latest_complete
+    manifest["latest_files"] = latest_files
     print(json.dumps(manifest, indent=2, sort_keys=True))
-    return 0
+    return 0 if latest_complete else 1
 
 
 def main() -> int:
@@ -528,7 +599,7 @@ def main() -> int:
         return 0
     if args.command == "refresh":
         code = refresh(cache_dir, args.timeout, args.snapshot, private_git=args.private_git)
-        return 0 if args.exit_zero else code
+        return 0 if args.exit_zero and code == 2 else code
     if args.command == "status":
         return status(cache_dir)
     return 1

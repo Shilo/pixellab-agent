@@ -44,9 +44,17 @@ PixelLab's public REST and MCP documentation can change independently of this re
 .\dev-tools\manage-pixellab-doc-cache.ps1
 ```
 
-The menu offers `Initialize local docs cache` only before the cache has a manifest. Once initialized, it offers refresh and status actions. For direct CLI use, run `python dev-tools/pixellab-doc-watch.py refresh`.
+The menu offers `Initialize local docs cache` only before the cache has a manifest. Once initialized, it offers refresh and status actions. Explicit `-Action init` remains safe and syncs cache metadata/source definitions.
 
 For noninteractive use, pass `-Action init`, `-Action refresh`, or `-Action status`.
+
+Direct Python commands are useful for automation or non-Windows shells:
+
+```powershell
+python dev-tools/pixellab-doc-watch.py init
+python dev-tools/pixellab-doc-watch.py refresh
+python dev-tools/pixellab-doc-watch.py status
+```
 
 The watcher keeps downloaded upstream docs under `.local/pixellab-doc-watch/`, which is ignored by Git. It treats REST OpenAPI as the API source of truth, checks `llms.txt` for parity, tracks the `/v2/docs` and `/v2/redoc` documentation shells, and tracks MCP docs as the MCP tool inventory source.
 

@@ -155,14 +155,14 @@ function Write-CacheState {
 }
 
 function Find-PythonCommand {
-    $python = Get-Command python -ErrorAction SilentlyContinue
-    if ($python) {
-        return "python"
-    }
-
-    $py = Get-Command py -ErrorAction SilentlyContinue
-    if ($py) {
-        return "py"
+    foreach ($candidate in @("python", "py")) {
+        if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) {
+            continue
+        }
+        $output = & $candidate --version 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            return $candidate
+        }
     }
 
     throw "Could not find python or py on PATH."
@@ -245,12 +245,11 @@ function Invoke-Main {
         }
         "init" {
             if ($state.IsInitialized) {
-                Write-Host "Local PixelLab docs cache is already initialized."
-                return
+                Write-Host "Local PixelLab docs cache is already initialized; syncing cache metadata and sources."
             }
             Invoke-DocWatch -RepoRoot $repoRoot -Arguments @("init")
             Write-Host ""
-            Write-Host "Initialized local PixelLab docs cache." -ForegroundColor Green
+            Write-Host "Initialized or updated local PixelLab docs cache." -ForegroundColor Green
         }
         "refresh" {
             Invoke-DocWatch -RepoRoot $repoRoot -Arguments @("refresh")

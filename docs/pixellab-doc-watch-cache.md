@@ -53,7 +53,7 @@ From the `pixellab-pip` repository root:
 .\dev-tools\manage-pixellab-doc-cache.ps1
 ```
 
-The Windows menu wrapper hides the init option after the cache has a `manifest.json`.
+The Windows menu wrapper hides the init option after the cache has a `manifest.json`. Explicit `-Action init` remains safe and syncs cache metadata/source definitions.
 
 For noninteractive use, pass `-Action init`, `-Action refresh`, or `-Action status`.
 
@@ -105,17 +105,19 @@ The refresh command:
 6. Updates `.local/pixellab-doc-watch/manifest.json`.
 7. Replaces `latest/` with the newly fetched files.
 
+When a source changes, the timestamped snapshot contains the newly fetched content plus a `previous/` subfolder copied from the prior `latest/` cache for that source. Compare those two folders when you need to inspect the actual before/after content.
+
 By default, `refresh` exits with code `2` when changes are detected, `0` when nothing changed, and `1` when one or more sources could not be fetched. Use `--exit-zero` for manual checks where any completed refresh should count as success; fetch failures still appear in the generated report.
 
 Some agent shells display any nonzero process exit generically. For manual verification, trust the command output and manifest fields: `Changes detected.` plus `last_refresh_had_failures: false` means the refresh succeeded and found drift.
 
-Verify the latest local state with:
+Inspect the latest local state with:
 
 ```powershell
 python dev-tools/pixellab-doc-watch.py status
 ```
 
-Open the report path shown in `last_report` to inspect the latest findings.
+`status` prints the manifest plus whether every configured source has a matching `latest/raw` and `latest/normalized` file. Open the report path shown in `last_report` to inspect the latest findings.
 
 ## How To Read A Report
 
@@ -133,9 +135,9 @@ Every report includes an Agent Skill impact checklist. Review the listed files w
 
 Recommended flow:
 
-1. Run `python dev-tools/pixellab-doc-watch.py refresh`.
+1. Run `.\dev-tools\manage-pixellab-doc-cache.ps1` and choose `Refresh and compare docs`, or run `python dev-tools/pixellab-doc-watch.py refresh`.
 2. Open the newest report listed in `manifest.json`.
-3. Check the raw or normalized snapshot for any changed source.
+3. Check the raw or normalized snapshot for any changed source. For before/after inspection, compare `snapshots/<timestamp>/previous/` with `snapshots/<timestamp>/`.
 4. Update only the relevant tracked docs or skill references.
 5. Refresh again after editing only if you need to confirm the upstream source did not change mid-work.
 
@@ -168,4 +170,4 @@ py dev-tools/pixellab-doc-watch.py refresh
 
 If a source fails to download, the watcher keeps the existing `latest/` cache entry for that source and writes `fetch_failed` in the report. Rerun later. Do not update routing claims from a partial failed refresh unless the needed source was fetched successfully.
 
-If the report shows a change but the difference is unclear, compare the relevant normalized JSON under `latest/normalized/` with the matching timestamp under `snapshots/`.
+If the report shows a change but the difference is unclear, compare the relevant files under `snapshots/<timestamp>/previous/` with the current files under `snapshots/<timestamp>/`. If there is no `previous/` file, that source was initialized in that run.
