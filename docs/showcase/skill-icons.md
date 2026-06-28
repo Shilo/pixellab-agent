@@ -129,6 +129,7 @@ Controls:
 | Icon grid | `8x8`, intended `32x32` icons |
 | Background | `no_background: false` |
 | Seed | `24062806` |
+| Usage reported | `20` generations |
 
 Request body:
 
@@ -165,7 +166,7 @@ Prompt language has tradeoffs:
 
 Routes that did not win:
 
-- REST `generate-ui-v2` had the right colors and idea, but looked noisy/downscaled, had lower 32px clarity, and showed rounded/button-like background behavior.
+- REST `generate-ui-v2` had the right colors and idea, but looked noisy/downscaled, had lower 32px clarity, showed rounded/button-like background behavior, and produced small amounts of text-like or glyph-like noise.
 - MCP `create_ui_asset` with 64 pieces improved layout and semantic targeting, but strongly created framed UI buttons/slots and poor pure-icon consistency.
 - MCP `create_tiles_pro` produced interesting icon-like 4x4 batches, but it was not the best finished 8x8 skill icon route.
 
@@ -173,9 +174,9 @@ Routes that did not win:
 
 | Output | Showcase copy | Original generated file |
 |---|---|---|
-| Rich-background winner | `docs/showcase/skill-icons/create-image-pro-rich-background-8x8-32px.png` | `generated/fantasy_skill_icons_create_image_pro_hybrid_prompt_trial/create_image_pro_skill_icons_hybrid_prompt_8x8_32px.png` |
-| Original strict-grid co-best | `docs/showcase/skill-icons/create-image-pro-original-strict-grid-8x8-32px.png` | `generated/fantasy_skill_icons_create_image_pro_trial/create_image_pro_skill_icons_pictorial_8x8_32px.png` |
-| Borderless mosaic learning example | `docs/showcase/skill-icons/create-image-pro-borderless-mosaic-8x8-32px.png` | `generated/fantasy_skill_icons_create_image_pro_borderless_trial/create_image_pro_skill_icons_borderless_8x8_32px.png` |
+| Rich-background winner | `docs/showcase/skill-icons/create-image-pro-rich-background-8x8-32px.png` | `<workspace>/generated/fantasy_skill_icons_create_image_pro_hybrid_prompt_trial/create_image_pro_skill_icons_hybrid_prompt_8x8_32px.png` |
+| Original strict-grid co-best | `docs/showcase/skill-icons/create-image-pro-original-strict-grid-8x8-32px.png` | `<workspace>/generated/fantasy_skill_icons_create_image_pro_trial/create_image_pro_skill_icons_pictorial_8x8_32px.png` |
+| Borderless mosaic learning example | `docs/showcase/skill-icons/create-image-pro-borderless-mosaic-8x8-32px.png` | `<workspace>/generated/fantasy_skill_icons_create_image_pro_borderless_trial/create_image_pro_skill_icons_borderless_8x8_32px.png` |
 
 ## Validation Notes
 

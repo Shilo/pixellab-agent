@@ -36,15 +36,15 @@ Why:
 
 Known downside:
 
-- It tends to add a subtle 1px dark border/card-slot treatment around each icon even when instructed not to. Future prompts should emphasize "borderless art only", "no black outline around cell edges", "no separating cell lines", and "background continues to cell edges".
+- It tends to add a visible 1px dark border/card-slot treatment around each icon even when instructed not to. Future prompts should emphasize "borderless art only", "no black outline around cell edges", "no separating cell lines", and "background continues to cell edges".
 - The likely cause is training-prior vocabulary: `skill icons`, `game UI`, `strict grid`, `cell`, and `spritesheet` often imply action-bar slots. However, `game UI` and strict sheet language also help create the authentic, high-contrast RPG icon look. Treat this as a tradeoff, not a simple ban.
 
 Current ranking:
 
 | Rank | Route | Result |
 |---:|---|---|
-| 1A | REST `generate-image-v2`, original strict-grid prompt | Best authentic RPG icon-sheet feel, punchy colors, strong symbol clarity, but most obvious subtle dark slot/card edge. |
-| 1B | REST `generate-image-v2`, rich-background prompt | Very close to 1A; richer explicit background direction and slightly softer border behavior, but less of the classic hotbar punch. |
+| 1A | REST `generate-image-v2`, rich-background prompt | Best match to the stated no-border/no-frame constraints; richer explicit background direction and slightly softer border behavior, but less of the classic hotbar punch. |
+| 1B | REST `generate-image-v2`, original strict-grid prompt | Best authentic RPG icon-sheet feel, punchy colors, and strong symbol clarity, but the most obvious visible dark slot/card edge. |
 | 2 | REST `generate-ui-v2` | Right general idea and colors, but too noisy/downscaled, lower 32px clarity, rounded/background-slot feel, and some text-like noise. |
 | 3 | MCP `create_ui_asset` with 64 pieces | Clean structure and semantic labels, but poor consistency for pure icons because it strongly creates framed UI buttons/slots. |
 | Fallback | MCP `create_tiles_pro` plus optional sheet edit | Interesting for 4x4 tile-like icon batches, but not the best route for finished 8x8 skill icon sheets. |
@@ -67,11 +67,10 @@ Use these phrases for skill icon prompts:
 - `No black outline around each cell`
 - `No separating lines between icons`
 - `Invisible grid only`
-- `Borderless spritesheet mosaic`
 - `Do not draw separator lines, seams, perimeter strokes, boxes, card edges, icon slots, frames, borders, or outlines around square areas`
 - `Background artwork must reach all four edges and all four corners and touch neighboring artwork directly`
 
-Avoid these phrases unless the user explicitly wants them:
+Avoid positive or unqualified mentions of these phrases unless the user explicitly wants them:
 
 - `rune`
 - `glyph`
@@ -87,6 +86,7 @@ Use with caution:
 
 - `game UI` gives desirable authentic icon-sheet punch, but can increase slot/card-edge behavior.
 - `spritesheet`, `strict grid`, and `cell` improve alignment and classic sheet feel, but can increase visible per-cell borders.
+- `Borderless spritesheet mosaic` can reduce hard grid/card behavior, but it flattened backgrounds in the trial; treat it as experimental rather than a default phrase.
 
 Even negative mentions of `rune` and `glyph` helped only when paired with "do not use"; positive use of those words can drift into text-like marks.
 
@@ -124,19 +124,19 @@ Pros:
 
 Cons:
 
-- Tends to add a subtle 1px black border/card edge around cells.
-- Can repeat visual categories, especially shields, weapons, potions, portals, and elemental effects.
+- Tends to add a visible 1px dark border or card edge around cells.
+- Repeats visual categories in practice; shields and arrows/bows dominated the seed-24062805 output, with weapons, potions, portals, and elemental effects also clustering.
 - Can still hallucinate text if the prompt does not strongly ban all text-like marks.
 - Single-shot sheets can obey the overall grid while not perfectly matching every requested individual skill concept.
 
-#### Top Candidate 1A: Original Strict-Grid Prompt
+#### Top Candidate 1B: Original Strict-Grid Prompt
 
 Human read:
 
 - Best for authentic RPG hotbar/icon-sheet feel.
 - Appealing punchy colors and strong contrast.
 - Very clear symbols and consistent icon language.
-- Weakness: subtle dark outline/card edge around each icon, likely because `spritesheet`, `strict grid`, `cell`, and `game UI skill icons` activate real game-icon-slot priors.
+- Weakness: visible dark card/slot edge around each icon, likely because `spritesheet`, `strict grid`, `cell`, and `game UI skill icons` activate real game-icon-slot priors.
 
 Input:
 
@@ -157,23 +157,23 @@ Input:
 
 Verification:
 
-- Output file: `generated/fantasy_skill_icons_create_image_pro_trial/create_image_pro_skill_icons_pictorial_8x8_32px.png`
+- Workspace-root output file: `<workspace>/generated/fantasy_skill_icons_create_image_pro_trial/create_image_pro_skill_icons_pictorial_8x8_32px.png`
 - Dimensions: `256x256`
 - Alpha: fully opaque. Report alpha as `alpha_min=255`, `alpha_max=255` when using 8-bit alpha, or explicitly say `normalized alpha=1.0` if using normalized tooling.
 - Cropped cell hashes: 64 pixel-hash-unique cells. This proves non-identical pixel data, not semantic uniqueness.
 - Usage: 20 generations
-- Main issue: subtle black border around each icon cell.
+- Main issue: visible black border/card edge around each icon cell.
 
-#### Top Candidate 1B: Rich-Background Reduced-Slot Prompt
+#### Top Candidate 1A: Rich-Background Reduced-Slot Prompt
 
 Human read:
 
-- Very close to the original best.
+- Best match to the stated no-border/no-frame constraints among the top outputs.
 - Better explicit background direction: luminous gradients, painterly pixel texture, depth, magical light, atmospheric color variation, not flat solid color.
 - Slightly less hard-framed than the original strict-grid winner.
 - Weakness: softened some of the classic installed-in-an-RPG-hotbar punch from the original.
 
-Key prompt differences from 1A:
+Key prompt differences from 1B:
 
 - Replaced `spritesheet`, `Strict grid`, and `each cell` with softer `sheet`, `icon`, and `square` wording.
 - Kept `skill icons` and `game UI`, because those improve the target vibe.
@@ -201,11 +201,12 @@ Input:
 
 Verification:
 
-- Output file: `generated/fantasy_skill_icons_create_image_pro_hybrid_prompt_trial/create_image_pro_skill_icons_hybrid_prompt_8x8_32px.png`
+- Workspace-root output file: `<workspace>/generated/fantasy_skill_icons_create_image_pro_hybrid_prompt_trial/create_image_pro_skill_icons_hybrid_prompt_8x8_32px.png`
 - Dimensions: `256x256`
 - Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
 - Cropped cell hashes: 64 pixel-hash-unique cells; semantic uniqueness still needs visual review.
-- Visual result: recovered richer background/gradient quality compared with the over-optimized borderless mosaic prompt, while avoiding the hardest slot-card grid of the original best.
+- Usage: 20 generations
+- Visual result: recovered richer background/gradient quality compared with the over-optimized borderless mosaic prompt, while avoiding the hardest slot-card grid of the original strict-grid output.
 
 Border-reduction trial:
 
@@ -226,10 +227,11 @@ Border-reduction trial:
 
 Border-reduction trial verification:
 
-- Output file: `generated/fantasy_skill_icons_create_image_pro_borderless_trial/create_image_pro_skill_icons_borderless_8x8_32px.png`
+- Workspace-root output file: `<workspace>/generated/fantasy_skill_icons_create_image_pro_borderless_trial/create_image_pro_skill_icons_borderless_8x8_32px.png`
 - Dimensions: `256x256`
 - Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
 - Cropped cell hashes: 64 pixel-hash-unique cells; semantic uniqueness still needs visual review.
+- Usage: 20 generations
 - Visual result: reduced the obvious 1px card-grid border compared with the previous winning run, but many symbols still use dark pixel outlines and boundary-edge pixels remain darker than the sheet average. Treat this as an improvement, not a solved no-border guarantee.
 
 ### REST `POST /create-image-pixen`
@@ -382,7 +384,7 @@ Tested parameters:
 
 Observed result:
 
-- Output file: `generated/fantasy_skill_icons_generate_ui_trial/generate_ui_v2_skill_icons_8x8_32px.png`
+- Workspace-root output file: `<workspace>/generated/fantasy_skill_icons_generate_ui_trial/generate_ui_v2_skill_icons_8x8_32px.png`
 - Dimensions: `256x256`
 - Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
 - Cropped cell hashes: 64 pixel-hash-unique cells; semantic uniqueness still needs visual review.
@@ -427,7 +429,7 @@ Tested parameters:
 
 Observed result:
 
-- Output file: `generated/fantasy_skill_icons_create_ui_asset_mcp_trial/mcp_create_ui_asset_skill_icons_pieces_8x8_32px.png`
+- Workspace-root output file: `<workspace>/generated/fantasy_skill_icons_create_ui_asset_mcp_trial/mcp_create_ui_asset_skill_icons_pieces_8x8_32px.png`
 - UI asset ID: `81bf98ef-4309-4c38-90a3-d39fb8d6ade3`
 - Dimensions: `256x256`
 - Alpha: `alpha_min=255`, `alpha_max=255`, `transparent_pixels=0`
