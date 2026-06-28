@@ -162,6 +162,60 @@ Common files to update:
 - `docs/pixellab/pixellab-asset-routing.md`
 - `docs/pixellab/pixellab-user-facing-term-backend-mapping.md`
 
+Reusable agent prompt after a drift-detecting refresh:
+
+```text
+Update PixelLab Pip from the latest docs-cache refresh.
+
+Work from the repository root.
+
+First read:
+- AGENTS.md
+- docs/README.md
+- docs/developer.md
+- docs/pixellab/pixellab-doc-watch-cache.md
+- .local/pixellab-doc-watch/manifest.json
+- the latest report named in manifest.last_report
+- the matching .local/pixellab-doc-watch/changes/<timestamp>.json
+- the matching .local/pixellab-doc-watch/snapshots/<timestamp>/ files, including previous/ when present
+
+Goal:
+Determine whether the latest PixelLab REST/MCP/docs refresh changes any public routing, endpoint/tool availability, schemas, parameters, prompt limits, polling behavior, result shapes, auth/setup guidance, or surface boundaries.
+
+Rules:
+- Do not update Skill/docs for raw_changed alone unless raw before/after inspection reveals meaningful public-doc changes.
+- Treat metadata_changed as report-only unless it changes public versioning or docs meaning.
+- For fetch_failed or parse_failed sources, do not update claims from that failed source.
+- Use official refreshed cache files as the source of truth. Do not invent PixelLab behavior.
+- Keep skills/pixellab-pip/SKILL.md focused on core routing, common decisions, and pointers.
+- Put detailed endpoint/tool behavior in skills/pixellab-pip/references/.
+- Put broader research/comparison material in docs/pixellab/.
+- Update only files affected by the detected changes.
+- Preserve existing repo style and avoid redundant docs.
+
+Likely files to inspect/update:
+- skills/pixellab-pip/SKILL.md
+- skills/pixellab-pip/references/official-pixellab-documentation.md
+- skills/pixellab-pip/references/prompt-limits.md
+- skills/pixellab-pip/references/image-input-roles.md
+- docs/pixellab/pixellab-ui-generation-surfaces-research.md
+- docs/pixellab/pixellab-asset-routing.md
+- docs/pixellab/pixellab-user-facing-term-backend-mapping.md
+- docs/pixellab/pixellab-surfaces-and-services.md
+
+Deliverables:
+1. Briefly summarize what changed upstream.
+2. List which local files needed updates and why.
+3. Apply the updates.
+4. Run relevant verification, at minimum:
+   - rg for old/stale endpoint or tool names related to the change
+   - python -m py_compile dev-tools/pixellab-doc-watch.py if watcher docs/checklist changed
+   - git diff --check
+5. Report any upstream changes that were intentionally not applied and why.
+
+After editing, challenge your own changes: identify any overclaim, stale route, duplicated guidance, or SKILL.md detail that should instead live in references/docs, then fix only valid issues.
+```
+
 ## Local-Only Rules
 
 - Do not commit `.local/pixellab-doc-watch/`.
