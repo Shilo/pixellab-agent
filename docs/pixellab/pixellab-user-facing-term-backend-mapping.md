@@ -62,7 +62,7 @@ Important exclusions:
 
 `https://api.pixellab.ai/v2/openapi.json` currently exposes these generation and management families:
 
-- Images: `/generate-image-v2`, `/generate-with-style-v2`, `/generate-ui-v2`, `/create-image-pixflux`, `/create-image-pixflux-background`, `/create-image-pixen`, `/create-image-bitforge`.
+- Images and UI: `/generate-image-v2`, `/generate-with-style-v2`, `/generate-ui-v2`, `/create-ui-asset`, `/ui-assets`, `/create-image-pixflux`, `/create-image-pixflux-background`, `/create-image-pixen`, `/create-image-bitforge`.
 - Image operations: `/image-to-pixelart`, `/image-to-pixelart-pro`, `/resize`, `/remove-background`, `/edit-image`, `/edit-images-v2`, `/inpaint`, `/inpaint-v3`.
 - Animation and rotation: `/animate-with-text`, `/animate-with-text-v2`, `/animate-with-text-v3`, `/animate-with-skeleton`, `/estimate-skeleton`, `/edit-animation-v2`, `/interpolation-v2`, `/transfer-outfit-v2`, `/rotate`, `/generate-8-rotations-v2`, `/generate-8-rotations-v3`.
 - Characters: `/create-character-with-4-directions`, `/create-character-with-8-directions`, `/create-character-pro`, `/create-character-v3`, `/create-character-state`, `/animate-character`, `/characters/animations`, plus character list/get/delete/tag/zip.
@@ -83,6 +83,7 @@ Current MCP tool families:
 - Tilesets: `create_topdown_tileset`, `get_topdown_tileset`, `list_topdown_tilesets`, `delete_topdown_tileset`, `create_sidescroller_tileset`, `get_sidescroller_tileset`, `list_sidescroller_tilesets`, `delete_sidescroller_tileset`.
 - Isometric/tile variants: `create_isometric_tile`, `get_isometric_tile`, `list_isometric_tiles`, `delete_isometric_tile`, `create_tiles_pro`, `get_tiles_pro`, `list_tiles_pro`, `delete_tiles_pro`.
 - Objects and map objects: `create_map_object`, `get_map_object`, `create_1_direction_object`, `create_8_direction_object`, `get_object`, `list_objects`, `animate_object`, `create_object_state`, `delete_object`, `select_object_frames`, `dismiss_review`.
+- UI assets: `create_ui_asset`, `get_ui_asset`, `list_ui_assets`, `delete_ui_asset`.
 - Platform helpers: `get_balance`, `list_projects`, `chat_*`, `sandbox_*`, `agent_*`, `agent_feedback`, `agent_help`.
 
 MCP does not currently document raw image-editing equivalents for every REST v2 image route, such as `edit-image`, `edit-images-v2`, `inpaint`, `resize`, or `remove-background`. Route those to REST v2 unless actual MCP tools are visible in a client.
@@ -104,9 +105,9 @@ Public REST paths below are relative to `https://api.pixellab.ai/v2`. Website/in
 | `Image to image (depth)` | No exact public depth endpoint found; closest documented image/init/reference routes are PixFlux/Pro image routes | None documented | Aseprite request identifiers include root label `generate-pixelart-flux` with depth behavior | PixFlux-endpoint editor workflow; depth is not public v2 field observed | Internal/editor-specific | Low. Aseprite terminology evidence informs this row; source filenames are intentionally omitted. |
 | `Image to pixel art` | `POST /image-to-pixelart` | None documented | Aseprite root `generate-image-to-pixelart` | Converter | Public REST plus editor wrapper | High. Evidence: API page `/v2/image-to-pixelart`; Aseprite terminology evidence informs this row; source filenames are intentionally omitted. |
 | `Image to pixel art (Pro)` | `POST /image-to-pixelart-pro` | None documented | Aseprite root `generate-image-to-pixelart-pro` | Pro converter | Public REST plus editor wrapper | High. Evidence: API page `/v2/image-to-pixelart-pro`; Aseprite terminology evidence informs this row; source filenames are intentionally omitted. |
-| `Create UI elements` | Public REST only has Pro `POST /generate-ui-v2`; no distinct public non-Pro UI endpoint found | None documented | Aseprite menu exposes a matching UI-generation action; website `/create-ui` is a human UI page | UI generation, likely editor/web workflow | Internal unless routed to Pro REST | Low for non-Pro exact route. Evidence: docs nav `Create UI elements`; Aseprite terminology evidence informs this row; source filenames are intentionally omitted. |
-| `Create UI elements (Pro)` | `POST /generate-ui-v2` | None documented | Aseprite root `generate-ui`, `model_name = "generate_ui"` | Pro UI workflow | Public REST plus editor wrapper | High. Evidence: API page `/v2/generate-ui-v2`; Aseprite terminology evidence informs this row; source filenames are intentionally omitted. |
-| `Create UI from layout (Pro)` | Partial: closest public REST is `POST /generate-ui-v2`; no public layout-template endpoint found | None documented | Aseprite root `generate-ui-template`, `model_name = "generate_ui_template"` | Pro UI template/layout workflow | Editor-specific wrapper | Medium for UI capability, low for exact layout contract. Aseprite terminology evidence informs this row; source filenames are intentionally omitted. |
+| `Create UI elements` | `POST /generate-ui-v2` for loose UI images; `POST /create-ui-asset` for structured/saved UI assets | `create_ui_asset` for MCP-first managed UI assets | Aseprite menu exposes a matching UI-generation action; website `/create-ui` is a human UI page | UI generation and UI asset workflows | Public REST/MCP for documented routes; website/editor internals remain internal | Medium. When both REST and MCP are available, REST `/create-ui-asset` is the fuller structured UI asset route. See `../pixellab-ui-generation-surfaces-research.md`. |
+| `Create UI elements (Pro)` | `POST /generate-ui-v2`; `POST /create-ui-asset` when saved asset, elements, or shape pieces matter | `create_ui_asset` for MCP-first workflows | Aseprite root `generate-ui`, `model_name = "generate_ui"` | Pro UI workflow | Public REST/MCP plus editor wrapper | High for public REST/MCP routes; Aseprite terminology evidence informs labels only. See `../pixellab-ui-generation-surfaces-research.md`. |
+| `Create UI from layout (Pro)` | Prefer `POST /create-ui-asset` with `pieces` and/or `elements` | `create_ui_asset` with `pieces` and/or `elements` when MCP-first | Aseprite root `generate-ui-template`, `model_name = "generate_ui_template"` | Pro UI template/layout workflow | Public REST/MCP for shape-piece asset creation; editor-specific wrappers remain internal | High for current public shape-piece capability. REST has the more complete schema. See `../pixellab-ui-generation-surfaces-research.md`. |
 
 ### Animation, Rotation, And Prompt Labels
 
@@ -298,7 +299,7 @@ Recommended lookup flow:
 
 - `Gemini`: existing repo research observed the word in an older website create-tileset Pro chunk, but the current chunk fetched on 2026-06-26 did not include it and the old chunk URL returned 404. Treat `Gemini` as stale/low-confidence unless a current page or bundle reintroduces it.
 - Website Create Tileset Pro: current chunk confirms `use_pro`, `spread_x`, `slope_size`, `raggedness`, and root `/tilesets/create`; public REST does not expose an exact equivalent. MCP `create_topdown_tileset` has similar controls, but exact backend mapping is not public.
-- `Create UI elements` non-Pro: docs and Aseprite expose the label, but public REST currently exposes only `generate-ui-v2` for UI generation. Non-Pro UI should be considered editor/web-only unless a public route appears.
+- UI labels still collide: `generate-ui-v2` is loose/raw UI image generation, while `create-ui-asset` and MCP `create_ui_asset` are structured saved UI asset workflows with `pieces`/`elements`. See `../pixellab-ui-generation-surfaces-research.md`.
 - `M-L PixPatch v2`: docs/Aseprite expose the term, but public v2 has only base/pro inpaint endpoints. Do not invent `/v2/pixpatch` or `/v2/inpaint-pixpatch-v2`.
 - Pixelorama/editor replacement routes: observed in the current editor chunk, but they are website-session routes and may change independently of public REST/MCP.
 - Aseprite local source is rich but not a public API contract. It is excellent terminology evidence, but routing should prefer REST v2 or MCP when building code.
@@ -311,7 +312,7 @@ For automation and code, route to REST v2 or MCP first:
 - PixFlux/M-XL image -> `POST /v2/create-image-pixflux`.
 - Pro S-XL image -> `POST /v2/generate-image-v2`.
 - BitForge/S-M image -> `POST /v2/create-image-bitforge`.
-- UI Pro -> `POST /v2/generate-ui-v2`.
+- UI Pro/raw image -> `POST /v2/generate-ui-v2`; UI asset/layout/pieces -> prefer `POST /v2/create-ui-asset`, or use MCP `create_ui_asset` for MCP-first workflows.
 - Animation new/v3 -> `POST /v2/animate-with-text-v3`.
 - Animation Pro -> `POST /v2/animate-with-text-v2`.
 - Character/object/tileset managed workflows -> MCP tools when available, otherwise corresponding REST v2 endpoints.
