@@ -16,7 +16,6 @@ PixelLab Pip's strongest item-icon route is REST `generate-image-v2` for complet
 
 ## Contents
 
-- [Request](#request)
 - [Best Example: General Inventory Background-Removed Sheet](#best-example-general-inventory-background-removed-sheet)
 - [Weapon Sheet](#weapon-sheet)
 - [Armor Sheet](#armor-sheet)
@@ -26,15 +25,15 @@ PixelLab Pip's strongest item-icon route is REST `generate-image-v2` for complet
 - [Showcase Assets](#showcase-assets)
 - [Validation Notes](#validation-notes)
 
-## Request
-
-```text
-/pixellab-pip create complete 32px materials inventory set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
-```
-
 ## Best Example: General Inventory Background-Removed Sheet
 
 ![Fantasy RPG general inventory item icons](item-icons/fantasy-rpg-inventory-bgremoved-8x8-32px.png)
+
+Original prompt:
+
+```text
+/pixellab-pip create complete 32px inventory item set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
+```
 
 The general inventory sheet is the recommended showcase winner. It covers the most complete cross-section of RPG inventory categories: weapons, armor, jewelry, potions, scrolls, books, maps, food, coins, gems, crafting materials, monster parts, tools, keys, containers, travel gear, bombs, arrows, elemental items, holy items, and cursed charms. The final showcased file is the PixelLab background-removed version requested by the user.
 
@@ -76,6 +75,12 @@ Findings:
 
 ![Fantasy RPG weapon item icons](item-icons/fantasy-rpg-weapons-8x8-32px.png)
 
+Original prompt:
+
+```text
+/pixellab-pip create complete 32px weapon item set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
+```
+
 The weapon sheet demonstrates that `generate-image-v2` can keep a tight category while still varying silhouettes. The prompt covers one-handed, two-handed, ranged, thrown, magical, holy, cursed, elemental, crystal, bone, and legendary weapon variants without introducing armor, potions, food, coins, or UI slot framing.
 
 Route: PixelLab REST v2 `generate-image-v2`
@@ -115,6 +120,12 @@ Findings:
 ## Armor Sheet
 
 ![Fantasy RPG armor item icons](item-icons/fantasy-rpg-armor-8x8-32px.png)
+
+Original prompt:
+
+```text
+/pixellab-pip create complete 32px armor item set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
+```
 
 The armor sheet uses the same transparent item-icon strategy for defensive equipment. It covers helmets, circlets, masks, torso pieces, robes, tunics, pauldrons, gloves, belts, legwear, boots, shields, jewelry, and elemental or legendary variants while excluding weapons and consumables.
 
@@ -156,11 +167,17 @@ Findings:
 
 ![Fantasy RPG consumable item icons](item-icons/fantasy-rpg-consumables-8x8-32px.png)
 
-The consumable sheet is an exact 64-icon crop set generated from one PixelLab sheet. The retained manifest lists targeted consumables across potions, antidotes, holy water, poisons, scrolls, repair supplies, bombs, ammo, food, drink, camping supplies, magic materials, and monster ingredients. The exact prompt artifact was not retained with the run, so this showcase records the preserved route, controls, and output manifest rather than inventing an exact request body.
+Original prompt:
+
+```text
+create complete 32px consumable inventory items for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
+```
+
+The consumable sheet is an exact 64-icon crop set generated from one PixelLab sheet. The retained manifest lists targeted consumables across potions, antidotes, holy water, poisons, scrolls, repair supplies, bombs, ammo, food, drink, camping supplies, magic materials, and monster ingredients.
 
 Route: PixelLab REST v2 `generate-image-v2`
 
-Prompt preparation: category-targeted item list, exact prompt not retained in the artifact folder.
+Prompt preparation: agent-optimized from the user's consumable inventory request.
 
 Generation details:
 
@@ -188,6 +205,12 @@ Findings:
 ## Material Sheet
 
 ![Fantasy RPG material item icons](item-icons/fantasy-rpg-materials-8x8-32px.png)
+
+Original prompt:
+
+```text
+/pixellab-pip create complete 32px materials inventory set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
+```
 
 The material sheet is the most focused crafting-resource set. It covers ores, minerals, woods, cloth, leather, monster parts, gems, crystals, elemental essences, herbs, mushrooms, roots, seeds, flowers, honey, wax, oil, resin, vials, rope, gears, nails, parchment, rune stone, coins, key blank, and a small treasure pouch.
 

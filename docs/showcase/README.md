@@ -19,7 +19,7 @@ Real PixelLab Pip example workflows, including prompts, selected routes, outputs
 [<img src="item-icons/fantasy-rpg-inventory-bgremoved-8x8-32px.png" alt="Fantasy RPG inventory item icon sheet" width="256">](item-icons.md)
 
 ```text
-/pixellab-pip create complete 32px materials inventory set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
+/pixellab-pip create complete 32px inventory item set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
 ```
 
 ### Gameplay GUI
