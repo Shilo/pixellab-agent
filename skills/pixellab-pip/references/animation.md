@@ -31,7 +31,7 @@ Treat `last_frame` as high-risk when:
 - The prompt is idle, stand, breathing, subtle bob, weight shift, neutral stance, or another low-motion loop.
 - The user requires no effects, particles, marks, symbols, trails, or artifacts.
 
-For clean idle loops, prefer one candidate first. Use first-frame-only generation with careful prompt wording unless the user provides or asks for a distinct last-frame anchor. Preserve the endpoint's returned frame order when assembling previews or spritesheets; do not create local ping-pong, reversed, duplicated, trimmed, or otherwise reordered outputs unless the user explicitly asks for that playback style. Do not spend retries changing only frame count or tiny last-frame differences unless the user asks for that specific experiment.
+For clean idle loops, prefer one candidate first. Use first-frame-only generation with careful prompt wording unless the user provides or asks for a last-frame anchor. If the user supplies an identical or near-identical `last_frame`, explain the artifact risk and ask whether to use it or try first-frame-only instead. Preserve the endpoint's returned frame order when assembling previews or spritesheets; do not create local ping-pong, reversed, duplicated, trimmed, or otherwise reordered outputs unless the user explicitly asks for that playback style. Do not spend retries changing only frame count or tiny last-frame differences unless the user asks for that specific experiment.
 
 When the user does not specify `frame_count`, use the endpoint default or documented animation/template default. For REST `animate-with-text-v3`, current OpenAPI documents `frame_count` as 4-16 with default 8; refresh the schema before choosing a non-default value when exact current behavior matters.
 

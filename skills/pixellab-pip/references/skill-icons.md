@@ -28,7 +28,7 @@ Use REST `create-image-pixen` only when the user explicitly values a cheap singl
 
 ## Backgroundless / Transparent Icons
 
-Complete/backgrounded skill icon sheets are the validated default. Transparent/backgroundless skill icons are a separate request shape: use the same `generate-image-v2` route, set `no_background: true`, remove background-specific prompt wording, and verify the original output before calling it final.
+Complete/backgrounded skill icon sheets are the validated default. Transparent/backgroundless skill icons are a separate, less-validated request shape: when the user clearly asks for them, start with `generate-image-v2` plus `no_background: true` as a candidate, remove background and opacity prompt wording, and verify alpha, layout, borders, and 32px readability before calling it final.
 
 If the user requests transparent icons or icons without backgrounds:
 
