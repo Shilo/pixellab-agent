@@ -1,6 +1,6 @@
 # Cost Routing
 
-Read this when the user says cheap, cheaper, low-cost, budget, minimize credits, save generations, avoid Pro, cheapest acceptable, or similar wording. Also read it when comparing a Pro route to a `new`, v3, standard, or Pixen route.
+Read this when the user says cheap, cheaper, affordable, low-cost, budget, minimize credits, save generations, avoid Pro, cheapest acceptable, or similar wording. Also read it when the user asks for a cost-driven comparison between Pro and a `new`, v3, standard, Pixen, PixFlux, or BitForge route. For normal route selection without cost concern, use `SKILL.md` and the matching asset reference instead of loading this file solely because an endpoint has a Pro/new/v3 label.
 
 The cost-sensitive rule is: satisfy the user's asset intent with the lowest documented-cost route that is likely to work, then report the tradeoff. Do not silently upgrade to Pro just because it is the usual highest-quality route.
 
@@ -10,10 +10,12 @@ Cheap mode also changes retry behavior. A first approved generation is not permi
 
 Treat these labels as route-selection hints, not provider internals:
 
-- `standard`, `new`, `v3`, Pixen, PixFlux, and other non-Pro routes are cheap-family hints when they fit the task, but route by the concrete endpoint/tool rather than by the label alone.
+- `standard`, `new`, `v3`, Pixen, PixFlux, BitForge, and other documented non-Pro routes are cheap-family hints when they fit the task, but route by the concrete endpoint/tool rather than by the label alone.
 - `Pro`, `pro`, Pro Tools, and endpoint names ending in `-pro` or `-v2` with a Pro summary are the expensive family unless current docs say otherwise.
 - `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `create-ui-asset`, `create-character-pro`, `image-to-pixelart-pro`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `inpaint-v3`, `edit-images-v2`, `generate-8-rotations-v2`, 1/8-direction object creation, and object Pro animation should be treated as expensive or potentially expensive.
 - `v3` is not automatically cheap: REST `inpaint-v3` is documented as Pro. Use the endpoint summary/current docs to classify exceptions.
+- `PixPatch` is a website/editor inpaint label, not a public v2 image endpoint. For cheap edits, route to the documented base `inpaint`/edit route when it fits; treat `inpaint-v3` as Pro.
+- `Gemini` is stale/low-confidence older website wording for Create Tileset Pro. If current official docs reintroduce a Gemini/external-provider route, treat it as expensive or unknown until current cost is documented or measured; do not use it as a cheap route by default.
 - Prompt enhancement calls and inline `enhance_prompt` are small extra costs when exposed; use one enhancement path and skip optional enhancement when the user prioritizes cheapest possible output unless prompt quality risk is high and you explain the added cost.
 
 ## Current Cost Findings
@@ -29,8 +31,9 @@ These were checked against the official REST v2 OpenAPI and MCP docs on 2026-06-
 - Object animation `mode='pro'` costs 20-40 generations per direction, or 160-320 generations for a full 8-direction animation. Prefer `mode='v3'`, the documented default, for cheap object animation.
 - MCP `create_ui_asset` / REST `create-ui-asset` is documented as Pro and costs 20-40 generations.
 - REST summaries label `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `image-to-pixelart-pro`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `inpaint-v3`, `edit-images-v2`, and `generate-8-rotations-v2` as Pro-family routes. Treat them as higher-cost even when exact generation counts are not shown in the summary.
-- REST `create-image-pixen` and `create-image-pixflux` are non-Pro image families. Current docs and product labels use `new` differently by surface/tool, so do not equate `new` with exactly one endpoint without checking the selected surface. Use Pixen for cheap small/single-image/icon iteration when its controls fit, and PixFlux for cheap general-image/background-style generation when its route fits.
+- REST `create-image-pixen`, `create-image-pixflux`, `create-image-pixflux-background`, and `create-image-bitforge` are public image routes whose current summaries are not Pro-labeled. Current docs and product labels use `new` differently by surface/tool, so do not equate `new` with exactly one endpoint without checking the selected surface. Use Pixen for cheap small/single-image/icon iteration when its controls fit, PixFlux for cheap general-image/background-style generation when its route fits, and BitForge only when its image/style route fits better than Pixen/PixFlux.
 - REST `animate-with-text-v3` and `generate-8-rotations-v3` are the cheap v3 family when they fit.
+- For animation routes, do not lower `frame_count` as a cost optimization unless current docs or a verified pricing response show that frame count changes cost or feasibility. Prefer changing documented cost drivers such as route family, mode, direction count, candidate count, enhancement use, or size when those are available and compatible with the user's request.
 
 If exact current costs matter to the user, refresh official docs or use a small balance-before/balance-after test with explicit approval. Do not invent exact prices for routes whose docs expose only a Pro/new/v3 label.
 
