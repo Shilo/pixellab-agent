@@ -22,22 +22,21 @@ Use UI routes only when the user asks for the slot, button, panel, bar, containe
 
 ## Single Skill Icons
 
-For a single skill, ability, spell, action-bar, or hotbar icon, prefer REST v2 `POST /generate-image-v2` when the user wants the highest-quality icon-art route or wants several candidates to choose from. At `32x32`, current `generate-image-v2` behavior may return a multi-candidate result because small output sizes produce batches; present those as candidates and select/package one only after visual review.
+For a single skill, ability, spell, action-bar, or hotbar icon, prefer REST v2 `POST /generate-image-v2` when the user wants the highest-quality icon-art route or wants several candidates to choose from. At `32x32`, `generate-image-v2` may return a multi-candidate result because small output sizes produce batches; present those as candidates and select/package one only after visual review.
 
 Use REST `create-image-pixen` only when the user explicitly values a cheap single-icon attempt, exact low-detail/outline/view controls, or fast iteration over candidate variety. Pixen can produce crisp symbols, but verify that the result still reads as a skill/ability icon rather than a simple inventory item, flat silhouette, rune-like mark, or unclear pictogram.
 
 ## Backgroundless / Transparent Icons
 
-This reference is validated for complete/backgrounded skill icon sheets. Transparent/backgroundless skill-icon sheet behavior with `generate-image-v2` and `no_background: true` is unverified.
+Complete/backgrounded skill icon sheets are the validated default. Transparent/backgroundless skill icons are a separate request shape: use the same `generate-image-v2` route, set `no_background: true`, remove background-specific prompt wording, and verify the original output before calling it final.
 
 If the user requests transparent icons or icons without backgrounds:
 
-- State that transparent/backgroundless skill-icon sheet behavior is unverified.
 - Propose a single comparison test before a large batch when that would save credits.
-- If the user confirms, insists, or clearly asked to proceed with a transparent result, use `no_background: true` and perform the attempt honestly.
+- Use `no_background: true` when the user clearly wants a transparent result.
 - Remove background, opacity, full-bleed painted-background, and canvas-size clauses from the prompt. Let `no_background` and `image_size` carry those controls.
 - Verify the original PixelLab output for alpha, symbol clarity, grid sizing, per-cell size, and absence of unwanted borders/frames before calling the result final.
-- If the original output has opaque fills, flattened backgrounds, border artifacts, wrong symbol scale, or a collapsed layout, report that dogfooding result against the original output. Do not silently repair it locally and claim success.
+- If the original output has opaque fills, flattened backgrounds, border artifacts, wrong symbol scale, or a collapsed layout, report the failure against the original output. Do not silently repair it locally and claim success.
 
 ## Canvas Sizing
 

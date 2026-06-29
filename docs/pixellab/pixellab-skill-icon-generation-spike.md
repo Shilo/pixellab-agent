@@ -2,9 +2,9 @@
 
 Last reviewed: 2026-06-29.
 
-Purpose: capture live-generation findings for fantasy RPG skill icon and item icon requests so `pixellab-pip` can route future "skill icon", "ability icon", "spell icon", "action bar icon", and similar requests with better defaults.
+Purpose: capture live-generation findings for fantasy RPG skill icon and item icon requests so `pixellab-pip` can route "skill icon", "ability icon", "spell icon", "action bar icon", "item icon", and similar requests with tested defaults.
 
-This spike is based on live PixelLab generations and human visual review. The current human-ranked winner remains REST v2 `POST /generate-image-v2` ("Create S-XL image (Pro)") for complete 8x8 finished skill icon sheets. Two `generate-image-v2` prompt variants are close co-winners for different reasons: the original strict-grid prompt has the most authentic RPG hotbar/icon-sheet punch, while the later rich-background prompt reduces some border pressure and improves explicit background guidance.
+This spike is based on live PixelLab generations and human visual review. The human-ranked winner is REST v2 `POST /generate-image-v2` ("Create S-XL image (Pro)") for complete 8x8 finished skill icon sheets. Two `generate-image-v2` prompt variants are close co-winners for different reasons: the original strict-grid prompt has the most authentic RPG hotbar/icon-sheet punch, while the rich-background prompt reduces some border pressure and improves explicit background guidance.
 
 ## Target Asset Definition
 
@@ -39,10 +39,10 @@ Why:
 
 Known downside:
 
-- It tends to add a visible 1px dark border/card-slot treatment around each icon even when instructed not to. Future prompts should emphasize "borderless art only", "no black outline around cell edges", "no separating cell lines", and "background continues to cell edges".
+- It tends to add a visible 1px dark border/card-slot treatment around each icon even when instructed not to. Emphasize "borderless art only", "no black outline around cell edges", "no separating cell lines", and "background continues to cell edges".
 - The likely cause is training-prior vocabulary: `skill icons`, `game UI`, `strict grid`, `cell`, and `spritesheet` often imply action-bar slots. However, `game UI` and strict sheet language also help create the authentic, high-contrast RPG icon look. Treat this as a tradeoff, not a simple ban.
 
-Current ranking:
+Validated ranking:
 
 | Rank | Route | Result |
 |---:|---|---|
@@ -52,7 +52,7 @@ Current ranking:
 | 3 | MCP `create_ui_asset` with 64 pieces | Clean structure and semantic labels, but poor consistency for pure icons because it strongly creates framed UI buttons/slots. |
 | Fallback | MCP `create_tiles_pro` plus optional sheet edit | Interesting for 4x4 tile-like icon batches, but not the best route for finished 8x8 skill icon sheets. |
 
-Use `create_tiles_pro` as an experimental alternative when the user wants a tile-like set or when Pro image generation keeps failing semantic style, but do not treat it as the default for finished skill icon sheets yet.
+Use `create_tiles_pro` as an experimental alternative when the user wants a tile-like set or when Pro image generation keeps failing semantic style, but do not treat it as the default for finished skill icon sheets.
 
 ## Prompting Rules Learned
 
@@ -108,7 +108,7 @@ Tested parameters:
 - Endpoint: REST v2 `POST /generate-image-v2`
 - `image_size`: `{ "width": 256, "height": 256 }`
 - `no_background`: `false`
-- Best human-ranked seed so far: `24062805`
+- Best human-ranked seed: `24062805`
 - Rich-background near-best seed: `24062808`
 - Border-reduction trial seed: `24062806`
 
@@ -127,7 +127,7 @@ Canvas sizing:
 
 Pros:
 
-- Best human-ranked route so far.
+- Best human-ranked route.
 - Produced two closely ranked top outputs with different strengths.
 - Clear, readable symbols.
 - Full colorful backgrounds.
@@ -384,8 +384,8 @@ Recommendation:
 
 Best use:
 
-- Standalone transparent item/object icons.
-- Pickups, props, inventory items, weapons, materials, furniture, and other object-like assets.
+- Standalone object sprites and managed props.
+- Pickups, props, weapons, materials, furniture, and other object-like assets when the user is not asking for an icon or icon sheet.
 
 Tested parameters:
 
@@ -410,7 +410,7 @@ Cons for skill icon sheets:
 Recommendation:
 
 - Do not default to this for finished skill icons.
-- Do not default to this for transparent item icons or inventory icon sheets; later item-icon tests found poor 32px clarity and inconsistent contours for icon use.
+- Do not default to this for transparent item icons or inventory icon sheets; dedicated item-icon tests found poor 32px clarity and inconsistent contours for icon use.
 - Use it for standalone object sprites or managed props that are not icons, icon sheets, or inventory UI artwork.
 
 ### REST `POST /create-image-pixflux`, `POST /create-image-bitforge`, `POST /generate-with-style-v2`
@@ -419,7 +419,7 @@ Status:
 
 - Not evaluated in this spike for finished skill icon sheets.
 
-Possible future use:
+Non-default uses:
 
 - Style reference workflows if the user provides a preferred icon sheet.
 - Alternative image models if `generate-image-v2` keeps adding borders.
@@ -437,7 +437,7 @@ Tested parameters:
 - `no_background`: `false`
 - `seed`: `24062810`
 - `color_palette`: `sapphire blue, ember orange, moonlit violet, emerald green, gold`
-- Prompt: same rich-background hybrid skill-icon prompt used for the latest `generate-image-v2` comparison.
+- Prompt: same rich-background hybrid skill-icon prompt used for the `generate-image-v2` comparison.
 
 Observed result:
 
@@ -465,7 +465,7 @@ Cons:
 Recommendation:
 
 - Keep as an experimental runner-up when the user wants authentic game UI icon-sheet feel.
-- Do not default to it for strict no-border/no-text skill icon sheets until prompt wording is improved.
+- Do not default to it for strict no-border/no-text skill icon sheets; the tested output had lower 32px clarity, slot-border behavior, and text-like noise.
 
 ### REST `POST /create-ui-asset` and MCP `create_ui_asset`
 
@@ -513,21 +513,21 @@ Recommendation:
 
 ## Item Icon Guidance
 
-This spike predates the dedicated item-icon route tests. For current inventory item, equipment, loot, pickup, or transparent RPG item-icon requests, use `skills/pixellab-pip/references/item-icons.md`.
+Inventory item, equipment, loot, pickup, or transparent RPG item-icon requests route through `skills/pixellab-pip/references/item-icons.md`.
 
-Later item-icon testing found that MCP `create_1_direction_object` is a poor default for icons: it produced noisy/downscaled-looking 32px results, incomplete or inconsistent contours, and weak readability. Keep object generation for standalone props and managed objects that are not icon sheets or inventory UI artwork.
+Dedicated item-icon testing found that MCP `create_1_direction_object` is a poor default for icons: it produced noisy/downscaled-looking 32px results, incomplete or inconsistent contours, and weak readability. Keep object generation for standalone props and managed objects that are not icon sheets or inventory UI artwork.
 
-For item-icon sheets, the current default is REST `generate-image-v2`, with `no_background: true` for transparent inventory icons. Pixen is useful only when the user explicitly values a cheap single-image attempt or fast comparison and must be verified for semantic recognizability.
+For item-icon sheets, default to REST `generate-image-v2`, with `no_background: true` for transparent inventory icons. Pixen is useful only when the user explicitly values a cheap single-image attempt or fast comparison and must be verified for semantic recognizability.
 
-## Suggested `SKILL.md` Routing Update
+## Runtime Routing Distinction
 
-Future `SKILL.md` guidance should distinguish:
+`SKILL.md` distinguishes:
 
 - `skill icon`, `ability icon`, `spell icon`, `action-bar icon`, `hotbar icon`: finished UI icon art, default to REST `generate-image-v2` for complete sheets.
 - `item icon`, `inventory icon`, `equipment icon`, `loot icon`, `pickup icon`, or transparent RPG item sheet: inventory icon art, read `references/item-icons.md` and prefer REST `generate-image-v2`.
 - standalone prop/object requests that are not icons or icon sheets: use object routes.
 
-Draft routing rule:
+Runtime routing rule:
 
 > For finished skill/ability/spell/action-bar icon sheets, prefer REST `generate-image-v2` over object generation, Pixen, and tiles-pro. Use strict prompt wording for pictorial symbols only, no text-like marks, fully opaque painted cells, and no borders/frames/UI slots. Verify dimensions, alpha, grid structure, visual text artifacts, and cell-edge borders before calling the output final. Use `create_tiles_pro` only as an experimental/fallback style route, and use sheet-level `edit-images-v2` only for opacity/background cleanup on an already-good sheet.
 
@@ -548,10 +548,10 @@ Always verify:
 
 For border detection, metadata is not enough. A 1px black border can be fully opaque and structurally valid while still violating the user's art requirement.
 
-## Open Questions
+## Non-Default Research Areas
 
-- Can prompt wording eliminate the 1px border in `generate-image-v2`, or is it a model habit for icon sheets?
-- Can REST `generate-ui-v2` be prompt-optimized to remove slot-border and text-like artifacts while preserving its authentic game-icon feel?
-- Can `create-ui-asset` or MCP `create_ui_asset` be coerced into borderless icon-art sheets after a first test showed strong framed icon-button behavior?
-- Does `generate-with-style-v2` using the current winner as style reference preserve clarity while removing borders?
-- For production 64-icon sheets, is it better to generate one full sheet, four 4x4 sheets, or individual icons when exact per-icon semantics matter?
+- Prompt wording may reduce the 1px border in `generate-image-v2`, but the validated route still requires human border review.
+- REST `generate-ui-v2` remains a non-default runner-up because the tested output had slot-border and text-like artifacts.
+- `create-ui-asset` and MCP `create_ui_asset` remain UI-container routes; the tested output strongly framed icons as buttons/slots.
+- `generate-with-style-v2` with a winning sheet as style reference is a style-reference experiment, not the current default.
+- For exact per-icon semantics, compare one full sheet against smaller sheet batches before promising exact 64-item coverage.

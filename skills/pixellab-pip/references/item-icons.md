@@ -25,7 +25,7 @@ Use UI routes only when the user asks for the slot, button, panel, inventory fra
 
 ## Single Item Icons
 
-For a single transparent inventory item icon, still avoid object generation. Prefer REST v2 `POST /generate-image-v2` when the user wants the highest-quality icon-art route or wants several candidates to choose from. At `32x32`, current `generate-image-v2` behavior may return a multi-candidate result because small output sizes produce batches; present those as candidates and select/package one only after visual review.
+For a single transparent inventory item icon, still avoid object generation. Prefer REST v2 `POST /generate-image-v2` when the user wants the highest-quality icon-art route or wants several candidates to choose from. At `32x32`, `generate-image-v2` may return a multi-candidate result because small output sizes produce batches; present those as candidates and select/package one only after visual review.
 
 Use REST `create-image-pixen` only when the user explicitly values a cheap single-image attempt, exact low-detail/outline/view controls, or fast iteration over candidate variety. Pixen can produce clean contours, but verify semantic recognizability carefully.
 

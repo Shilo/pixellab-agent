@@ -155,7 +155,7 @@ Findings:
 - Better visual punch than the rich-background winner, but less faithful to the requested no-border/no-frame constraint.
 - No obvious readable labels were visible during review.
 - Repeats visual categories such as shields, weapons, potions, portals, and elemental effects.
-- Earlier review language underestimated this route compared with tiles-pro; later human review ranked Create Image Pro as the clear best approach overall.
+- Final human review ranked Create Image Pro as the clear best approach overall, ahead of tiles-pro for this finished 8x8 skill-icon target.
 
 ## Learning Example: Borderless Mosaic Create Image Pro Sheet
 

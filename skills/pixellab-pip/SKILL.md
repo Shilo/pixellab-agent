@@ -28,7 +28,7 @@ Classify the user's asset, API, or question intent first, then choose the suppor
 5. Refresh current facts when a needed tool/endpoint/field is missing or unclear, or when auth, SDK support, pricing, model/mode availability, or latest MCP tools matter.
 6. For consistency-sensitive work, summarize the user's identity, style, palette, view, and reference anchors. Ask up to three blocking questions before a credit-spending call.
 7. For PixelLab natural-language request parameters such as `description`, `action`, `*_description`, `item_descriptions`, `text`, or `color_palette`, improve vague user wording into endpoint-ready English parameter values unless the user opts out. Use a matching PixelLab prompt-enhancement endpoint when it fits the chosen route; otherwise enhance directly from the request and visible inputs. For non-English or mixed-language requests, read `references/localization.md`.
-8. If the user asks for cheap, low-cost, budget, fewer credits, cheapest, or minimizing generations, read `references/cost-routing.md` before choosing a paid route. Prefer documented low-cost routes such as standard, `new`, v3, Pixen, or other non-Pro routes when they satisfy the request. Avoid Pro and Pro Tools routes unless no low-cost route fits or the user approves the cost/quality tradeoff after you name it.
+8. If the user asks for cheap, low-cost, budget, fewer credits, cheapest, or minimizing generations, read `references/cost-routing.md` before choosing a paid route. Prefer documented low-cost routes such as standard, `new`, v3, Pixen, PixFlux, or other non-Pro routes when they satisfy the request, but do not route by label alone because labels are surface-specific. Avoid Pro and Pro Tools routes unless no low-cost route fits or the user approves the cost/quality tradeoff after you name it. In cost-sensitive mode, ask before any extra paid iteration, retry, regeneration, comparison candidate, or batch expansion unless the user already approved a concrete budget or attempt count; include cost so far when asking.
 9. Before live generation, confirm the PixelLab bearer token is configured without asking the user to paste it into chat.
 10. Act or answer. Ask a short clarification only for known collisions.
 
@@ -129,7 +129,7 @@ Treat PixelLab model/provider language as product labels unless official docs di
 - `Pixen`, `PixFlux`, `BitForge`: public product/workflow labels, not guaranteed provider names.
 - `PixPatch`: website-surface label; no public v2 `PixPatch` image endpoint was documented.
 - `Pro`: quality/tier/mode label across many unrelated tools, not one endpoint or model. Treat Pro and Pro Tools routes as expensive unless current docs prove otherwise.
-- `v3` and `new`: workflow/version labels scoped to a selected operation, not a universal model. Treat them as the preferred cheap family when the user asks to minimize cost and the route fits.
+- `v3` and `new`: workflow/version labels scoped to a selected operation, not universal model selectors. Treat them as cheap-family hints when the route fits, but check the selected endpoint because exceptions exist, such as REST `inpaint-v3` being documented as Pro.
 - `S-XL`, `M-XL`, `S-M`, `M-L`: size/product labels, not asset intents.
 - `Gemini`: stale/low-confidence older website Create Tileset Pro wording; do not mention it as current unless refreshed official website docs reintroduce it.
 
