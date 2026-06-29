@@ -16,7 +16,7 @@ Run it on the original failed generation. The helper removes only edge-connected
 
 If the helper cannot execute, such as missing Python, missing Pillow, a file error, or an ambiguous background-sampling error, skip further local guessing and use PixelLab `POST /remove-background` with the original failed generation as the image input. If local removal leaves enclosed background inside holes, loops, handles, straps, or similar negative spaces, do not globally remove the color when it may also appear in the art; use PixelLab fallback unless the user explicitly approves a different source or repair path.
 
-For PixelLab `/remove-background`, set `background_removal_task` to `remove_simple_background` for flat/simple backgrounds. Use `remove_complex_background` only when the background is actually complex or intertwined. Include a concise foreground/text hint when it helps preserve art pixels or remove enclosed negative spaces.
+For PixelLab `/remove-background`, always set `background_removal_task` to `remove_simple_background` for PixelLab Pip background-failure recovery.
 
 If safe background removal cannot be achieved, report the output as a failed candidate and ask how to proceed. Do not spend credits on another generation or edit unless the user approves the retry.
 
