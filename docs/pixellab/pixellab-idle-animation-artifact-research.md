@@ -1,6 +1,6 @@
 # PixelLab Idle Animation Artifact Research
 
-Last reviewed: 2026-06-28.
+Last reviewed: 2026-06-29.
 
 Purpose: record live-generation findings from attempts to create a clean 9-frame idle loop from a small transparent pixel-art character frame using PixelLab REST v2 `animate-with-text-v3`.
 
@@ -23,6 +23,10 @@ Test route:
 - `enhance_prompt` was `false`.
 - `seed` was `0`, which the current schema describes as random seed behavior rather than deterministic replay.
 
+Additional frame-count finding:
+
+- The endpoint rejects odd `frame_count` values. A request for `frame_count: 7` failed validation; `frame_count: 6` is the nearest valid shorter setting and returns 7 total images including the initial frame.
+
 Two route modes were compared:
 
 - First and last frame supplied: equivalent to the product behavior the user described as "interpolate (new)".
@@ -38,6 +42,13 @@ Removing the character's white teeth did not solve the issue. It changed the art
 
 First-frame-only generation avoided the external puff/arc artifacts in the tested runs, but it did not close the loop and over-animated the character into visible arm or club gestures. This suggests `last_frame` helps loop closure but can induce external "motion explanation" artifacts, while omitting `last_frame` reduces those artifacts but gives the model too much freedom to drift.
 
+Current synthesis from the test series:
+
+- Changing frame count did not solve the idle artifact problem. Odd `frame_count` values are rejected, and the nearest shorter valid setting still produced detached white pixels and failed to close cleanly.
+- Changing the last frame slightly did not solve the problem. A non-identical last-frame anchor still produced large detached splash/arc artifacts during a low-motion idle request.
+- Some interpolated outputs showed late-frame visual instability, including color or palette shifts near the final generated frame before the anchored endpoint.
+- The strongest positive lever was not frame count or anchor similarity; it was action clarity. When the `action` described a more expressive character motion, such as a friendly hand wave, the model had enough internal body movement to animate and avoided the detached idle artifacts in the observed run.
+
 ## Observed Prompt Behavior
 
 The following prompt families were tested with first and last frame supplied. All returned technically looped endpoint frames, but all produced external artifacts in the middle frames:
@@ -51,6 +62,8 @@ The following prompt families were tested with first and last frame supplied. Al
 | `Standing pose, slow one-pixel bob.` | Produced puff-cloud artifacts. |
 | `Subtle weight shift between planted feet.` | Produced colored or white motion/effect arcs across rerolls. |
 | `Small torso dip and return.` | Produced white arc/cloud shapes. |
+| Image-grounded idle loop with a slightly different generated last frame | Returned exact start and end anchors, but produced large detached white splash/arc marks in the middle frames. |
+| Concrete hand-wave action with the same slightly different anchors | Returned exact start and end anchors and produced a readable raised-hand wave without the detached puff/splash artifacts seen in idle tests. |
 | Negative-prompt append variants | Did not reliably help; mentioning puffs, smoke, or white pixels may have kept those concepts active in the prompt. |
 
 The following variants were tested first-frame-only:
@@ -60,6 +73,7 @@ The following variants were tested first-frame-only:
 | `idle` | No external puff/arcs, but the character raised the arm/club and did not loop back to the source pose. |
 | `idle loop` | No external puff/arcs, but the character raised the arm/club into a clear gesture and did not loop back to the source pose. |
 | Image-grounded `idle loop` wording | No external puff/arcs and much less gesture drift than bare `idle loop`, but the last frame still was not pixel-identical to the source pose. |
+| Image-grounded `idle loop` wording with 7 total frames | API rejected `frame_count: 7`; using the nearest valid shorter setting, `frame_count: 6`, returned 7 total images but reintroduced detached white pixels above the head and did not close the loop. |
 | `slow blink` | No external puff/arcs, but the character drifted into larger arm/club gestures and did not loop back to the source pose. |
 
 ## Teeth Hypothesis
@@ -92,6 +106,9 @@ This explains why:
 - Prompt-only fixes did not reliably work.
 - First-frame-only runs removed the external marks but drifted into larger body gestures and did not close the loop.
 - Concise, image-grounded first-frame-only wording reduced drift compared with a bare `idle loop` prompt, but still did not produce a true closed loop.
+- Using a slightly different last frame, rather than an identical last frame, did not remove the artifacts; in one test it produced larger detached white splash marks.
+- A larger, concrete character action such as a friendly hand wave gave the model enough internal body motion and avoided the detached marks in one test.
+- Late generated frames can also show palette or color instability, so endpoint equality alone is not enough to judge a loop.
 
 ## Practical Routing Guidance
 
@@ -116,6 +133,14 @@ For clean idle loops, prefer one of these workflows:
 3. Prefer concise image-grounded first-frame-only wording over bare labels such as `idle` or `idle loop` when testing for low-drift candidates.
 4. If an interpolation candidate is otherwise good, remove only disconnected external artifact pixels with a conservative alpha/component cleanup pass.
 5. Verify every frame visually and with a contact sheet before reporting success.
+
+Do not spend many retries on these as primary fixes for subtle idle artifacts:
+
+- Changing only the frame count.
+- Changing only the last frame by a tiny amount.
+- Relying on exact first/last endpoint matches.
+
+For non-idle character animations, prefer expressive actions with visible body mechanics. A wave, attack, turn, jump, reach, or other concrete movement may perform better than trying to force barely visible idle motion through interpolation.
 
 Local assembly and verification may include:
 
@@ -152,6 +177,8 @@ The issue was not that any single term always fails; it was that low-motion prom
 Negative prompts also did not reliably help. They can be useful for clear exclusions, but in this case long negative lists introduced artifact concepts such as puff, smoke, particles, trails, and white pixels into the prompt itself. In repeated tests, those concepts still appeared.
 
 Future prompt experiments should avoid both broad animation labels and artifact vocabulary. Prefer concrete internal character actions that have visible motion without requiring external indicators, but expect first-frame-only outputs to need local loop assembly.
+
+For animations that do not have to be subtle idles, prefer explicit expressive intent. Describe which limb moves, where it moves, and what pose it settles into. The successful wave test suggests the model behaves better when the requested action has a clear internal motion path.
 
 Potential future tests:
 
