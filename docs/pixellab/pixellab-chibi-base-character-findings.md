@@ -335,16 +335,24 @@ Visual morphology notes:
 - The torso is narrow and small, but not an exaggerated hourglass.
 - The shoulders/chest are restrained, leaving room for shirts and jackets.
 - The limbs are simple and readable, with minimal anatomy.
+- The arms and legs are visibly large compared with the torso. The torso reads as a narrow central connector, while the limbs carry much of the body mass and silhouette.
 - The hands are small/simple rather than large gloves.
 - The feet are the major shape anchor: larger, rounded wedge/block forms that make the character bottom-heavy and stable.
 - The silhouette is outfit-friendly because the base is not over-muscled and the extremities are broad enough to support shoes, pants, sleeves, and layered clothing.
 - The style reads like a clean, lower-muscle cousin of Ragnarok Online rather than a generic chibi tutorial base.
 
+Derived proportion observation from the first standing frames:
+
+- Male first standing frame visible size is about 29x72px; female first standing frame visible size is about 28x70px.
+- In the front-facing standing pose, the full body span reaches about 24-28px through the shoulder/arm/hip region, while the central torso itself reads much narrower because the arms sit outside it.
+- The lower-body rows separate into two limb masses around 7-9px wide each through the legs, then widen into foot shapes around 10-14px wide each.
+- This means the target is not just `narrow torso` or `wedge feet`; it is a proportion relationship: small torso core, comparatively substantial limbs, and feet that are large enough to anchor the whole sprite.
+
 Implications for the 64px target:
 
 - CPACK's frame cell is 64x98, but the visible standing body is about 70-72px tall. Our PixelLab `64x64` target should be understood as a desired visible-body scale near 64px, not as the exact CPACK cell size.
 - If recreating the feel at smaller scale, the likely target is a visible body around 60-64px tall inside a larger transparent canvas, with a possible future 48px visible-height downscale experiment.
-- Prompting should preserve CPACK's clean body grammar: `customizable isometric pixel art avatar base`, `8-direction RPG sprite proportions`, `small narrow torso`, `simple low-anatomy limbs`, `bottom-heavy rounded wedge feet`, `outfit-layer friendly base`.
+- Prompting should preserve CPACK's clean body grammar: `customizable isometric pixel art avatar base`, `8-direction RPG sprite proportions`, `small narrow torso`, `simple low-anatomy limbs`, `arms and legs large compared with the small torso`, `bottom-heavy rounded wedge feet`, `outfit-layer friendly base`.
 - Do not prompt for CPACK by name when generating unless the goal is explicitly reference discussion. Use its structural lessons rather than copying or redistributing the purchased asset.
 - Keep CPACK as the primary external shape anchor and Ragnarok Online as the lineage/reference family. For future generation attempts, CPACK should take priority when the two conflict.
 
@@ -376,6 +384,8 @@ Promising terms to test:
 - `bottom-heavy rounded wedge feet`
 - `small simple hands`
 - `simple low-anatomy limbs`
+- `arms and legs large compared with the small torso`
+- `small torso core with substantial limbs`
 - `outfit-layer friendly base`
 - `legs close together`
 - `no thigh gap`
