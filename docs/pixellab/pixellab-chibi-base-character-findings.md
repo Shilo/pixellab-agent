@@ -287,6 +287,14 @@ Web-search implications from 2026-06-30:
 - Secret of the Solstice is a valid adjacent game reference for RO-like 2D sprites in a 3D/isometric MMO, but current search results suggest it copies the general RO presentation more than the exact lower-resolution base-body flare.
 - Use all found third-party sprite sheets and galleries as visual inspiration only. Licensing and ownership vary; do not feed them directly into generation or claim derived production rights without separate permission.
 
+Why Ragnarok Online appears unusually isolated:
+
+- Most `chibi` art references optimize for a soft head-heavy caricature: bean or pear bodies, equal-width tube limbs, plush roundness, and toy-like hands/feet.
+- Ragnarok Online's silhouette solves a different production problem. It needs tiny low-top-down sprites that remain readable while wearing modular paper-doll equipment.
+- That combination rewards a narrow core body with exaggerated extremities: small torso, separated head, simplified hands, and bottom-heavy wedge/block feet that keep pose and equipment readable at a distance.
+- Other adjacent games usually change at least one of those constraints. Tree of Savior and Celestian Tales move larger and more detailed; Dofus/Wakfu-like isometric characters have bigger torsos and rounder/stubbier masses; Gacha-style avatars use thicker limbs but not the same low-top-down wedge-foot construction.
+- A useful human-facing label is therefore `Ragnarok Online half-chibi paper-doll sprite proportions`, not generic `chibi`, `SD`, or `super deformed`.
+
 ## Prompt Implications From Research
 
 Avoid relying on `chibi` alone. It pushes the model toward head size, not necessarily the desired body silhouette.
