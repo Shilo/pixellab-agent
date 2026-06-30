@@ -80,6 +80,73 @@ Public template-mode tuning is limited to generation controls such as `action_de
 
 No public managed-template field currently exposes direct 3D depth maps, per-bone easing, stride curves, secondary motion, limb IK, shadow-strength controls, editable keyframes, or `bone_scaling` as an animation-generation input. When the gait itself is too robotic, use managed v3/pro custom animation or raw skeleton/Aseprite keypoint authoring rather than expecting `walking-8-frames` to be a full rig editor.
 
+### Humanoid Horse Walk Template Batch Study
+
+A focused 2026-06-30 batch tested the humanoid/mannequin `walking-8-frames` template on a horse-headed bipedal character. The test character was an upright humanoid horse with a horse head, arms, legs, and a relaxed idle stance. The character was intentionally treated as a humanoid/mannequin body plan rather than a quadruped horse, because the sprite walks on two feet and has arms.
+
+The source setup used a single south/down-facing idle frame as the visual reference for managed character creation. The managed character was created with a mannequin/humanoid template family, low top-down RPG view, transparent background, and 92x92 output size. The animation tests then used the same managed character and the same south direction unless noted otherwise.
+
+The purpose of the batch was not to find a final production animation. It was to isolate which public inputs affected three observed failure modes:
+
+- Direction/head instability: some generated frames turned the head or upper body toward the back-facing/north pose even though the requested direction was south.
+- Shading artifacts: the legs received hard, dark shadow bands that looked unnatural for the character style.
+- Motion quality: arms and legs moved consistently, but the gait remained rigid and robotic, with limited organic weight transfer.
+
+Manifest-style trial summary:
+
+| Row | Route | Mode | Template id | Direction | Seed | Action text | Style fields | Returned frames | Observed result |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | MCP `animate_character` after REST managed character creation | `template` | `walking-8-frames` | `south` | Not set | None | None | 8 | Severe direction/head flip in the final frames; some frames showed a back-facing head/body interpretation despite the south request. |
+| 1 | REST `POST /v2/characters/animations` | `template` | `walking-8-frames` | `south` | Fixed seed | None | None | 8 | Head stayed south/front-facing. Motion remained stiff and leg shading remained high-contrast. This suggests the row 0 flip was generation variance rather than a wrong direction request. |
+| 2 | REST `POST /v2/characters/animations` | `template` | `walking-8-frames` | `south` | Same fixed seed | None | `shading="flat shading"` | 8 | Head/back flip returned in some frames. Hard leg shadows were not reliably fixed. For this character, `shading="flat shading"` by itself was not a stable correction. |
+| 3 | REST `POST /v2/characters/animations` | `template` | `walking-8-frames` | `south` | Same fixed seed | Direction-lock wording only | None | 8 | Head stayed south/front-facing. Arm and leg cycling remained consistent but still rigid. |
+| 4 | REST `POST /v2/characters/animations` | `template` | `walking-8-frames` | `south` | Same fixed seed | Direction-lock wording plus shadow/naturalness wording | None | 8 | Similar to row 3. The additional wording about shoulder sway, weight shift, flat colors, and avoiding heavy shadows did not materially improve gait quality. |
+| 5 | REST `POST /v2/characters/animations` | `v3` | None | `south` | Same fixed seed | Custom natural walk wording | `frame_count=8` | 9 | Head stayed stable and dark pixels were lower, but output returned nine images and the pose read more like arms-spread stepping than a clean walk. |
+
+The exact user-facing visual description used when creating the managed character was:
+
+```text
+a horse-headed humanoid character standing in a relaxed idle pose, bipedal upright body, RPG pixel art, transparent background
+```
+
+Rows 0, 1, and 2 did not provide animation action text. They relied on the template id and the managed character's stored description/settings. Rows 3 and 4 tested whether template mode would follow additional action text while still using the preset motion. Row 5 tested non-template v3 custom animation as a control.
+
+Row 3 action text:
+
+```text
+A front-facing south/down-facing walking cycle. Keep the horse head, face, chest, and belly facing the camera in every frame; do not turn around or show the back of the head. Natural relaxed arm swing and subtle weight shift.
+```
+
+Row 4 action text:
+
+```text
+A front-facing south/down-facing walking cycle. Keep the horse head, face, chest, and belly facing the camera in every frame; do not turn around or show the back of the head. Natural relaxed arm swing, subtle shoulder sway, and gentle weight shift. Keep flat colors and avoid heavy dark leg shadows.
+```
+
+Row 5 v3 control action text:
+
+```text
+A front-facing south/down-facing natural relaxed walk cycle. The horse head, face, chest, and belly stay facing the camera every frame. Subtle shoulder sway, gentle weight shift, relaxed arm swing, soft flat colors, no heavy dark leg shadows.
+```
+
+Quantitative inspection supported the visual reading. The original MCP-default output had a high opaque-pixel count and a high dark-pixel share. Template rows 1-4 had similar dimensions and frame counts, but rows 3 and 4 were the most stable for head direction. The `flat shading` row did not reduce dark-pixel share reliably and reintroduced orientation instability. The v3 row reduced the average dark-pixel share but did not preserve the requested eight-frame count and did not produce a better walk cycle.
+
+Interpretation:
+
+- Explicit `directions=["south"]` is necessary but not sufficient. The template renderer can still reinterpret individual frames if the prompt and random seed allow direction ambiguity.
+- A fixed seed can remove a bad stochastic head flip in one run, but it should not be treated as a universal quality fix.
+- Direction-lock `action_description` is the strongest observed mitigation for head flipping in south-facing humanoid template walks.
+- Additional action wording about subtle shoulder sway, weight shift, and natural motion did not materially change the preset gait. The built-in template appears to dominate limb timing and body mechanics.
+- `shading="flat shading"` is a soft style control, not a deterministic shadow-removal control. It may be appropriate to try when hard shadows are unacceptable, but this batch showed it can interact with generation variance and destabilize orientation.
+- Preset template mode is useful for cheap, consistent arm/leg cycling and quick managed-character motion. It should not be presented as a reliable route for natural locomotion on characters where organic weight transfer, nuanced easing, or authored acting quality matters.
+
+Recommended routing consequence:
+
+- If the user asks for a cheap/simple managed walk, use template mode and include explicit direction-lock text when the character is front-facing or direction-sensitive.
+- If the user asks for a natural, polished, or less robotic walk, warn that preset template mode is likely insufficient. Prefer raw animation routes such as `animate-with-text-*`, pro/custom managed animation when appropriate, or a custom skeleton/keypoint workflow.
+- If the user specifically wants skeleton ownership, natural locomotion, or editable gait, use the raw skeleton pipeline: estimate or author keypoints, build a multi-frame keypoint sequence, then call `animate-with-skeleton`.
+- Do not assume that adding naturalness language to a preset template will meaningfully alter the preset's gait mechanics. Treat it mainly as a style/orientation hint.
+
 ### Public API Boundary
 
 The website and Aseprite extension expose useful evidence about PixelLab product behavior, but their private request shapes, session behavior, and editor operation channels are not public automation contracts. Use them only as terminology and behavior evidence. Programmatic integrations should use official REST v2 routes or MCP tools unless PixelLab publishes a first-party route in public docs.
