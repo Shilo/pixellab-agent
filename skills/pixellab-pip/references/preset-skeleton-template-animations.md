@@ -2,7 +2,7 @@
 
 Read this for PixelLab requests involving skeletons, preset animations, template animations, built-in character animations, or named motions such as `walking-8-frames`, `breathing-idle`, `jumping-1`, `running-6-frames`, or "make the website's walk template".
 
-Current focus: preset/template animations for managed characters, plus boundary guidance for raw skeleton/keypoint routes. Custom skeleton authoring is future-facing; route custom keypoint work carefully to documented REST skeleton endpoints, and do not automate private website or Aseprite extension internals.
+Current focus: preset/template animations for managed characters plus a streamlined REST-first auto-rig/keypoint pipeline for estimating, exporting, and animating raw skeleton data. Custom skeleton authoring beyond estimated/exported keypoints is still future-facing; route keypoint work carefully to documented REST skeleton endpoints, and do not automate private website or Aseprite extension internals.
 
 ## Core Distinction
 
@@ -168,9 +168,36 @@ color_image
 seed
 ```
 
-Current MCP does not expose standalone raw-skeleton tools equivalent to Aseprite's "Estimate skeleton", "Edit skeleton", "Export skeleton for API", or "Animate with skeleton (new)" editor flow. MCP `create_character` / `animate_character` are managed-character tools; they can use template animations and stored character skeleton metadata internally, but they do not accept arbitrary keypoint arrays. Use REST v2 for raw skeleton estimation/animation.
+Current MCP does not expose standalone raw-skeleton tools equivalent to Aseprite's "Estimate skeleton", "Edit skeleton", "Export skeleton for API", or "Animate with skeleton (new)" editor flow. MCP `create_character` / `animate_character` are managed-character tools; they can use template animations and stored character skeleton metadata internally, but they do not accept arbitrary keypoint arrays. Use REST v2 for raw skeleton estimation/animation unless a future visible MCP tool explicitly exposes `skeleton_keypoints` or equivalent keypoint fields.
 
-Programmatic raw-skeleton route:
+## Auto-Rig Skeleton Pipeline
+
+Use this route when the user says "auto rig", "estimate skeleton", "rig this humanoid sprite", "export skeleton for API", "animate with this skeleton", or asks for an automatic skeleton pipeline from a simple humanoid prompt.
+
+Today, the streamlined programmatic route is REST-first:
+
+```text
+source image or generated reference frame
+  -> REST estimate-skeleton
+  -> save/export keypoint JSON
+  -> optional local/Aseprite keypoint editing or template keypoint authoring
+  -> REST animate-with-skeleton or create-image-bitforge
+```
+
+Do not route raw skeleton data through MCP unless the visible MCP tool schema accepts keypoint data. Current MCP template animation is still the right route for built-in managed motions such as humanoid `walking-8-frames`; raw skeleton animation is the right route when the user wants to own, export, edit, or reuse the skeleton keypoints.
+
+### Input Cases
+
+| User starts with | Best route |
+|---|---|
+| Existing sprite/image | Use it as the `estimate-skeleton` input image and as `reference_image` for later `animate-with-skeleton` unless the user supplies a separate reference. |
+| Aseprite-authored skeleton | Export from Aseprite, convert `pose_keypoints` to REST `skeleton_keypoints`, then call REST. |
+| Prompt only, such as "humanoid knight" | First create or ask for a base reference frame. Prefer a PixelLab-generated humanoid/mannequin frame if the user wants PixelLab to create the character; then estimate/export keypoints from that image. |
+| Existing managed character id | For preset motions, use MCP/REST managed template animation. For raw skeleton ownership, fetch/download a direction frame, estimate/export keypoints, then use REST raw skeleton routes. |
+
+For simple humanoid prompts, default the body plan to humanoid/mannequin. If creating a managed reference character first, use MCP `create_character(body_type="humanoid")` or REST `create-character-v3` with `template_id="mannequin"`. If creating only a raw single-frame reference, use an appropriate REST image/character route and then estimate keypoints from the returned image.
+
+### Programmatic Steps
 
 1. Estimate or author keypoints.
    - REST: `POST /v2/estimate-skeleton` for a sprite/image.
@@ -182,6 +209,21 @@ Programmatic raw-skeleton route:
    - REST single-image BitForge field: `skeleton_keypoints: [...]`.
 3. Call `POST /v2/animate-with-skeleton` with `image_size`, `reference_image`, `skeleton_keypoints`, and explicit `view` / `direction`.
 4. Add `init_images`, `inpainting_images`, `mask_images`, or `color_image` only when the user supplied those roles or the route requires them.
+
+Important: `estimate-skeleton` returns a skeleton for an image pose; it does not invent a full walk/run sequence by itself. For a real skeleton animation, `animate-with-skeleton` needs a keypoint sequence. If the user provides only one estimated pose and asks for motion, choose one of these:
+
+- Ask for or create additional keypoint poses.
+- Use an Aseprite visible editor workflow to insert/author local skeleton templates, then export the sequence.
+- Use managed template animation instead when they actually want a built-in walk/idle/jump.
+- Use REST custom text animation when they want motion but do not need skeleton ownership/export.
+
+### Defaults For Humanoid Auto-Rigging
+
+- Interpret "human", "person", "player", "NPC", "robot", "humanoid monster", and upright two-legged animal characters as humanoid/mannequin.
+- For a typical RPG/down-facing sprite, set `view="low top-down"` and `direction="south"` explicitly when calling `animate-with-skeleton`.
+- For side-view/platformer sprites, set `view="side"` and `direction="east"` or `west` based on the sprite.
+- Do not rely on `animate-with-skeleton` defaults; OpenAPI defaults are `view="side"` and `direction="east"`, which are wrong for many RPG sprites.
+- Save a sidecar manifest with `body_plan`, `source_image`, `image_size`, `view`, `direction`, `estimated_keypoints`, and the REST payload-ready `skeleton_keypoints`.
 
 Current OpenAPI defaults raw `animate-with-skeleton` to `view="side"` and `direction="east"`. Do not infer raw skeleton defaults from website managed-character examples, which may use low top-down/south or another stored character view/direction. Endpoint prose lists common supported sizes `16`, `32`, `64`, `128`, and `256`, while schema behavior can allow other 16-256 dimensions; verify current OpenAPI before writing exact production code for nonstandard sizes.
 

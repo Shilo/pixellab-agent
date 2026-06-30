@@ -2,7 +2,7 @@
 
 Generated: 2026-06-30.
 
-Scope: developer-facing research on PixelLab preset skeleton/template character animations, especially built-in Add Animation options such as `idle`, `jump`, `walk`, and `walk-8-frames`. This document focuses on observed website behavior, public REST v2/MCP equivalents, and the Aseprite extension's local skeleton/template evidence. It does not cover future custom skeleton authoring beyond noting the current public surfaces.
+Scope: developer-facing research on PixelLab preset skeleton/template character animations and the REST-first auto-rig/keypoint pipeline for estimating, exporting, and animating skeleton data. This document focuses on observed website behavior, public REST v2/MCP equivalents, and the Aseprite extension's local skeleton/template evidence. It does not cover a full custom skeleton authoring UI beyond the current estimate/export/animate surfaces.
 
 ## Executive Summary
 
@@ -273,6 +273,47 @@ The practical conclusion: Aseprite has a real interactive rigging/pose-authoring
 
 The installed extension exposes local skeleton reference families labeled `bipedal realistic`, `bipedal semi-chibi`, and `quadrupedal tiny`. It also exposes local walk references for those families. The local keypoint data uses labeled body points such as neck, face, shoulder, hip, and knee points. That supports the conclusion that PixelLab preset animation is skeleton/keypoint-guided under the hood. However, the extension's private editor channels are not stable public REST contracts.
 
+## Proposed Auto-Rig Skeleton Pipeline
+
+The useful product abstraction for Pip is an "auto-rig skeleton pipeline": accept a simple user intent, produce or use a reference sprite, estimate keypoints, save those keypoints as reusable API data, and then route to the public generation path that actually accepts skeleton data.
+
+Recommended current implementation:
+
+```text
+source sprite/reference frame
+  -> REST /estimate-skeleton
+  -> normalize/save keypoints and metadata
+  -> optional keypoint editing or sequence authoring
+  -> REST /animate-with-skeleton for animation frames
+  -> optional Aseprite import/export/tagging after generation
+```
+
+Current route choice:
+
+| Step | Preferred surface now | Reason |
+| --- | --- | --- |
+| Create a prompt-only humanoid reference | MCP `create_character` or REST `create-character-v3` when a managed character is useful; REST image/character route when only a raw reference frame is needed | The skeleton estimator requires an image. Simple humanoid prompts need a reference frame before raw keypoint work can begin. |
+| Auto-rig an existing sprite | REST `POST /v2/estimate-skeleton` | Public route that returns keypoints from an image. |
+| Store/export the rig | Local sidecar JSON and optional Aseprite export/import | Editing/export is client-side data handling, not a hosted MCP/API edit endpoint. |
+| Animate from skeleton data | REST `POST /v2/animate-with-skeleton` | Public route that accepts nested `skeleton_keypoints`. |
+| Create a single skeleton-guided image | REST `POST /v2/create-image-bitforge` | Public route that accepts one keypoint array plus `skeleton_guidance_scale`. |
+| Built-in walk/idle/jump on managed character | MCP `animate_character` or REST managed character animation | Prefer this when the user wants a managed preset, not raw keypoint ownership. |
+
+MCP priority should be conditional:
+
+- Use MCP first for managed character creation and managed preset animation.
+- Use REST first for raw skeleton keypoints today, because current public MCP tools do not accept or estimate skeleton keypoint arrays.
+- If a future MCP tool visibly exposes `estimate_skeleton`, `animate_with_skeleton`, or `skeleton_keypoints`, prefer it only for the matching raw-skeleton step and keep the same keypoint/export semantics.
+
+Important limitation: `estimate-skeleton` auto-rigs one supplied pose. It does not automatically create a full walk/run skeleton sequence. To animate with skeleton data, the pipeline needs multiple keypoint frames or another authored motion source. For a single estimated pose plus a generic "walk" request, Pip should either route to managed template animation, ask for/generate additional skeleton poses, use an Aseprite-visible authoring/export workflow, or use REST custom text animation when skeleton ownership is not required.
+
+Humanoid defaults:
+
+- Map human/person/player/NPC/robot/humanoid monster/upright two-legged animal prompts to humanoid/mannequin.
+- For down-facing RPG sprites, default the raw skeleton animation call to `view="low top-down"` and `direction="south"` rather than relying on REST defaults.
+- For side-view sprites, use `view="side"` and the visible facing direction.
+- Persist a sidecar manifest with body plan, source image, image size, view, direction, estimated keypoints, payload-ready skeleton keypoints, route used, and timestamp.
+
 ## Template Character Families
 
 Public MCP docs expose these high-level managed character template families:
@@ -430,10 +471,11 @@ The endpoint prose lists supported sizes `16`, `32`, `64`, `128`, and `256`, whi
 
 This is the right public route for custom skeleton keypoints. It is not the same as selecting a managed preset animation id on a character. Future custom skeleton support should build on this route, plus explicit keypoint validation/export/import rules.
 
-Current focus for the skill should remain preset skeleton/template animations:
+Current skill support should cover both managed preset animations and raw skeleton pipeline requests while keeping them separate:
 
 ```text
-Managed character id + template_animation_id + directions
+Managed preset: managed character id + template_animation_id + directions
+Raw skeleton: reference image + estimated/exported skeleton_keypoints + view/direction
 ```
 
 ## Aseprite Workflow Boundary
@@ -472,6 +514,15 @@ User wants exact skeleton keypoints, exported pose JSON, or custom skeletons
   -> REST v2 estimate-skeleton / animate-with-skeleton.
   -> Aseprite can export or organize keypoints, but do not automate private extension calls.
 
+User wants "auto-rig this humanoid" from an image
+  -> REST v2 estimate-skeleton.
+  -> Save sidecar keypoint JSON and payload-ready skeleton_keypoints.
+  -> Animate with REST animate-with-skeleton only when a keypoint sequence exists.
+
+User wants "auto-rig this humanoid" from only a prompt
+  -> Create or request a base reference frame first.
+  -> Then estimate/export keypoints from that generated/reference frame.
+
 User wants only to import/export/edit frames in Aseprite
   -> Generate with MCP/REST first, then use Aseprite CLI/Lua for workspace operations.
 ```
@@ -483,6 +534,7 @@ User wants only to import/export/edit frames in Aseprite
 3. The website first-party animation flow has richer internal fields such as calibration images and frozen first-frame anchors, but it is not a public automation contract.
 4. Aseprite extension local skeleton references strongly imply skeleton-guided presets, but those files can be updated by the extension updater and are not public API guarantees.
 5. `bone_scaling` appears in website character objects and UI constraints, but current public managed animation schema does not expose it as a direct animation-generation control. It should be treated as character metadata unless current docs later expose a stable field.
+6. A single estimated skeleton pose is not a motion template. Pipeline UX must distinguish "rig this pose" from "author a skeleton animation sequence."
 
 ## Implementation Recommendations For `pixellab-pip`
 
@@ -490,5 +542,6 @@ User wants only to import/export/edit frames in Aseprite
 2. Trigger that reference on terms such as `skeleton`, `preset animation`, `template animation`, `built-in animation`, `walk template`, `idle template`, `bark`, and explicit template ids like `walk-8-frames`.
 3. Prefer MCP for managed preset animations when MCP tools are visible.
 4. Fall back to REST v2 only when MCP is unavailable, exact schema control is needed, or the user explicitly asks for API/code.
-5. Keep raw skeleton keypoint support separate from preset template animation. For now, route custom skeleton work to explanation/planning or REST `animate-with-skeleton`, not to hidden Aseprite/website internals.
-6. Preserve template frame counts and returned frame order. Do not locally stretch, duplicate, trim, ping-pong, or reorder generated template frames unless the user explicitly asks for an alternate playback package.
+5. Add a streamlined auto-rig path for existing images: REST `estimate-skeleton`, sidecar manifest, optional keypoint editing/export, then REST `animate-with-skeleton` when a keypoint sequence exists.
+6. Keep raw skeleton keypoint support separate from preset template animation. For now, route custom skeleton work to explanation/planning or REST `animate-with-skeleton`, not to hidden Aseprite/website internals.
+7. Preserve template frame counts and returned frame order. Do not locally stretch, duplicate, trim, ping-pong, or reorder generated template frames unless the user explicitly asks for an alternate playback package.
