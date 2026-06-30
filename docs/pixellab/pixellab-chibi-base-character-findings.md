@@ -420,6 +420,57 @@ Next prompt implications:
 - Avoid `Ragnarok-like detail` when the torso starts getting too anatomical; use `RPG sprite detail` or `cute sprite detail` instead.
 - The best current V3 path is still seed `93636`, but with pose constraints and accessory avoidance.
 
+## V3/Pro Four-To-One Compact Wedge Search
+
+Artifact folder:
+
+```text
+pixellab-pip-generations/v3-pro-4to1-compact-wedge-search/
+```
+
+Settings:
+
+| Field | Value |
+|---|---|
+| Date | 2026-06-30 |
+| Ratio | 4 V3 attempts, 1 Pro attempt |
+| V3 endpoint | REST `/create-character-v3` |
+| Pro endpoint | REST `/create-character-pro` |
+| Image size request | 64x64 |
+| View | low top-down |
+| Template | `mannequin` |
+| V3 detail | low detail |
+| V3 outline | single color outline |
+| Prompt enhancement | disabled |
+| Batch cost | 28 subscription generations |
+
+Results:
+
+| Prompt label | Character ID | Seed | Route | Folder | Main result |
+|---|---|---:|---|---|---|
+| V3 Seed93636 Compact Vertical Bare Hands | `5f02be9a-f3f0-4f42-90e4-b34cc7d5e424` | `93636` | REST `/create-character-v3` | `01-v3-seed93636-compact-vertical-bare-hands/` | Fixed the literal glove problem from rank-1, but kept the wide stance and still has too much anatomical definition. Not a better anchor than `4eb5d0a7-4e9a-4855-aa09-0eea36e68714`. |
+| V3 Seed93636 Cute Compact Wedge Base | `7f84ea31-b564-4400-a6fb-50418823d854` | `93636` | REST `/create-character-v3` | `02-v3-seed93636-cute-compact-wedge-base/` | Worse than the first prompt. It became more baby-like and did not preserve the appealing style energy of the original `93636` wedge result. |
+| V3 Seed93637 Compact Pose Wedge Search | `a8562812-53b8-4a3a-b3ac-6947f97d469f` | `93637` | REST `/create-character-v3` | `03-v3-seed93637-compact-pose-wedge-search/` | Most compact V3 body in this batch and reduced the stance spread, but lost charm and still did not reach the target flat hourglass/wedge avatar base. |
+| V3 Seed93638 Clean Style Bald Compact | `1b55c2a6-e3ac-442e-8f40-220e7d3b54b7` | `93638` | REST `/create-character-v3` | `04-v3-seed93638-clean-style-bald-compact/` | Drifted into a short baby-like body. This reinforces that `bald hairless` plus `chibi` still risks infant proportions. |
+| Pro Seed93639 Readable Wedge | `cf472bbd-b24b-4568-9b9f-241ca3fc605b` | `93639` | REST `/create-character-pro` | `05-pro-seed93639-readable-wedge/` | Preserved the Pro wedge/hourglass idea, but stayed too flat and low-character. Better than some failed Pro outputs, but not competitive with the best V3/standard anchors. |
+
+Verification:
+
+- All five completed successfully.
+- All five downloaded as transparent PNG rotations.
+- V3 returned 8 directions and 112x112 or 120x120 canvases, even with a 64x64 request.
+- Pro returned 8 directions and a 104x104 canvas.
+- Visible south sprite bounds ranged from roughly 50px to 60px tall.
+
+Findings:
+
+- `no gloves`, `bare hands`, and `bare feet` are useful and should stay in any prompt that uses hand-shape language.
+- `compact vertical stance`, `feet below shoulders`, `arms hanging down`, and `legs close together` can reduce spread somewhat, but they do not reliably overcome seed `93636`'s wide-stance tendency.
+- Reusing seed `93636` remains helpful for quality/style, but it also preserves the spread/anatomy failure. It is not enough to repair by prompt alone so far.
+- Nearby seed `93637` reduced spread, but also lost the cuteness and style quality. This suggests seed exploration matters, but small numeric seed changes are not guaranteed to preserve the good traits.
+- Pro with a different seed and `medium readable detail` still leaned too flat. The Pro route is not currently beating V3 or the original standard-mode favorite.
+- None of these five should replace the ranked liked-result registry unless future human review chooses one as a partial anchor.
+
 ## Suggested Next Test Plan
 
 Use standard mode first, with 4 directions, chibi proportions, low top-down view, size target 64, low or default detail, and omitted/default outline.
