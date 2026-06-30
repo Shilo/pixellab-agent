@@ -250,6 +250,9 @@ New clarification from user review:
 
 Useful references:
 
+- [Customizable Pixel Art Character Kit / CPACK v2 on Unity Asset Store](https://assetstore.unity.com/packages/2d/characters/customizable-pixel-art-character-kit-13984) - best current external morphology reference. It has the same RO-like half-chibi/isometric body grammar, but cleaner and less muscular than Ragnarok Online.
+- [Customizable Pixel Art Character Kit on GameDev Market](https://www.gamedevmarket.net/asset/customizable-pixel-art-character-kit-1076) - alternate store/source page for the same Mizuko/Midaem asset.
+- [CPACK v2 YouTube preview](https://www.youtube.com/watch?v=U3qQE__kXqE) - visual preview reference for the kit in motion.
 - [Ragnarok Online official/concept art gallery](https://www.creativeuncut.com/art_ragnarok-online_a.html) - useful high-level art reference for RO's chibi and semi-chibi identity.
 - [Ragnarok Online chibi characters art](https://www.creativeuncut.com/gallery-14/ro-sd-characters3.html) - useful reference for the official SD/chibi promotional direction.
 - [RagnarokOnline Job Class & NPC Sprite List](https://nn.ai4rei.net/dev/npclist/?qq=8) - useful for inspecting actual RO sprite silhouettes and body/gear readability.
@@ -297,6 +300,54 @@ Why Ragnarok Online appears unusually isolated:
 - The Reddit `ragnarok half-chibi` comment is useful supporting evidence because another artist independently ran into the same naming/reference-search problem.
 - A useful human-facing label is therefore `Ragnarok Online half-chibi paper-doll sprite proportions`, not generic `chibi`, `SD`, or `super deformed`.
 
+## CPACK V2 Reference Findings
+
+The user's purchased `Customizable Pixel Art Character Kit` / `CPACK v2` is now the best external anchor for the target base body. It appears to capture the same useful silhouette family as Ragnarok Online, while avoiding the heavier muscular/anatomical detail that made direct RO references risky.
+
+Local reference files reviewed:
+
+- `C:\Users\shilo\Downloads\CPACK v2 Documentation.pdf`
+- `C:\Users\shilo\Downloads\readme.rtf`
+- `C:\Users\shilo\Downloads\Male_Skin_01.png`
+- `C:\Users\shilo\Downloads\Female_Skin_01.png`
+
+Documentation and readme facts:
+
+- The kit contains male and female base pixel-art character sheets.
+- It includes stand poses and walking animations in 8 directions, using an isometric perspective.
+- Each walking animation is a perfect loop with 8 frames.
+- Each sheet is 576x784px.
+- Each frame/cell is 64x98px.
+- The character is assembled from layered sprite sheets: skin, eyes, hair, shirt, pants, shoes, with optional hats/glasses and back-hair/front-hair ordering.
+- The PDF recommends Unity import settings that preserve pixel art: Truecolor compression, mipmapping off, point sampling, anisotropic filtering off, and anti-aliasing off.
+- The readme describes the kit as good for MMOs and classic 2D isometric/horizontal games.
+
+Measured skin-sheet facts:
+
+| File | Sheet size | Grid | Cell size | Visible body size range | First standing frame visible size |
+|---|---:|---:|---:|---:|---:|
+| `Male_Skin_01.png` | 576x784 | 9x8, 72 frames | 64x98 | 20-37px wide, 69-74px tall | 29x72px |
+| `Female_Skin_01.png` | 576x784 | 9x8, 72 frames | 64x98 | 20-37px wide, 69-74px tall | 28x70px |
+
+Visual morphology notes:
+
+- The head is large but not baby-round or plush.
+- The torso is narrow and small, but not an exaggerated hourglass.
+- The shoulders/chest are restrained, leaving room for shirts and jackets.
+- The limbs are simple and readable, with minimal anatomy.
+- The hands are small/simple rather than large gloves.
+- The feet are the major shape anchor: larger, rounded wedge/block forms that make the character bottom-heavy and stable.
+- The silhouette is outfit-friendly because the base is not over-muscled and the extremities are broad enough to support shoes, pants, sleeves, and layered clothing.
+- The style reads like a clean, lower-muscle cousin of Ragnarok Online rather than a generic chibi tutorial base.
+
+Implications for the 64px target:
+
+- CPACK's frame cell is 64x98, but the visible standing body is about 70-72px tall. Our PixelLab `64x64` target should be understood as a desired visible-body scale near 64px, not as the exact CPACK cell size.
+- If recreating the feel at smaller scale, the likely target is a visible body around 60-64px tall inside a larger transparent canvas, with a possible future 48px visible-height downscale experiment.
+- Prompting should preserve CPACK's clean body grammar: `customizable isometric pixel art avatar base`, `8-direction RPG sprite proportions`, `small narrow torso`, `simple low-anatomy limbs`, `bottom-heavy rounded wedge feet`, `outfit-layer friendly base`.
+- Do not prompt for CPACK by name when generating unless the goal is explicitly reference discussion. Use its structural lessons rather than copying or redistributing the purchased asset.
+- Keep CPACK as the primary external shape anchor and Ragnarok Online as the lineage/reference family. For future generation attempts, CPACK should take priority when the two conflict.
+
 ## Prompt Implications From Research
 
 Avoid relying on `chibi` alone. It pushes the model toward head size, not necessarily the desired body silhouette.
@@ -307,6 +358,9 @@ Promising terms to test:
 - `2.5 heads tall`
 - `3 heads tall`
 - `bottom-heavy chibi`
+- `customizable isometric pixel art avatar base`
+- `8-direction RPG sprite proportions`
+- `CPACK-like clean half-chibi body grammar`
 - `Ragnarok Online style semi-chibi MMO sprite`
 - `RO-style semi-chibi base sprite`
 - `flat low-shading`
@@ -319,6 +373,10 @@ Promising terms to test:
 - `arms taper from thin shoulders to wide mitten hands`
 - `legs taper from narrow thighs to wide wedge feet`
 - `legs taper outward into wider blocky feet`
+- `bottom-heavy rounded wedge feet`
+- `small simple hands`
+- `simple low-anatomy limbs`
+- `outfit-layer friendly base`
 - `legs close together`
 - `no thigh gap`
 - `compact thick limbs`
@@ -331,13 +389,14 @@ Risky terms:
 - `curvy`, which can pull the body toward gendered anatomy.
 - `mochi`, `bean body`, `plush`, `squishy`, and `cuddly`, which pull toward the wrong soft rounded chibi branch.
 - `Animal Crossing style` and `Nendoroid style`, which may reinforce toy-like or plush baby proportions rather than the RO-like modular base.
+- Direct `Ragnarok Online` wording when it pulls in too much muscular/anatomical detail. Prefer CPACK-like clean half-chibi proportions when the goal is a blank base.
 - `big eyes` without `unisex`, which can push gendered or infant-like face emphasis.
 - `bald` too early in the prompt, which can dominate the result and produce baby-like heads.
 - `super deformed` alone, which may mean 2-head bobblehead proportions instead of the desired 2.5-3-head semi-chibi avatar.
 
 Next seed experiment to consider:
 
-- Try `seed: 0` with `bottom-heavy chibi`, `slim torso`, `legs taper outward into wider blocky feet`, and `Ragnarok Online inspired base character`, while keeping the canvas at 64x64, low top-down, and low/detail-light rendering.
+- Try `seed: 0` with `customizable isometric pixel art avatar base`, `clean half-chibi proportions`, `small narrow torso`, `simple low-anatomy limbs`, `bottom-heavy rounded wedge feet`, and `outfit-layer friendly base`, while keeping the canvas at 64x64, low top-down, and low/detail-light rendering.
 
 ## Next Six-Prompt Test Plan
 
