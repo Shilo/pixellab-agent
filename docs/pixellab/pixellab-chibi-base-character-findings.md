@@ -606,3 +606,119 @@ Prefer a small batch that tests only one variable at a time:
 4. A prompt that avoids `oversized head` and `big eyes`, because those may amplify the infant-like read when combined with baldness and bare skin.
 
 If preserving Candidate 1's body is more important than fresh generation, the most promising route may be an edit/paperdoll-style workflow: use Candidate 1 as the identity/reference and request removal of only the hair while preserving the body, pose, skin, canvas, and transparent background. That route should be documented as an edit experiment, not a solved base-generation prompt, until verified.
+
+## Pixen Single-Image South-Facing Prompt Sweep
+
+Artifact folder:
+
+```text
+pixellab-pip-generations/cpack-prompt-sweep-v3-pixen-20260630/
+```
+
+Plans and summaries:
+
+| File | Purpose |
+|---|---|
+| `prompt-plan-v2-probe.json` | One V3 redundant CPACK-derived prompt plus four small Pixen probes. |
+| `prompt-plan-v3-30-sweep.json` | Thirty 32x64 Pixen prompts compiled before generation. |
+| `prompt-plan-v4-rescue-sweep.json` | Twenty 64x64 Pixen rescue prompts after 32x64 failed semantically. |
+| `phase-2-pixen-probe/results.json` | Four-probe Pixen results and verification. |
+| `phase-3-pixen-30-sweep/summary.json` | Thirty 32x64 Pixen results, contact sheet metadata, balance data. |
+| `phase-4-pixen-rescue-64/summary.json` | Twenty 64x64 Pixen rescue results, contact sheet metadata, balance data. |
+
+Settings used:
+
+| Sweep | Route | Size | View | Direction | Detail | Outline | Prompt enhancement |
+|---|---|---:|---|---|---|---|---|
+| V3 redundant test | REST `/create-character-v3` | 64x64 request | low top-down | 8 rotations | low detail | omitted/null | disabled |
+| Pixen probe | REST `/create-image-pixen` | 32x64 | low top-down | south | low detail | omitted/null | disabled |
+| Pixen 30 sweep | REST `/create-image-pixen` | 32x64 | low top-down | south | low detail | omitted/null | disabled |
+| Pixen rescue sweep | REST `/create-image-pixen` | 64x64 | low top-down | south | low detail | omitted/null | disabled |
+
+Cost:
+
+- Probe balance: `2305.45 -> 2299.45`, delta `6` subscription generations. This includes four Pixen probes and balance after the V3 job had already consumed its cost.
+- Thirty-prompt Pixen sweep balance: `2299.45 -> 2269.45`, delta `30` subscription generations.
+- Twenty-prompt 64x64 rescue sweep balance: `2269.45 -> 2249.45`, delta `20` subscription generations.
+- Total tracked Pixen/image-sweep cost for this documented set: `56` subscription generations, excluding the earlier V3 cost already reflected before the probe balance snapshot.
+
+### V3 Redundant CPACK-Derived Prompt
+
+Prompt:
+
+```text
+customizable isometric pixel art avatar base, clean half-chibi proportions, small narrow torso core, arms and legs large compared with the torso, simple low-anatomy limbs, bottom-heavy rounded wedge feet, outfit-layer friendly base, light peach bare skin, bald hairless
+```
+
+Result:
+
+- V3 completed and saved 8 transparent rotations under `phase-1-v3-character/`.
+- South frame is bald and full body, but still more anatomical and less cute than the original `Clean Chibi Base Template`.
+- The redundant CPACK-derived wording did not magically recover the desired base shape in V3.
+
+### Pixen Probe Findings
+
+Four 32x64 probes tested the initial prompt with `south-facing`, `front-facing`, `idle`, and `arms resting at sides`.
+
+Findings:
+
+- `front-facing` and `south-facing` helped orientation, but did not prevent scene/action/body-rendering drift.
+- `idle` reduced the action feel slightly, but Pixen still created anatomy-heavy, posed, or clothing-like results.
+- `arms resting at sides` was the best pose-control phrase, but it made the result more doll/anatomy-heavy.
+- `bare skin` was not sufficient to prevent clothing-like artifacts. Future prompts need explicit `nude`, `no clothing`, and `no accessories` when searching for this base.
+- Even with `detail: low detail`, Pixen still rendered more shading and anatomy than desired. Prompt-side `low quality`, `low shading`, and `flat colors` are worth testing, but they are not enough by themselves.
+
+### 32x64 Thirty-Prompt Sweep
+
+The 30-prompt sweep intentionally varied the body-language terms while keeping a consistent control set:
+
+- `single`
+- `front-facing` and/or `south-facing`
+- `idle`
+- `unisex`, `androgynous`, or `non-gendered`
+- `nude bare skin`
+- `no clothing`, `no clothes`, and/or `no accessories`
+- `bald hairless`
+- `low quality`, `low shading`, `flat colors`, and/or `low detail`
+- small torso plus large/simple/wedge limbs
+
+Main result:
+
+- The sweep mostly failed. Pixen treated many 32x64 prompts as cropped portrait-like character art rather than a small complete body sprite.
+- Many outputs had huge cropped heads, dramatic faces, extra rendering, action/scene energy, or implied clothing/accessory details.
+- The 32x64 aspect ratio is valid according to the API, but for this content it appears to encourage tight crops and high visual emphasis on the head/face.
+
+Prompt implications:
+
+- Do not rely on `front-facing/south-facing idle character base` alone for Pixen single-image generation.
+- Add `full body visible head to feet`, `small centered figure`, and `not portrait/not close-up` if using Pixen for this search again.
+- If the goal is a complete sprite at 32x64, Pixen may need a reference image or a character route instead of prompt-only single-image generation.
+
+### 64x64 Rescue Sweep
+
+The rescue sweep switched to 64x64 and explicitly requested:
+
+- `small centered full-body sprite`
+- `entire body visible head to feet`
+- `not portrait`, `not close-up`, `not a bust`
+- `no scene`, `no action`
+- the same nude/unisex/bald/low-shading controls
+
+Main result:
+
+- 64x64 reduced the crop/portrait failure and produced more complete bodies.
+- The route still did not solve the target style. Outputs continued to drift toward dramatic faces, gendered body language, extra costume/body rendering, or the wrong silhouette.
+- Several results are usable as evidence that 64x64 is better for full-body discovery than 32x64, but none should replace the existing liked anchors.
+
+Best partial lessons:
+
+- `full body visible with empty transparent space around it` and `small centered figure` were more effective than `32x64` for avoiding head crops.
+- `small full-body`, `entire body visible`, and `not portrait` should be used together if Pixen is tried again.
+- `RPG maker scale` and `sprite sheet cell` helped communicate small full-body scale, but still did not force the CPACK-like body shape.
+- The single-image Pixen route is poor for discovering this very specific CPACK/RO-like base shape from text alone. It may be useful for cheap rough probing, but the stronger path is likely reference-guided editing or character generation anchored on a known-good body.
+
+Current conclusion:
+
+- Prompt-only Pixen is not the secret for this target yet.
+- The most promising future direction is to use the purchased CPACK-style asset or the original `Clean Chibi Base Template` as a reference/identity anchor, then test hair removal or style transfer while preserving body proportions.
+- If generating from text only, use V3/standard character routes rather than Pixen single-image, because character routes are more likely to preserve full-body sprite structure.
