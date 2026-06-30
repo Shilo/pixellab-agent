@@ -264,6 +264,7 @@ Useful references:
 - [Ragnarok Online Sprite - 01 by Farheit](https://www.deviantart.com/farheit/art/Ragnarok-Online-Sprite-01-57059213) - useful example of a fan-made RPG Maker XP sprite modeled from a Ragnarok Online character; the page reports a 128x192 image size, implying RPG Maker-style frame layout.
 - [Disgaea RO Sprites on PixelJoint](https://pixeljoint.com/pixelart/39574.htm) - useful art-process reference for what artists perceive as RO palette/shading style. Comments discuss palette/ramp choices in an RO context.
 - [FXFreitas Sprites showcase on Hercules Board](https://board.herc.ws/topic/9831-showcase-fxfreitas-sprites/) - useful for custom/edited RO-style sprite discussion and examples, including Ragnarok DS sprite enhancement and RO color/texture matching notes.
+- [Reddit comment calling the style "ragnarok half-chibi"](https://www.reddit.com/r/RagnarokOnline/comments/1h9zn24/comment/m18hle5/) - useful because it independently describes the exact discovery problem: RO's half-chibi style is hard to find references for, and AI tools struggle to reproduce it from generic terms.
 - [Tree of Savior on Steam](https://store.steampowered.com/app/372000/Tree_of_Savior_English_Ver/) - adjacent cute/charming character reference, but not as exact for the target base silhouette.
 - [Tree of Savior concept art gallery](https://toswiki.treeofsaviorgame.com/gallery/concept_art) - adjacent costume/character proportion reference.
 - [La Tale official page](https://latale.papayaplay.com/latale.do?tp=download) - confirms La Tale as a 2D side-scrolling fantasy MMORPG. Useful for 2D avatar/clothing readability, but side-view proportions are less directly comparable to low-top-down base sprites.
@@ -293,6 +294,7 @@ Why Ragnarok Online appears unusually isolated:
 - Ragnarok Online's silhouette solves a different production problem. It needs tiny low-top-down sprites that remain readable while wearing modular paper-doll equipment.
 - That combination rewards a narrow core body with exaggerated extremities: small torso, separated head, simplified hands, and bottom-heavy wedge/block feet that keep pose and equipment readable at a distance.
 - Other adjacent games usually change at least one of those constraints. Tree of Savior and Celestian Tales move larger and more detailed; Dofus/Wakfu-like isometric characters have bigger torsos and rounder/stubbier masses; Gacha-style avatars use thicker limbs but not the same low-top-down wedge-foot construction.
+- The Reddit `ragnarok half-chibi` comment is useful supporting evidence because another artist independently ran into the same naming/reference-search problem.
 - A useful human-facing label is therefore `Ragnarok Online half-chibi paper-doll sprite proportions`, not generic `chibi`, `SD`, or `super deformed`.
 
 ## Prompt Implications From Research
