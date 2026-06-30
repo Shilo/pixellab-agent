@@ -301,6 +301,60 @@ Game/reference-anchored:
 5. `Unisex RO-style 2.5D isometric semi-chibi avatar base, light peach bare skin, no clothes, bald hairless, tiny trapezoid torso, narrow waist, arms taper to mitten hands, legs taper to wide wedge feet, no thigh gap, readable clothing-template silhouette, flat low-detail pixel sprite.`
 6. `Unisex semi-chibi MMO avatar base inspired by Ragnarok Online sprite proportions and flat geometric cartoon shape language, light peach bare skin, no clothes, bald hairless, 2.75 heads tall, narrow pinched torso, thick tapered limbs, mitten hands, wedge feet, minimal interior shading.`
 
+## Researched Six-Prompt Batch Results
+
+Artifact folder:
+
+```text
+pixellab-pip-generations/standard-64-flat-researched-chibi-base-prompts/
+```
+
+Settings:
+
+| Field | Value |
+|---|---|
+| Surface | MCP `create_character` |
+| Mode | `standard` |
+| Body type | `humanoid` |
+| Directions | 4 |
+| Proportions | chibi preset |
+| View | low top-down |
+| Size target | 64 |
+| Detail | low detail |
+| Shading | flat shading |
+| Outline | single color black outline |
+| Batch cost | 6 subscription generations |
+
+Ranking from human review:
+
+1. Prompt 3, `Unisex semi-chibi dress-up avatar base... broad simple hands and heavy wedge feet... thick close-set limbs... tapered geometry...`, is the strongest direction from this batch. It leaned into wedge-shaped legs and heavy feet more than prior attempts.
+2. Prompts 1 and 2 are secondary partial successes. They preserve the lower-detail standard-mode look and stay closer to a base template than the game-name prompts, but they do not improve the torso or arm wedge shape enough.
+3. Prompts 4, 5, and 6, which mention Ragnarok Online / RO, failed for this specific blank base target. The game reference did not produce the desired proportions, and prompt 5 contaminated the result with colored clothing or footwear details.
+
+Important visual findings:
+
+- Prompt 3's legs moved closer to the desired wedge style.
+- Prompt 3 still did not solve the arms; the arms did not clearly become wedge-shaped.
+- Prompt 3 still has a more defined torso than desired. The target torso should read flatter and more like a simple narrow hourglass or trapezoid, not a detailed anatomical torso.
+- Long prompts are not proven to help. The stronger result may have come from specific terms such as `dress-up avatar base`, `heavy wedge feet`, `thick close-set limbs`, and `tapered geometry`, not from prompt length.
+- Ragnarok Online is still useful as a human-facing research reference, but direct `Ragnarok Online style` or `RO-style` prompt wording should be treated as risky for blank base generation.
+
+Next focused prompt direction:
+
+- Stay in standard mode with low detail and flat shading.
+- Build around prompt 3's successful terms.
+- Remove direct game names.
+- Reduce anatomical-detail cues.
+- Test shorter versus medium-length prompts around the same wedge-leg idea.
+- Add more explicit arm shape language: `wedge arms`, `sleeve-shaped arms`, `arms widen from shoulder to mitten hands`, or `flat tapered arms`.
+- Add torso simplification: `flat narrow hourglass torso`, `simple torso silhouette`, or `no detailed torso anatomy`.
+
+Next three prompts to test:
+
+1. `Unisex semi-chibi dress-up avatar base, 3 heads tall, light peach bare skin, no clothes, bald hairless, flat low-shading pixel sprite, flat narrow hourglass torso, no detailed torso anatomy, thick close-set wedge legs, heavy wedge feet, sleeve-shaped arms that widen into mitten hands.`
+2. `Unisex semi-chibi base character, light peach bare skin, no clothes, bald hairless, simple flat hourglass torso, compact thick limbs, wedge legs, wedge arms, large mitten hands, heavy wedge feet, legs close together, flat low-detail shading.`
+3. `Unisex dress-up chibi avatar base, light peach bare skin, no clothes, bald hairless, small flat torso, thick close-set tapered legs with heavy wedge feet, tapered sleeve-like arms with mitten hands, cute outfit-template silhouette, low-detail flat shading.`
+
 ## Suggested Next Test Plan
 
 Use standard mode first, with 4 directions, chibi proportions, low top-down view, size target 64, low or default detail, and omitted/default outline.
