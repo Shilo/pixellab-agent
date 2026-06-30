@@ -15,6 +15,7 @@ These docs explain PixelLab tools, workflows, terminology, SDK boundaries, and a
 - [PixelLab UI Generation Surfaces Research](pixellab/pixellab-ui-generation-surfaces-research.md) - current UI-specific matrix for MCP `create_ui_asset`, REST `/create-ui-asset`, REST `/generate-ui-v2`, shape pieces, elements, and website/editor boundaries.
 - [PixelLab User-Facing Term To Backend Mapping](pixellab/pixellab-user-facing-term-backend-mapping.md) - production mapping of user-facing labels across REST v2, MCP, website/editor, Pixelorama, and Aseprite to endpoints, tools, and model/product terms.
 - [PixelLab Documentation Watch Cache](pixellab/pixellab-doc-watch-cache.md) - local-only watcher workflow for caching upstream PixelLab docs, detecting REST/MCP drift, and deciding when the Agent Skill needs updates.
+- [PixelLab Skeleton And Template Animation Research](pixellab/pixellab-skeleton-template-animation-research.md) - managed template animations, raw skeleton keypoint routes, Aseprite skeleton workflow parity, and MCP/REST boundaries.
 - [PixelLab Auth And Security](pixellab/pixellab-auth-and-security.md) - bearer-token handling and automation boundaries.
 - [PixelLab SDK Compatibility](pixellab/pixellab-sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.
 - [PixelLab Terminology](pixellab/pixellab-terminology.md) - product labels, endpoint labels, and terms agents should not over-interpret.
