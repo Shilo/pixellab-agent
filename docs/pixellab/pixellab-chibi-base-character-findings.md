@@ -228,12 +228,25 @@ The target should not be described as generic `chibi` alone. Research and visual
 - `semi-chibi`
 - `2.5 to 3 heads tall`
 - `stylized avatar proportions`
+- `bottom-heavy chibi`
 - `graphic/geometric shape language`
 - `tapered geometry`
+- `bell-bottom limbs`
+- `cone-shaped limbs`
+- `triangle-shaped limbs`
 - `wedge-shaped feet`
 - `mitten-like hands`
 - `flat low-shading pixel sprite`
 - `silhouette-readable MMO sprite`
+
+New clarification from user review:
+
+- The desired limb shape overlaps with common chibi / super-deformed drawing language, where arms and legs can widen toward the ends.
+- However, the target is not the soft `mochi`, `bean body`, plush, squishy, or Animal Crossing / Nendoroid branch of chibi.
+- The desired branch is closer to Ragnarok Online's modular paper-doll RPG sprite silhouette: slim torso, bottom-heavy body weight, simplified limbs, and legs that taper outward into wider blocky or wedge-like feet.
+- Gacha Life is an adjacent reference for thicker stylized limbs, but it does not appear to emphasize the same outward flare as strongly as Ragnarok Online.
+- Trickster Online and Secret of the Solstice are adjacent 2D/isometric MMO references worth inspecting, but Ragnarok Online remains the strongest remembered match for the base-body flare.
+- The attached Ragnarok Online-style base reference is the clearest current visual target: lower-resolution than RO's full-quality sprites, but with the same bottom-heavy flared limb and narrow torso construction.
 
 Useful references:
 
@@ -263,14 +276,19 @@ Promising terms to test:
 - `semi-chibi`
 - `2.5 heads tall`
 - `3 heads tall`
+- `bottom-heavy chibi`
 - `Ragnarok Online style semi-chibi MMO sprite`
 - `RO-style semi-chibi base sprite`
 - `flat low-shading`
 - `minimal interior shading`
+- `bell-bottom limbs`
+- `cone-shaped limbs`
+- `triangle-shaped limbs`
 - `wedge-shaped feet`
 - `mitten hands`
 - `arms taper from thin shoulders to wide mitten hands`
 - `legs taper from narrow thighs to wide wedge feet`
+- `legs taper outward into wider blocky feet`
 - `legs close together`
 - `no thigh gap`
 - `compact thick limbs`
@@ -281,9 +299,15 @@ Promising terms to test:
 Risky terms:
 
 - `curvy`, which can pull the body toward gendered anatomy.
+- `mochi`, `bean body`, `plush`, `squishy`, and `cuddly`, which pull toward the wrong soft rounded chibi branch.
+- `Animal Crossing style` and `Nendoroid style`, which may reinforce toy-like or plush baby proportions rather than the RO-like modular base.
 - `big eyes` without `unisex`, which can push gendered or infant-like face emphasis.
 - `bald` too early in the prompt, which can dominate the result and produce baby-like heads.
 - `super deformed` alone, which may mean 2-head bobblehead proportions instead of the desired 2.5-3-head semi-chibi avatar.
+
+Next seed experiment to consider:
+
+- Try `seed: 0` with `bottom-heavy chibi`, `slim torso`, `legs taper outward into wider blocky feet`, and `Ragnarok Online inspired base character`, while keeping the canvas at 64x64, low top-down, and low/detail-light rendering.
 
 ## Next Six-Prompt Test Plan
 
