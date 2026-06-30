@@ -1,8 +1,8 @@
-# Preset Skeleton And Template Animations
+# Preset Template And Raw Skeleton Animations
 
 Read this for PixelLab requests involving skeletons, preset animations, template animations, built-in character animations, or named motions such as `walk-8-frames`, `walking-8-frames`, `idle`, `jump`, `bark`, `running-6-frames`, or "make the website's walk template".
 
-Current focus: preset/template skeleton animations for managed characters. Custom skeleton authoring is future-facing; route custom keypoint work carefully to documented REST skeleton endpoints, and do not automate private website or Aseprite extension internals.
+Current focus: preset/template animations for managed characters, plus boundary guidance for raw skeleton/keypoint routes. Custom skeleton authoring is future-facing; route custom keypoint work carefully to documented REST skeleton endpoints, and do not automate private website or Aseprite extension internals.
 
 ## Core Distinction
 
@@ -40,12 +40,14 @@ Typical flow:
 4. Poll with `get_character` or the returned job IDs, depending on visible MCP tool behavior.
 5. Download frames/ZIP only after completion if local files are needed.
 
+Live MCP smoke on 2026-06-30 showed template calls completing for humanoid `walking-8-frames` and `breathing-idle`, plus quadruped `walk-8-frames` and `bark`. In that smoke, MCP did not expose usage/cost, and `animation_name` did not override the stored canonical template label returned by `get_character`. Verify by canonical `template_animation_id`, direction, and frame count rather than by a custom display name alone.
+
 MCP call shape:
 
 ```python
 animate_character(
     character_id="...",
-    template_animation_id="walk-8-frames",
+    template_animation_id="walking-8-frames",
     animation_name="walk",
     directions=["south"],
     mode="template",
@@ -103,11 +105,11 @@ Request shape:
 
 ```json
 {
-  "character_id": "ab3dd5a1-a78e-46d2-b297-112d05cb3aaf",
+  "character_id": "managed-humanoid-character-id",
   "mode": "template",
-  "template_animation_id": "walk-8-frames",
+  "template_animation_id": "walking-8-frames",
   "animation_name": "walk",
-  "directions": ["south", "east", "north", "west"]
+  "directions": ["south"]
 }
 ```
 
@@ -194,14 +196,16 @@ Known managed template families, last verified against MCP docs, REST OpenAPI, a
 
 ```text
 mannequin
-bear
-cat
 dog
+cat
 horse
+bear
 lion
 ```
 
 MCP `create_character` uses `body_type="quadruped"` plus `template` for animal families. Humanoid/mannequin characters may use `body_type="humanoid"` and available proportions/template controls in the visible MCP schema.
+
+Map human/person/player/NPC/wizard/knight/robot/biped requests to the mannequin/humanoid animation family unless the user explicitly asks for a quadruped or another non-human template.
 
 If a character already exists, prefer its stored `template_id` from `get_character` or REST `GET /characters/{character_id}` over guessing from the prompt.
 
@@ -209,123 +213,7 @@ If a character already exists, prefer its stored `template_id` from `get_charact
 
 Use exact ids. Do not send labels such as "Walk (8 frames)". This catalog was last verified against the website Add Animation bundle on 2026-06-30. Official REST docs expose the `template_animation_id` field but do not provide a stable public enum endpoint; refresh visible MCP tool docs or official docs before claiming "all available animations" or building long-lived integrations.
 
-### dog
-
-```text
-walk-4-frames
-walk-6-frames
-walk-8-frames
-fast-walk
-running-4-frames
-running-6-frames
-running-8-frames
-sneaking
-idle
-bark
-```
-
-### cat
-
-```text
-walk-4-frames
-walk-6-frames
-walk-8-frames
-running-4-frames
-running-6-frames
-running-8-frames
-slow-run
-jump
-idle
-seated-on-belly-idle
-sitting
-sitting-on-belly
-standing
-standing-from-belly
-drinking
-eating
-licking
-yawning
-angry
-```
-
-### bear
-
-```text
-walk-4-frames
-walk-6-frames
-walk-8-frames
-running-4-frames
-running-6-frames
-running-8-frames
-jump
-stand-on-hind-legs
-attack-left
-attack-right
-jump-attack
-idle-long
-idle-resting
-idle-sitting
-drinking
-eating
-going-to-sleep
-waking-getting-up
-sitting-down
-standing-up
-angry
-```
-
-### horse
-
-```text
-walk-4-frames
-walk-6-frames
-walk-8-frames
-walk-turn-left
-walk-turn-right
-running-4-frames
-running-6-frames
-running-8-frames
-running-turn-left
-running-turn-right
-running-headbutt
-swimming
-attack
-attack-back
-hit-left
-hit-right
-dying
-idle-shaking-head
-rest-idle
-eat-start
-eating
-eat-end
-start-sleep
-sleep-cycle
-rest-cycle
-wake-up
-lie-down
-stand-up
-```
-
-### lion
-
-```text
-walk-4-frames
-walk-6-frames
-walk-8-frames
-running-4-frames
-running-6-frames
-running-8-frames
-jump
-attack
-jump-attack
-idle
-idle-sitting
-drinking
-eating
-sitting
-standing
-```
+The sections are ordered by likely request frequency, with mannequin/humanoid first because most player, NPC, human, and biped requests map there.
 
 ### mannequin
 
@@ -381,10 +269,131 @@ pushing
 throw-object
 ```
 
+### dog
+
+```text
+walk-4-frames
+walk-6-frames
+walk-8-frames
+fast-walk
+running-4-frames
+running-6-frames
+running-8-frames
+sneaking
+idle
+bark
+```
+
+### cat
+
+```text
+walk-4-frames
+walk-6-frames
+walk-8-frames
+running-4-frames
+running-6-frames
+running-8-frames
+slow-run
+jump
+idle
+seated-on-belly-idle
+sitting
+sitting-on-belly
+standing
+standing-from-belly
+drinking
+eating
+licking
+yawning
+angry
+```
+
+### horse
+
+```text
+walk-4-frames
+walk-6-frames
+walk-8-frames
+walk-turn-left
+walk-turn-right
+running-4-frames
+running-6-frames
+running-8-frames
+running-turn-left
+running-turn-right
+running-headbutt
+swimming
+attack
+attack-back
+hit-left
+hit-right
+dying
+idle-shaking-head
+rest-idle
+eat-start
+eating
+eat-end
+start-sleep
+sleep-cycle
+rest-cycle
+wake-up
+lie-down
+stand-up
+```
+
+### bear
+
+```text
+walk-4-frames
+walk-6-frames
+walk-8-frames
+running-4-frames
+running-6-frames
+running-8-frames
+jump
+stand-on-hind-legs
+attack-left
+attack-right
+jump-attack
+idle-long
+idle-resting
+idle-sitting
+drinking
+eating
+going-to-sleep
+waking-getting-up
+sitting-down
+standing-up
+angry
+```
+
+### lion
+
+```text
+walk-4-frames
+walk-6-frames
+walk-8-frames
+running-4-frames
+running-6-frames
+running-8-frames
+jump
+attack
+jump-attack
+idle
+idle-sitting
+drinking
+eating
+sitting
+standing
+```
+
 If a user asks for a label that maps cleanly to one id, choose it. Examples:
 
 | User says | Use id |
 |---|---|
+| "human walk 8 frames" | `walking-8-frames` |
+| "person idle" | `breathing-idle` |
+| "wizard jump" | `jumping-1` or `jumping-2` |
 | "dog walk 8 frames" | `walk-8-frames` |
 | "dog fast walk" | `fast-walk` |
 | "humanoid walk 8 frames" | `walking-8-frames` |
@@ -395,7 +404,7 @@ If the requested animation exists for one template family but not another, say s
 
 ## Frame Count And Ordering Rules
 
-- Preset template mode owns its frame count through the selected template id. Do not set `frame_count` expecting it to override `walk-8-frames`.
+- Preset template mode owns its frame count through the selected template id. Do not set `frame_count` expecting it to override `walking-8-frames`.
 - V3 custom mode owns frame count through `frame_count` 4-16, even only, default 8.
 - Preserve returned frame order.
 - Do not locally duplicate, trim, interpolate, reverse, or ping-pong frames unless the user explicitly asks for that packaging.
@@ -409,7 +418,7 @@ Good:
 
 ```json
 {
-  "template_animation_id": "walk-8-frames",
+  "template_animation_id": "walking-8-frames",
   "animation_name": "walk",
   "directions": ["south"]
 }
@@ -419,7 +428,7 @@ Only add `action_description` when the user asks for a variant and the route sup
 
 ```json
 {
-  "template_animation_id": "walk-8-frames",
+  "template_animation_id": "walking-8-frames",
   "action_description": "a steady cheerful walk with a slight head bob"
 }
 ```
