@@ -1,6 +1,6 @@
 # Preset Template And Raw Skeleton Animations
 
-Read this for PixelLab requests involving skeletons, preset animations, template animations, built-in character animations, or named motions such as `walk-8-frames`, `walking-8-frames`, `idle`, `jump`, `bark`, `running-6-frames`, or "make the website's walk template".
+Read this for PixelLab requests involving skeletons, preset animations, template animations, built-in character animations, or named motions such as `walking-8-frames`, `breathing-idle`, `jumping-1`, `running-6-frames`, or "make the website's walk template".
 
 Current focus: preset/template animations for managed characters, plus boundary guidance for raw skeleton/keypoint routes. Custom skeleton authoring is future-facing; route custom keypoint work carefully to documented REST skeleton endpoints, and do not automate private website or Aseprite extension internals.
 
@@ -10,7 +10,7 @@ There are two different animation families:
 
 | User intent | Meaning | Route |
 |---|---|---|
-| Preset/template/built-in animation | Animate an existing managed character using a named motion template such as `walk-8-frames`, `idle`, or `bark`. PixelLab generates frames for that character and direction. | Prefer MCP `animate_character`; fallback REST v2 `/characters/animations`. |
+| Preset/template/built-in animation | Animate an existing managed character using a named motion template such as `walking-8-frames`, `breathing-idle`, or `jumping-1`. PixelLab generates frames for that character and direction. | Prefer MCP `animate_character`; fallback REST v2 `/characters/animations`. |
 | Raw/custom skeleton animation | Generate frames from explicit skeleton keypoints, a reference image, optional masks/init images, and camera settings. | REST v2 `/animate-with-skeleton` and `/estimate-skeleton`. |
 
 Do not call website/Aseprite private routes such as `/generate-animation/background` or extension suffixes such as `generate-animation`. They may reveal first-party behavior but are not stable public automation contracts.
@@ -24,9 +24,15 @@ For managed preset/template animations:
 3. If the user explicitly asks for API/code/batch integration, use REST v2 directly.
 4. If neither MCP nor REST auth is configured, stop before spending credits and route to setup; do not ask the user to paste secrets into chat.
 
-This priority holds even when a REST/API secret exists. MCP remains the preferred agent workflow for managed character assets because it carries managed IDs, polling, downloads, and resource helpers. REST v2 is more feature-rich for exact schemas and raw skeleton keypoints.
+This priority holds even when a REST/API secret exists. MCP remains the preferred agent workflow for managed character assets because it carries managed IDs, polling, downloads, and resource helpers. REST v2 is more feature-rich for exact schemas, raw skeleton keypoints, and advanced character-animation controls.
 
 If the user explicitly requested MCP, do not silently fall back to REST. Report that MCP tools are unavailable and ask before using REST v2.
+
+## MCP vs REST v2 Capability
+
+MCP `animate_character` is fully suitable for normal managed-character template animation work: template mode, v3 custom mode, explicit directions, and `frame_count` for v3. When the visible MCP schema exposes pro mode with cost confirmation, it can also route pro animation. Use MCP first when the tools are visible.
+
+It is not a complete field-for-field replacement for REST v2 `/characters/animations` or `/animate-character`. The REST request schema currently exposes additional exact-control fields such as `description`, `text_guidance_scale`, `outline`, `shading`, `detail`, `isometric`, `color_image`, `force_colors`, `seed`, and inline `enhance_prompt` for v3 mode. Use REST v2 when those fields matter, when writing integration code, or when validating exact API behavior.
 
 ## Managed Preset Animation With MCP
 
@@ -40,7 +46,7 @@ Typical flow:
 4. Poll with `get_character` or the returned job IDs, depending on visible MCP tool behavior.
 5. Download frames/ZIP only after completion if local files are needed.
 
-Live MCP smoke on 2026-06-30 showed template calls completing for humanoid `walking-8-frames` and `breathing-idle`, plus quadruped `walk-8-frames` and `bark`. In that smoke, MCP did not expose usage/cost, and `animation_name` did not override the stored canonical template label returned by `get_character`. Verify by canonical `template_animation_id`, direction, and frame count rather than by a custom display name alone.
+Live MCP smoke on 2026-06-30 showed template calls completing for humanoid `walking-8-frames` and `breathing-idle`, plus quadruped `walk-8-frames` and another built-in activity template. In that smoke, MCP did not expose usage/cost, and `animation_name` did not override the stored canonical template label returned by `get_character`. Verify by canonical `template_animation_id`, direction, and frame count rather than by a custom display name alone.
 
 MCP call shape:
 
@@ -53,6 +59,8 @@ animate_character(
     mode="template",
 )
 ```
+
+For a reference image or GIF frame that must become a managed humanoid character first, use REST v2 `create-character-v3` with required `description`, `reference_image`, `template_id="mannequin"`, and the appropriate `view`/`no_background` fields, then use the returned `character_id` with MCP `animate_character` after the character completes. Live testing on 2026-06-30 confirmed this path for a horse-headed biped: REST v2 created a managed mannequin-family character from a source GIF frame, and MCP `animate_character` completed `walking-8-frames` for `south`, `east`, `north`, and `west` with 8 frames per direction.
 
 For a newly created quadruped:
 
@@ -203,9 +211,9 @@ bear
 lion
 ```
 
-MCP `create_character` uses `body_type="quadruped"` plus `template` for animal families. Humanoid/mannequin characters may use `body_type="humanoid"` and available proportions/template controls in the visible MCP schema.
+MCP `create_character` uses `body_type="quadruped"` plus `template` for animals that stand and move on four legs. Humanoid/mannequin characters use `body_type="humanoid"` and humanoid proportion controls when available. Do not pass `template="mannequin"` to MCP `create_character`; `template` is quadruped-only there. REST v2 `create-character-v3` uses `template_id="mannequin"` for this humanoid/mannequin workflow.
 
-Map human/person/player/NPC/wizard/knight/robot/biped requests to the mannequin/humanoid animation family unless the user explicitly asks for a quadruped or another non-human template.
+Choose the template family by body plan and stance, not by species name alone. Map human/person/player/NPC/wizard/knight/robot/biped requests to the mannequin/humanoid animation family. Also map humanoid-stance animals or monsters, such as a horse person, cat warrior, fox mage, or any animal walking on two feet with arms, to mannequin/humanoid unless the existing managed character metadata proves it is quadruped.
 
 If a character already exists, prefer its stored `template_id` from `get_character` or REST `GET /characters/{character_id}` over guessing from the prompt.
 
@@ -398,7 +406,6 @@ If a user asks for a label that maps cleanly to one id, choose it. Examples:
 | "dog fast walk" | `fast-walk` |
 | "humanoid walk 8 frames" | `walking-8-frames` |
 | "fight idle" | `fight-stance-idle-8-frames` |
-| "bark" | `bark` |
 
 If the requested animation exists for one template family but not another, say so and offer the closest same-family option. Do not silently substitute `walking-8-frames` for a quadruped `walk-8-frames` or vice versa.
 
