@@ -54,7 +54,7 @@ Updated `skills/pixellab-pip/references/job-lifecycle.md`:
 
 Updated `skills/pixellab-pip/references/usage-reporting.md`:
 
-- Clarified that REST live-call reports should include the exact public `/v2` HTTP path when known, not only shorthand operation names.
+- Clarified that REST live-call reports should include the exact public `/v2` HTTP path actually used, not only shorthand operation labels.
 
 Updated `skills/pixellab-pip/references/official-pixellab-documentation.md`:
 

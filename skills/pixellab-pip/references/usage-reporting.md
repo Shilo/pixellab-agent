@@ -40,7 +40,7 @@ Unless the user explicitly states or approves another output location, local Pix
 
 Put route and inputs in bullets instead of burying them in prose. Do not lead with internal job IDs. Include job, asset, or result IDs only when the result is pending/review, when the user needs the ID for a follow-up action, or when debugging exact status/schema behavior.
 
-For REST routes, report the exact public v2 HTTP path when known, such as `REST POST /v2/tilesets`, and optionally include the operation label in parentheses. Do not report only shorthand operation names such as `/create-tileset` when the saved request used a public v2 path.
+For REST routes, report the exact public v2 HTTP path that was actually used, such as `REST POST /v2/create-tileset` or `REST POST /v2/tilesets`, and optionally include the operation label in parentheses. Do not report only shorthand operation labels when the saved request used a public v2 path.
 
 Always include the final user-facing natural-language values that affected generation, especially `description`, `action`, `edit_description`, `animation_description`, `style_description`, `negative_description`, `item_descriptions`, `text`, and `color_palette`. If prompt enhancement or agent enhancement changed the user's wording, show the final value used. If a value is too long, include the most useful excerpt and say it was truncated for readability.
 
