@@ -37,7 +37,7 @@ Use me when you need to create, edit, animate, integrate, or troubleshoot PixelL
 | Use images and attachments correctly | Classify supplied files as edit targets, identity references, style references, concept images, masks, palettes, init/source images, or animation frames instead of guessing one generic role. |
 | Fallback background removal | When a requested transparent asset still comes back with a background, verify a safe local cleanup first and fall back to PixelLab background removal when uncertain. |
 | Paperdoll and layered workflow guidance | Route layered character, outfit, equipment, isolated asset, and composited-output requests without pretending PixelLab returns layers where it does not. |
-| Local Aseprite CLI workspaces | Move generated assets into Aseprite without driving the PixelLab extension UI: create or update `.aseprite` copies, import frames as layers/tags, and export PNG sequences, GIFs, sprite sheets, and metadata through documented Aseprite CLI/Lua. |
+| Local Aseprite CLI workspaces | Move generated assets into Aseprite without driving the PixelLab extension UI: create or update `.aseprite` copies, import frames as layers/tags, export PNG sequences, GIFs, sprite sheets, and metadata, or locally clamp/reduce colors to palettes such as 1-bit black/white, Game Boy green, PICO-8, or supplied hex colors through documented Aseprite CLI/Lua. |
 | Safer auth and automation | Use bearer-token and MCP secret setup, avoid copied website session tokens, and stay away from undocumented internal endpoints used by first-party surfaces such as the website or Aseprite extension. |
 | Current docs and SDK checks | Refresh official PixelLab docs, OpenAPI schemas, MCP docs, SDK coverage, auth setup, pricing, limits, model labels, or endpoint fields before making exact claims. |
 | Clear generation reports | Report the PixelLab tool or endpoint used, prompt prep method, final natural-language parameters, key controls, IDs, output locations, async status, credit/balance delta when available, and verification status. |
@@ -193,6 +193,8 @@ Examples:
 pip animate this idle character
 @pixellab-pip edit this image into cleaner 32px pixel art
 @pixellab-pip create a tiny potion sprite, then make an Aseprite workspace with frames, a tag, a GIF preview, and a sprite sheet
+@pixellab-pip create a mossy top-down tileset, then clamp the result to 1-bit black and white
+@pixellab-pip make a small item icon sheet and reduce it to a Game Boy green palette
 ```
 
 Implicit invocation should also work when an agent sees PixelLab/Pip context plus setup or asset words such as "setup PixelLab", "configure PixelLab MCP", "connect the PixelLab API", "create an image", "make a sprite", "draw a character", "generate a tileset", "animate this", "edit this image", "use PixelLab MCP", "call the REST API", or "check PixelLab docs". Explicit invocation is still recommended when you want Pip used for sure.
