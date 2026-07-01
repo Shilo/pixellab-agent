@@ -64,7 +64,7 @@ The official Aseprite extension is an editor integration. Observed extension ope
 
 When an Aseprite workflow maps to current public REST v2, use the documented route instead, for example `generate-image-v2`, `generate-with-style-v2`, `generate-ui-v2`, `create-ui-asset`, `edit-image`, `edit-images-v2`, `inpaint`, `inpaint-v3`, `image-to-pixelart`, `image-to-pixelart-pro`, `resize`, `remove-background`, `animate-with-text-v3`, `animate-with-skeleton`, `estimate-skeleton`, `edit-animation-v2`, `interpolation-v2`, `transfer-outfit-v2`, `rotate`, `generate-8-rotations-v2/v3`, `create-tileset`, `create-tileset-sidescroller`, `create-isometric-tile`, and `create-tiles-pro`.
 
-For exact editor-only behavior such as PixelLab extension quantize/reduce-colors, unzoom pixel art, pixel correction, old/root map-extension tools, and reshape, route to Aseprite/Pixelorama as visible editor surfaces. For explicit local Aseprite palette quantization, source-derived color reduction, indexed conversion, strict palette clamps, or document palette replacement, read `aseprite-cli.md`; do not treat that file-level Aseprite route as PixelLab's private editor utility.
+For exact editor-only behavior such as PixelLab extension quantize/reduce-colors, unzoom pixel art, pixel correction, old/root map-extension tools, and reshape, route to Aseprite/Pixelorama as visible editor surfaces. For direct file-level palette quantization, source-derived color reduction, bit-depth conversion, indexed conversion, strict palette clamps, or document palette replacement, read `aseprite-cli.md`; do not treat that file-level Aseprite route as PixelLab's private editor utility.
 
 ## What This Skill Adds
 
