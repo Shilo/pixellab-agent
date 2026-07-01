@@ -2,13 +2,16 @@
 
 Last reviewed: 2026-06-29.
 
-![Create Image Pro rich-background skill icons](skill-icons/create-image-pro-rich-background-8x8-32px.png)
-
-![Create Image Pro fire magic skill icons](skill-icons/create-image-pro-fire-magic-sheet-8x8-32px.png)
-
-![Create Image Pro original strict-grid skill icons](skill-icons/create-image-pro-original-strict-grid-8x8-32px.png)
-
-![Create Image Pro borderless mosaic skill icons](skill-icons/create-image-pro-borderless-mosaic-8x8-32px.png)
+<table>
+  <tr>
+    <td><img src="skill-icons/create-image-pro-rich-background-8x8-32px.png" alt="Create Image Pro rich-background skill icons"></td>
+    <td><img src="skill-icons/create-image-pro-fire-magic-sheet-8x8-32px.png" alt="Create Image Pro fire magic skill icons"></td>
+  </tr>
+  <tr>
+    <td><img src="skill-icons/create-image-pro-original-strict-grid-8x8-32px.png" alt="Create Image Pro original strict-grid skill icons"></td>
+    <td><img src="skill-icons/create-image-pro-borderless-mosaic-8x8-32px.png" alt="Create Image Pro borderless mosaic skill icons"></td>
+  </tr>
+</table>
 
 PixelLab Pip's strongest skill-icon route is REST `generate-image-v2`, surfaced in the product as Create Image Pro / Create S-XL Image Pro. The best showcased output is the rich-background prompt because it better follows the requested no-border/no-frame constraints while keeping strong readable symbols and colorful illustrated backgrounds. The original strict-grid output is very close and may be prettier for some game UI use cases, but it bakes in a faint card/slot edge.
 

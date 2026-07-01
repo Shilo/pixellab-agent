@@ -2,19 +2,23 @@
 
 Last reviewed: 2026-06-29.
 
-![Fantasy RPG general inventory item icons](item-icons/fantasy-rpg-inventory-bgremoved-8x8-32px.png)
-
-![Fantasy RPG weapon item icons](item-icons/fantasy-rpg-weapons-8x8-32px.png)
-
-![Fantasy RPG armor item icons](item-icons/fantasy-rpg-armor-8x8-32px.png)
-
-![Fantasy RPG consumable item icons](item-icons/fantasy-rpg-consumables-8x8-32px.png)
-
-![Fantasy RPG material item icons](item-icons/fantasy-rpg-materials-8x8-32px.png)
-
-![Candy sweets and treats item icons](item-icons/candy-sweets-treats-8x8-32px.png)
-
-![Glossy candy sweets and treats item icons](item-icons/candy-sweets-treats-glossy-8x8-32px.png)
+<table>
+  <tr>
+    <td><img src="item-icons/fantasy-rpg-inventory-bgremoved-8x8-32px.png" alt="Fantasy RPG general inventory item icons"></td>
+    <td><img src="item-icons/fantasy-rpg-weapons-8x8-32px.png" alt="Fantasy RPG weapon item icons"></td>
+  </tr>
+  <tr>
+    <td><img src="item-icons/fantasy-rpg-armor-8x8-32px.png" alt="Fantasy RPG armor item icons"></td>
+    <td><img src="item-icons/fantasy-rpg-consumables-8x8-32px.png" alt="Fantasy RPG consumable item icons"></td>
+  </tr>
+  <tr>
+    <td><img src="item-icons/fantasy-rpg-materials-8x8-32px.png" alt="Fantasy RPG material item icons"></td>
+    <td><img src="item-icons/candy-sweets-treats-8x8-32px.png" alt="Candy sweets and treats item icons"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="item-icons/candy-sweets-treats-glossy-8x8-32px.png" alt="Glossy candy sweets and treats item icons"></td>
+  </tr>
+</table>
 
 PixelLab Pip's strongest item-icon route is REST `generate-image-v2` for complete 8 by 8 sheets. The showcased winner is the general inventory sheet after PixelLab background removal because it covers the broadest RPG inventory surface while keeping readable 32px items, transparent background, and no slot/frame treatment. The weapon, armor, consumable, and material sheets show the same route holding a consistent style across more specialized inventory categories.
 

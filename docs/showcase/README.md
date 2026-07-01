@@ -50,7 +50,7 @@ pip create a 64px character based on .pip-mascot.md
 
 Each showcase should include:
 
-- All showcased images first, immediately after the title and review date, before prose or contents.
+- All showcased images first, immediately after the title and review date, before prose or contents. Use an HTML table with columns chosen from the images' natural sizes; do not set `width` or `height` on gallery images. Large sheets should be one image per row; smaller sheets should usually use two columns for consistency.
 - The request that produced each result near its detailed section.
 - Source inputs or brief summaries.
 - Final prompts or natural-language parameters sent to PixelLab.

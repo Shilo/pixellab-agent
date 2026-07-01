@@ -2,9 +2,12 @@
 
 Last reviewed: 2026-06-25.
 
-![Pip mascot idle animation](pip/pip.gif)
-
-![Pip mascot static sprite](pip/pip.png)
+<table>
+  <tr>
+    <td><img src="pip/pip.gif" alt="Pip mascot idle animation"></td>
+    <td><img src="pip/pip.png" alt="Pip mascot static sprite"></td>
+  </tr>
+</table>
 
 Pip is a compact honey-tan pixel pup mascot with a cyan collar and a friendly loopable idle animation. PixelLab Pip turned a mascot brief into PixelLab-ready character and animation prompts, routed the work through PixelLab MCP, and recorded the resulting assets for reuse.
 

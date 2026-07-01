@@ -2,15 +2,23 @@
 
 Last reviewed: 2026-06-28.
 
-![Textless modular fantasy MMORPG GUI kit](gameplay-gui/modular-mmorpg-gui-textless-688x384.png)
-
-![Compass modular fantasy MMORPG GUI kit](gameplay-gui/modular-mmorpg-gui-compass-688x384.png)
-
-![Fantasy MMORPG GUI kit](gameplay-gui/gameplay-gui-fantasy-mmo-688x384.png)
-
-![First-pass charcoal heath-fire UI](gameplay-gui/gameplay-gui-mood-only-344x192.png)
-
-![Gameplay GUI kit](gameplay-gui/gameplay-gui-component-specific-688x384.png)
+<table>
+  <tr>
+    <td><img src="gameplay-gui/modular-mmorpg-gui-textless-688x384.png" alt="Textless modular fantasy MMORPG GUI kit"></td>
+  </tr>
+  <tr>
+    <td><img src="gameplay-gui/modular-mmorpg-gui-compass-688x384.png" alt="Compass modular fantasy MMORPG GUI kit"></td>
+  </tr>
+  <tr>
+    <td><img src="gameplay-gui/gameplay-gui-fantasy-mmo-688x384.png" alt="Fantasy MMORPG GUI kit"></td>
+  </tr>
+  <tr>
+    <td><img src="gameplay-gui/gameplay-gui-mood-only-344x192.png" alt="First-pass charcoal heath-fire UI"></td>
+  </tr>
+  <tr>
+    <td><img src="gameplay-gui/gameplay-gui-component-specific-688x384.png" alt="Gameplay GUI kit"></td>
+  </tr>
+</table>
 
 PixelLab Pip's UI generators can handle related gameplay GUI requests at different levels of specificity. The lead examples are the MCP-generated modular MMORPG sheets because they have stronger reusable component separation and 9-slice-compatible rectangular pieces. The older REST example remains below as a broader fantasy MMORPG HUD kit with portrait frames, health and mana bars, action bars, bag slots, minimap frame, quest tracker, chat panel, parchment window, controls, icon frames, and currency buttons.
 
