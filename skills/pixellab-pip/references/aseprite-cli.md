@@ -337,8 +337,12 @@ local dithering = app.params["dithering"] or "none"
 local matrix = app.params["dithering_matrix"]
 
 local function samePath(a, b)
-  local na = app.fs.normalizePath(a or ""):gsub("\\", "/"):lower()
-  local nb = app.fs.normalizePath(b or ""):gsub("\\", "/"):lower()
+  local na = app.fs.normalizePath(a or ""):gsub("\\", "/")
+  local nb = app.fs.normalizePath(b or ""):gsub("\\", "/")
+  if app.fs.pathSeparator == "\\" then
+    na = na:lower()
+    nb = nb:lower()
+  end
   return na == nb
 end
 if samePath(input, output) then error("Output must be a copy path, not the input path") end
@@ -390,14 +394,19 @@ local matrix = app.params["dithering_matrix"]
 local hasTransparency = app.params["has_transparency"] == "true"
 
 local function samePath(a, b)
-  local na = app.fs.normalizePath(a or ""):gsub("\\", "/"):lower()
-  local nb = app.fs.normalizePath(b or ""):gsub("\\", "/"):lower()
+  local na = app.fs.normalizePath(a or ""):gsub("\\", "/")
+  local nb = app.fs.normalizePath(b or ""):gsub("\\", "/")
+  if app.fs.pathSeparator == "\\" then
+    na = na:lower()
+    nb = nb:lower()
+  end
   return na == nb
 end
 if samePath(input, output) then error("Output must be a copy path, not the input path") end
 local spr = app.open(input)
 if not spr then error("Could not open input: " .. tostring(input)) end
 local originalPalette = spr.palettes[1] and Palette(spr.palettes[1]) or nil
+app.command.ChangePixelFormat{ format="rgb" }
 
 local parsed = {}
 for hex in string.gmatch(colors or "", "([^,]+)") do
@@ -411,10 +420,13 @@ for hex in string.gmatch(colors or "", "([^,]+)") do
   table.insert(parsed, Color{ r=r, g=g, b=b, a=255 })
 end
 if #parsed < 1 then error("At least one color is required for a palette clamp") end
+if outputMode == "indexed" and #parsed == 1 and not hasTransparency then
+  error("One-color indexed output can collide with Aseprite's transparent index; use output_mode=rgb or approve an extra transparent/index-management entry")
+end
 
 local transparentOffset = (preserveTransparency and hasTransparency) and 1 or 0
 local pal = Palette(#parsed + transparentOffset)
-if preserveTransparency then
+if transparentOffset == 1 then
   pal:setColor(0, Color{ r=0, g=0, b=0, a=0 })
   spr.transparentColor = 0
 end
@@ -422,7 +434,37 @@ for i, color in ipairs(parsed) do
   pal:setColor(i - 1 + transparentOffset, color)
 end
 
-spr:setPalette(pal)
+local pc = app.pixelColor
+local function nearestPaletteColor(pixel)
+  local alpha = pc.rgbaA(pixel)
+  if preserveTransparency and alpha == 0 then return pixel end
+  local r = pc.rgbaR(pixel)
+  local g = pc.rgbaG(pixel)
+  local b = pc.rgbaB(pixel)
+  local best = parsed[1]
+  local bestDistance = math.huge
+  for _, color in ipairs(parsed) do
+    local dr = r - color.red
+    local dg = g - color.green
+    local db = b - color.blue
+    local distance = dr * dr + dg * dg + db * db
+    if distance < bestDistance then
+      bestDistance = distance
+      best = color
+    end
+  end
+  return pc.rgba(best.red, best.green, best.blue, alpha)
+end
+
+for _, cel in ipairs(spr.cels) do
+  local image = cel.image
+  for y = 0, image.height - 1 do
+    for x = 0, image.width - 1 do
+      image:putPixel(x, y, nearestPaletteColor(image:getPixel(x, y)))
+    end
+  end
+end
+
 local changePixelFormatArgs = { format="indexed" }
 if dithering ~= "none" then
   changePixelFormatArgs.dithering = dithering
@@ -430,15 +472,17 @@ if dithering ~= "none" then
     changePixelFormatArgs["dithering-matrix"] = matrix
   end
 end
-app.command.ChangePixelFormat(changePixelFormatArgs)
 
 if outputMode == "rgb" then
-  app.command.ChangePixelFormat{ format="rgb" }
   if originalPalette then
     spr:setPalette(originalPalette)
   end
-elseif replacePalette then
+else
   spr:setPalette(pal)
+  app.command.ChangePixelFormat(changePixelFormatArgs)
+  if replacePalette then
+    spr:setPalette(pal)
+  end
 end
 spr:saveCopyAs(output)
 print("OK:palette-clamped")
@@ -458,8 +502,12 @@ local output = app.params["output"]
 local paletteFile = app.params["palette"]
 
 local function samePath(a, b)
-  local na = app.fs.normalizePath(a or ""):gsub("\\", "/"):lower()
-  local nb = app.fs.normalizePath(b or ""):gsub("\\", "/"):lower()
+  local na = app.fs.normalizePath(a or ""):gsub("\\", "/")
+  local nb = app.fs.normalizePath(b or ""):gsub("\\", "/")
+  if app.fs.pathSeparator == "\\" then
+    na = na:lower()
+    nb = nb:lower()
+  end
   return na == nb
 end
 if samePath(input, output) then error("Output must be a copy path, not the input path") end
@@ -478,7 +526,7 @@ For named palettes or palette files, use `Sprite:loadPalette()`, `Sprite:setPale
 
 After palette quantization:
 
-1. Verify the output file exists.
+1. Verify the output file exists. Installed Aseprite extensions can print unrelated startup warnings in batch mode, and output-file visibility can lag briefly; judge success by the saved output plus color/palette checks, not clean stdout alone.
 2. Count visible colors in exported PNGs or cels and fail if any opaque/semitransparent pixel uses a color outside the requested palette.
 3. If palette replacement was requested, inspect the `.aseprite` palette and verify it contains exactly the requested visible entries, plus only an approved transparent index when needed.
 4. For multi-frame sprites, verify every frame, not only the active frame.
