@@ -12,6 +12,8 @@ Read this for terrain tilesets, platformer tilesets, isometric tiles, tile varia
 
 Capture tile size, view, terrain pair or tile list, transition description, base tile IDs, style/reference/palette images, seed, and target engine/export convention when relevant.
 
+Route top-down terrain/autotile wording to top-down tileset generation unless the user explicitly asks for platformer, sidescroller, side-view, or platform tiles. Phrases such as `upper`, `lower`, `inner`, `outer`, `floor`, `wall`, `transition`, `Wang`, `autotile`, or `terrain pair` describe top-down tileset structure when no side-view/platformer intent is present; do not reinterpret them as sidescroller center/top layers just because the words include floor or wall.
+
 Before spending repeated generations on prompt wording, check the visible MCP schema or current REST schema for controllable generation parameters. For top-down and sidescroller tilesets, relevant controls may include:
 
 - `text_guidance_scale`: increases or decreases text-description adherence.
