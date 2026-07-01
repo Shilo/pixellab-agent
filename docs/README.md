@@ -18,6 +18,7 @@ These docs explain PixelLab tools, workflows, terminology, SDK boundaries, and a
 - [PixelLab Chibi Base Character Findings](pixellab/pixellab-chibi-base-character-findings.md) - live-generation findings for a reusable chibi avatar base character, including closest candidates, failed prompt/model patterns, and unresolved next tests.
 - [PixelLab API Pricing Model List](pixellab/pixellab-api-pricing-model-list.md) - current API pricing and model/tool list from PixelLab's official API catalog.
 - [PixelLab Documentation Watch Cache](pixellab/pixellab-doc-watch-cache.md) - local-only watcher workflow for caching upstream PixelLab docs, detecting REST/MCP drift, and deciding when the Agent Skill needs updates.
+- [PixelLab Top-Down Tileset Transition Findings](pixellab/pixellab-topdown-tileset-transition-findings.md) - live-generation findings for `create_topdown_tileset` transition sizes, compact 4x4 graybox exports, and the `transition_size: 1.0` expanded-layout caveat.
 - [PixelLab Skeleton And Template Animation Research](pixellab/pixellab-skeleton-template-animation-research.md) - managed template animations, raw skeleton keypoint routes, Aseprite skeleton workflow parity, and MCP/REST boundaries.
 - [PixelLab Auth And Security](pixellab/pixellab-auth-and-security.md) - bearer-token handling and automation boundaries.
 - [PixelLab SDK Compatibility](pixellab/pixellab-sdk-compatibility.md) - official SDK guidance and when to call REST v2 directly.

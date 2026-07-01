@@ -1,0 +1,69 @@
+# PixelLab Top-Down Tileset Transition Findings
+
+Last reviewed: 2026-07-01.
+
+This note records live-generation findings for PixelLab top-down Wang/autotile tilesets when using the hosted MCP `create_topdown_tileset` tool for grid-based graybox prototyping assets.
+
+## Summary
+
+For compact top-down prototype tilesets, `transition_size` is not only a visual control. It can also change the exported atlas layout and tile count. These findings apply primarily to Standard mode unless a Pro-mode caveat is called out.
+
+- `transition_size: 0.0` produces the compact 16-tile `tileset15_4x4` layout, but can look flat unless the prompt strongly describes height, bevels, contrast, and boundary treatment.
+- `transition_size: 0.25` also produces the compact 16-tile `tileset15_4x4` layout. It can produce clean, readable colored outlines, but live graybox tests showed risks where the top/floor tile lost visible grid detail and the lower and upper terrain colors became too similar.
+- `transition_size: 0.5` produces the compact 16-tile `tileset15_4x4` layout. In live graybox tests, this was the strongest compact candidate overall because it kept the required atlas size while giving better wall depth and separation than `0.25`.
+- `transition_size: 1.0` produced a richer visual result in one test, but expanded the output to a larger `tileset15_4x8` atlas with 25 populated tiles in live tests. It also produced stretched or poor-looking candidates in later tests. Do not assume it will preserve a strict 4x4 atlas.
+
+## Standard vs Pro Mode
+
+Standard mode was the better fit for the tested graybox prototype goal. A batch of Standard `32x32` generations with `transition_size: 0.5` consistently downloaded as compact `128x128` 4x4 atlases, and one Standard `0.5` candidate was the strongest result in live review.
+
+Pro mode was not a good fit in the same live review. Even when the prompt explicitly requested full continuous grid lines at 16px spacing with no dashed or broken lines, the generated assets drifted toward rounded or block-mass shapes rather than crisp grid-based graybox Wang tiles. Pro `0.0` and `0.25` kept the compact `128x128` 4x4 atlas, but were still visually rejected for this prototype use case.
+
+Pro `0.5` and `1.0` both showed the expanded-layout problem. The requested Pro `0.5` run returned metadata with `transition_size: 1.0` and downloaded as `128x256`, a 4x8 atlas with 25 populated tiles. The Pro `1.0` run also downloaded as `128x256`. Treat Pro transition values at and above `0.5` as unsafe for strict 16-tile 4x4 graybox exports until this behavior changes.
+
+Pro mode was also materially more expensive in the live test. Four accepted Pro generations consumed 80 subscription generations, while a ten-generation Standard `0.5` batch consumed 40 subscription generations. Record this as observed run cost, not a permanent pricing guarantee.
+
+## Accepted Values
+
+The MCP tool currently validates `transition_size` as one of:
+
+- `0.0`
+- `0.25`
+- `0.5`
+- `1.0`
+
+Attempts to use values such as `0.75` or `0.99` were rejected by request validation before generation. Agents should not suggest near-`1.0` fractional values as a workaround for the full-transition atlas expansion unless current public PixelLab docs or tool validation change.
+
+## Graybox Prompt Findings
+
+The most useful graybox prompts described separate visual roles for the terrains:
+
+- Lower terrain: dark charcoal or navy blueprint floor, visible construction grid, sparse markers, and clear walkable base.
+- Upper terrain: raised slate-blue wall or platform blocks, lighter than the floor, beveled square edges, cyan edge highlights, and collision-readable geometry.
+- Transition: grid-aligned seams, thin cyan construction lines, yellow or magenta measurement ticks, clean corner joins, subtle height cues, and no organic terrain blending.
+
+Prompts that over-emphasized outlines, darkness, or contrast could make the output read as a single island or void shape instead of distinct raised blockout tiles. Prompts that under-specified contrast could make floor and wall tiles look too similar.
+
+## Routing Guidance
+
+For a strict 4x4 graybox top-down tileset, start with:
+
+- Standard mode
+- `tile_size: 32x32`
+- `transition_size: 0.5` first, with `0.25` as the next compact fallback
+- `view: high top-down`
+- low detail
+- selective outline
+- flat or basic shading
+
+Avoid Pro mode for this specific graybox blockout workflow unless testing Pro-only controls such as corner-pair behavior, spread, slope, or raggedness. The live Pro tests cost more and did not improve visual quality for compact grid prototyping.
+
+Use `transition_size: 1.0` only when the richer expanded transition set is acceptable. It may be visually preferable, but it should be treated as a different export layout rather than a compact 16-tile replacement.
+
+## Verification
+
+After generation, verify the downloaded PNG dimensions and metadata rather than relying on preview size:
+
+- Compact `32x32` 4x4 output should download as `128x128`.
+- Expanded `32x32` 4x8 output should download as `128x256`.
+- Check metadata fields such as `tile_size`, `tileset_data.total_tiles`, `tileset_data.spritesheet_grid`, and `tileset_data.spritesheet_layout`.
