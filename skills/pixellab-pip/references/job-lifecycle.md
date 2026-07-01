@@ -27,6 +27,8 @@ MCP creation tools return asset IDs quickly. Use the matching getter to inspect 
 - Character animations: `get_character` or animation-specific tool output when available.
 - Objects: `get_object`.
 - Map objects: `get_map_object`.
+- Fonts: `get_font`.
+- Portrait-character conversions: `get_portrait_character`.
 - UI assets, tilesets, tiles, projects, or helpers: use the visible matching MCP getter when exposed.
 
 State tools such as `create_character_state` and `create_object_state` auto-wait only briefly for the source asset to finish. If a state call fails because the source is still pending, poll the source with its getter first, then retry the state call only when the source is ready.

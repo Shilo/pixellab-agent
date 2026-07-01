@@ -30,9 +30,9 @@ If the user explicitly requested MCP, do not silently fall back to REST. Report 
 
 ## MCP vs REST v2 Capability
 
-MCP `animate_character` is fully suitable for normal managed-character template animation work when the visible runtime schema exposes the needed fields: template mode, v3 custom mode, explicit directions, and `frame_count` for v3. When the visible MCP schema exposes pro mode with cost confirmation, it can also route pro animation. Use MCP first when the tools are visible, but inspect the visible MCP schema before relying on fields such as `mode`, `frame_count`, `pro`, `confirm_cost`, cost reporting, or any future raw-skeleton support.
+MCP `animate_character` is fully suitable for normal managed-character template animation work when the visible runtime schema exposes the needed fields: template mode, v3 custom mode, explicit directions, and `frame_count` for v3. When the visible MCP schema exposes pro mode with cost confirmation, it can also route pro animation. Use MCP first when the tools are visible, but inspect the visible MCP schema before relying on fields such as `mode`, `frame_count`, `custom_start_frame`, `end_frame`, `pro`, `confirm_cost`, cost reporting, or any future raw-skeleton support.
 
-It is not a complete field-for-field replacement for REST v2 `/characters/animations` or `/animate-character`. The REST request schema currently exposes additional exact-control fields such as `description`, `text_guidance_scale`, `outline`, `shading`, `detail`, `isometric`, `color_image`, `force_colors`, `seed`, and inline `enhance_prompt` for v3 mode. Use REST v2 when those fields matter, when writing integration code, or when validating exact API behavior.
+It is not a complete field-for-field replacement for REST v2 `/characters/animations` or `/animate-character`. The REST request schema currently exposes additional exact-control fields such as `description`, `text_guidance_scale`, `outline`, `shading`, `detail`, `isometric`, `color_image`, `force_colors`, `seed`, v3-only `custom_start_frame`/`end_frame`, and inline `enhance_prompt` for v3 mode. Use REST v2 when those fields matter, when writing integration code, or when validating exact API behavior.
 
 ## Managed Preset Animation With MCP
 
@@ -130,6 +130,8 @@ Important fields:
 | `template_animation_id` | Exact preset id. Do not pass display labels. |
 | `directions` | Be explicit to avoid accidental all-direction generation. |
 | `frame_count` | Only for `mode="v3"` custom text animation. Ignored by preset template mode. |
+| `custom_start_frame` | Optional v3-only starting pose. Requires exactly one direction, uses the character's stored direction frame when omitted, and is not compatible with template/pro mode. |
+| `end_frame` | Optional v3-only target pose for interpolation. Dimensions must match the start frame, requires exactly one direction, and is not compatible with template/pro mode. |
 | `action_description` | Required for custom v3/pro. Optional in template mode; use only for light customization when appropriate. |
 | `enhance_prompt` | Only for v3 custom mode; do not set it for template/pro. |
 

@@ -58,6 +58,17 @@ Current public UI automation has two REST routes and one MCP-managed asset route
 
 Do not assume MCP `create_ui_asset` and REST `create-ui-asset` are pixel-identical for the same prompt and seed. Treat them as the same workflow family with overlapping controls, while REST currently exposes the fuller documented schema.
 
+## Font And Portrait-Character Boundary
+
+Current public docs expose Pro font and portrait-character conversion on both REST v2 and MCP:
+
+- REST `POST /generate-font-pro`; MCP `create_font` and `get_font`.
+- REST `POST /portrait-character-pro`; MCP `create_portrait_character` and `get_portrait_character`.
+
+Use the MCP tools for MCP-first asset workflows when visible. Use REST v2 when writing code, when exact fields such as `glyph_px`, `image_size`, `font_name`, `direction`, `view`, or `result_size` matter, or when MCP is unavailable and REST auth is configured.
+
+Do not route font requests to generic image/icon generation unless the public font routes are unavailable or the user explicitly wants a non-font image of lettering. Do not route portrait-to-character conversion to normal text-to-character generation; it is an image conversion workflow with `image` as the source input.
+
 ## Aseprite Extension Boundary
 
 The official Aseprite extension is an editor integration. Observed extension operation names include `generate-image-new`, `generate-pixelart-flux`, `generate-multi-edit`, `quantize-image`, `unzoom-pixelart`, and `correct-pixelart`. Treat those as undocumented internal endpoints used by first-party surfaces unless they appear in PixelLab's public REST v2 docs/OpenAPI or MCP docs as supported programmatic endpoints/tools. Do not cite extension source filenames, source layout, source contents, or internal request payloads in public documentation.

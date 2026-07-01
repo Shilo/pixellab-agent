@@ -1,6 +1,6 @@
 # PixelLab Surfaces And Services
 
-Last reviewed: 2026-06-25.
+Last reviewed: 2026-07-01.
 
 Purpose: explain how PixelLab's public APIs, agent tools, website/editor surfaces, SDKs, and local integrations differ so Pip can choose the right automation boundary.
 
@@ -22,7 +22,7 @@ For exact current schemas and tool lists, verify against the official [REST v2 d
 
 ## Service Boundaries
 
-The same asset type can appear across multiple surfaces. A character, object, tile, or UI asset may have:
+The same asset type can appear across multiple surfaces. A character, object, tile, UI asset, font, or portrait-character conversion may have:
 
 - A hosted MCP tool name.
 - A REST v2 endpoint path.

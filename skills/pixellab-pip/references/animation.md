@@ -25,6 +25,8 @@ Do not assume `animate-with-text-v3` with an identical or near-identical `last_f
 
 Use `last_frame` when the user needs interpolation between distinct poses, the action has clear internal body motion, or external motion marks are acceptable and will be inspected.
 
+For REST managed character animation, `/animate-character` and `/characters/animations` can now accept v3-only `custom_start_frame` and `end_frame` fields. Treat them like frame anchors: they require exactly one direction, are not compatible with template or pro mode, and `end_frame` enables interpolation toward a target pose. Use them only when the user asks for a custom start pose, target pose, or managed-character interpolation; otherwise let the character's stored direction frame be the start.
+
 Treat `last_frame` as high-risk when:
 
 - The first and last frames are identical or nearly identical.

@@ -1,6 +1,6 @@
 # PixelLab Asset Routing
 
-Last reviewed: 2026-06-28.
+Last reviewed: 2026-07-01.
 
 Purpose: map plain-language asset requests to the PixelLab workflow family most likely to satisfy the user without asking them to know PixelLab's internal product vocabulary.
 
@@ -13,6 +13,7 @@ Use this as routing guidance, not as a frozen schema. Refresh official docs for 
 | User intent | Preferred route | Notes |
 |---|---|---|
 | Character, player, NPC, enemy, creature | MCP character tools when configured; REST v2 character endpoints for code or exact control. | Character workflows often involve identity, directions, states, animations, and managed asset IDs. |
+| Portrait to character or character to portrait | MCP portrait-character tools when configured; REST v2 `portrait-character-pro` for code or exact control. | This is an image conversion workflow. Use `portrait_to_character` for a bust portrait source and `character_to_portrait` for a full-body character source. |
 | Character state or outfit/layer change | MCP character-state tools when available; REST v2 state/edit routes when exact control is needed. | Clarify whether the output should preserve identity, change pose/state, or generate a new design. |
 | Character animation | MCP animation tools for managed characters; REST v2 animation endpoints for direct API use. | For existing multi-direction characters, default unspecified animation direction to `south` (down-facing) for one preview candidate. Ask or confirm before animating all directions, and do not silently choose a diagonal such as north-west. Ask only when animation type, direction, frame count, or source asset is unclear. |
 | Object, prop, pickup, weapon, furniture that is not an icon or icon sheet | MCP object tools when configured; REST v2 object endpoints for code or exact control. | Infer object for standalone props, furniture, weapons, and managed reusable objects. Do not route inventory item icons, equipment icons, loot icons, pickup icons, or transparent RPG item-icon sheets through object generation. |
@@ -26,6 +27,7 @@ Use this as routing guidance, not as a frozen schema. Refresh official docs for 
 | General image, standalone sprite, icon, concept that is not a skill icon or item icon | REST v2 image generation. | MCP may not expose every raw image endpoint; use REST v2 for generic image primitives. Route skill/ability/spell/action-bar/hotbar icons through the skill-icon reference, and inventory/equipment/loot/pickup icons through the item-icon reference. |
 | Background, scene, title image | REST v2 background/image generation. | Use documented `create-image-pixflux-background` for background-image generation when REST v2 is the selected surface; treat as normal image generation unless the user needs map/editor semantics. |
 | UI, HUD, button, panel, menu | Use REST `/create-ui-asset` as the default structured UI asset route when REST and MCP are both available; use MCP `create_ui_asset` for MCP-first managed asset workflows; use REST `/generate-ui-v2` for loose UI images. | See [PixelLab UI Generation Surfaces Research](pixellab-ui-generation-surfaces-research.md). Website UI libraries are human/editor surfaces unless a public endpoint covers the task. |
+| Pixel font, bitmap font, font atlas, generated game font | MCP font tools when configured; REST v2 `generate-font-pro` for code or exact control. | Use this for actual font generation with weight, glyph size, and optional font family name. Do not treat it as a generic lettering image route. |
 | Image edit, inpaint, remove background, resize, convert to pixel art | REST v2 edit/transform endpoints. | Supplied images are optional unless the selected route requires image fields. For image-to-pixel-art without a requested size, prefer Pro. For fixed output size within current `output_size` limits, use normal `image-to-pixelart`. If the requested size is outside those limits, use Pro, verify dimensions, and if they differ, warn the user and ask before using PixelLab `resize` or local nearest-neighbor/canvas resize/pad/crop. |
 | Multi-image edit or combine references | REST v2 `edit-images-v2` when the task is an edit with multiple source/reference images. | Aseprite's observed `generate-multi-edit` operation is an undocumented internal endpoint, not a public REST route. Use website/editor only when the user wants the visual experimental product flow. |
 | Style reference or consistent-style generation | REST v2 style/reference image generation. | Use `generate-with-style-v2`, `generate-image-v2` style/reference fields, or documented image-model style fields as appropriate after checking current docs. |

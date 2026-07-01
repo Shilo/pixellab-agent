@@ -14,6 +14,8 @@ When images are visible to the agent, inspect them and write task-relevant facts
 |---|---|---|---|
 | "Use this as the subject" | Subject reference | The output should depict the same object, character, or subject, while text still guides details. | `reference_images` in `generate-image-v2`; `reference_image` in some character routes. |
 | "Use this exact character" | Identity/character reference | Preserve the existing character identity and rotate, animate, or derive states from it. | `reference_image` in `create-character-v3`; `reference_image` with `method=rotate_character` in `create-character-pro`; `directions` in 4/8-direction character routes. |
+| "Turn this portrait into a character" | Portrait conversion input | The supplied bust/face portrait is the source image to convert into a full-body character sprite. | `image` in `portrait-character-pro` with `direction=portrait_to_character`; MCP `create_portrait_character` when visible. |
+| "Make a portrait from this character" | Character conversion input | The supplied full-body character sprite is the source image to convert into a bust portrait. | `image` in `portrait-character-pro` with `direction=character_to_portrait`; MCP `create_portrait_character` when visible. |
 | "Make it look like this" | Style reference | Copy visual style, pixel size, palette feel, rendering, or tile shape, not the exact subject identity. | `style_image`, `style_images`, `reference_image` in `create-character-pro` style methods. |
 | "Use this rough design" | Concept image | Use the image as a design idea or sketch; text can reinterpret it. | `concept_image` in `generate-ui-v2`; `concept_image` with `method=create_from_concept` in `create-character-pro`. |
 | "Use this UI style" | UI style reference | Copy visual styling for a structured UI asset, not necessarily the layout. | `style_image` in `create-ui-asset`; if the user needs layout guidance instead, use `concept_image` in `generate-ui-v2` or shape `pieces`/`elements` in `create-ui-asset`. |
@@ -63,6 +65,11 @@ These image-editing and image-conversion routes are REST v2 routes unless curren
 - 4/8-direction character routes
   - `directions`: direction-specific reference images. Provided directions are used as-is; missing directions are generated.
   - Bipedal templates require south if any are provided. Quadrupeds require south and east.
+- `portrait-character-pro`
+  - `image`: source image to convert, not a style reference.
+  - `direction=portrait_to_character`: source must be a bust portrait; output is a full-body character sprite.
+  - `direction=character_to_portrait`: source must be a full-body character sprite; output is a bust portrait.
+  - Use `view` and `result_size` to control the generated character sprite when converting portrait to character.
 - `create-tileset`
   - `lower_reference_image`, `upper_reference_image`, `transition_reference_image`: style references for terrain layers/transition.
   - `color_image`: palette reference.
