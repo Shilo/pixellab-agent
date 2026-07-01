@@ -22,6 +22,14 @@ Real PixelLab Pip example workflows, including prompts, selected routes, outputs
 /pixellab-pip create complete 32px inventory item set for fantasy rpg. each item must be unique but consistent style. it must cover all the common items for an rpg game. no background, no border.
 ```
 
+### Tiles
+
+[<img src="tiles/minecraft-mod-generate-image-v2-8x8-32px-sheet.png" alt="Minecraft mod 32px tile sheet" width="256">](tiles.md)
+
+```text
+/pixellab-pip create a 64-tile Minecraft-inspired 32x32 terrain pack.
+```
+
 ### Gameplay GUI
 
 [<img src="gameplay-gui/modular-mmorpg-gui-textless-688x384.png" alt="Textless modular fantasy MMORPG GUI kit" width="688">](gameplay-gui.md)
