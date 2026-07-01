@@ -25,4 +25,6 @@ Before spending repeated generations on prompt wording, check the visible MCP sc
 
 If the desired result depends on strict palette, dithering placement, or a specific wall/floor material split, prefer REST tileset generation when it exposes reference or palette image fields that the visible MCP tool does not. Use prompt-only MCP retries only after checking that the needed controls are unavailable in the current surface.
 
+Live Standard top-down tests showed that even `text_guidance_scale: 20` did not force strict 1-bit black-and-white output or readable wall-surface dithering from text alone. Treat `1-bit`, `dithered`, `stippled`, `checker`, `no gray`, and similar wording as soft hints unless a palette/reference control or approved post-processing route is also used.
+
 Do not equate website Create Tileset Pro with public `create-tiles-pro`. Treat older Gemini wording as stale/low-confidence unless current official website docs reintroduce it.

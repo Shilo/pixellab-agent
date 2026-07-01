@@ -44,6 +44,33 @@ The most useful graybox prompts described separate visual roles for the terrains
 
 Prompts that over-emphasized outlines, darkness, or contrast could make the output read as a single island or void shape instead of distinct raised blockout tiles. Prompts that under-specified contrast could make floor and wall tiles look too similar.
 
+## One-Bit And Dithering Findings
+
+Prompt-only attempts were not able to force strict 1-bit black-and-white output or a dithered wall transition in hosted MCP Standard top-down tilesets.
+
+A ten-generation Standard batch used:
+
+- `tile_size: 16x16`
+- `view: high top-down`
+- `transition_size: 0.5`
+- `outline: lineless`
+- `shading: flat shading`
+- `detail: low detail`
+- `text_guidance_scale: 20`
+- no `color_image`
+- no lower, upper, or transition reference images
+- default `tile_strength`, `tileset_adherence`, and `tileset_adherence_freedom`
+
+The ten text variants tried concise and explicit phrases such as `1-bit`, `pure black`, `pure monochrome`, `no gray`, `black and white`, `dithered wall`, `dithered wall face`, `dithered vertical wall surface`, `dither wall band`, `checker black white wall surface`, `pixel noise`, `white pixels on black`, and `stippled wall surface`.
+
+All ten outputs preserved the expected compact atlas size: each downloaded PNG was `64x64`, matching a 4x4 grid of `16x16` tiles. None produced strict 1-bit output. Unique RGB color counts ranged from 13 to 37, and every output contained non-black/non-white colors. Several outputs also introduced visible tint despite monochrome wording; one high-contrast silhouette prompt drifted strongly purple.
+
+The strongest visual cluster came from prompts that kept both lower and upper terrain black or monochrome and described the transition as a white-on-black or black-and-white wall surface. Prompts that made the upper terrain white tended to brighten the whole terrain too much. However, even the strongest cluster did not place readable dithering on the wall surface.
+
+Observed conclusion: `text_guidance_scale` is a soft prompt-following control, not a hard palette, dithering, or material-placement constraint. For strict palette or precise dithering-placement tests, prompt-only MCP generation should be treated as low-confidence. Prefer REST `color_image` for palette anchoring, REST reference-image fields for terrain or transition anchoring, or an explicitly approved local/editor post-process workflow when the user wants deterministic 1-bit indexed output or ordered dithering.
+
+`color_image` is a REST-only palette reference image field for tileset generation. It should not be used when the experiment is specifically measuring text-only obedience, because it changes the test from prompt-following to palette anchoring.
+
 ## Routing Guidance
 
 For a strict 4x4 graybox top-down tileset, start with:
@@ -60,10 +87,14 @@ Avoid Pro mode for this specific graybox blockout workflow unless testing Pro-on
 
 Use `transition_size: 1.0` only when the richer expanded transition set is acceptable. It may be visually preferable, but it should be treated as a different export layout rather than a compact 16-tile replacement.
 
+Do not spend large prompt-only batches trying to force exact 1-bit palettes or transition-surface dithering. First decide whether the goal is text-obedience research or production control. For production control, move to REST palette/reference inputs or approved Aseprite/indexed-color processing instead of escalating prompt wording alone.
+
 ## Verification
 
 After generation, verify the downloaded PNG dimensions and metadata rather than relying on preview size:
 
 - Compact `32x32` 4x4 output should download as `128x128`.
 - Expanded `32x32` 4x8 output should download as `128x256`.
+- Compact `16x16` 4x4 output should download as `64x64`.
+- For strict palette claims, count unique RGB colors in the original downloaded PNG and verify the exact palette rather than relying on the prompt or preview.
 - Check metadata fields such as `tile_size`, `tileset_data.total_tiles`, `tileset_data.spritesheet_grid`, and `tileset_data.spritesheet_layout`.
