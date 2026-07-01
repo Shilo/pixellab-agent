@@ -69,7 +69,7 @@ The strongest visual cluster came from prompts that kept both lower and upper te
 
 Observed conclusion: `text_guidance_scale` is a soft prompt-following control, not a hard palette, dithering, or material-placement constraint. For strict palette or precise dithering-placement tests, prompt-only MCP generation should be treated as low-confidence. Prefer REST `color_image` for palette anchoring, REST reference-image fields for terrain or transition anchoring, or an explicitly approved local/editor post-process workflow when the user wants deterministic 1-bit indexed output or ordered dithering.
 
-`color_image` is a REST-only palette reference image field for tileset generation. It should not be used when the experiment is specifically measuring text-only obedience, because it changes the test from prompt-following to palette anchoring.
+`color_image` is a REST-only palette reference image field for tileset generation. It should not be used when the experiment is specifically measuring text-only obedience, because it changes the test from prompt-following to palette anchoring. When the goal is production palette control, it is appropriate to use `color_image`; observed REST behavior suggests top-down tilesets may require the palette reference image to be `64x64` internally even when smaller PNGs pass initial request validation.
 
 ### Transition Reference Image Test
 
@@ -111,7 +111,7 @@ Avoid Pro mode for this specific graybox blockout workflow unless testing Pro-on
 
 Use `transition_size: 1.0` only when the richer expanded transition set is acceptable. It may be visually preferable, but it should be treated as a different export layout rather than a compact 16-tile replacement.
 
-Do not spend large prompt-only batches trying to force exact 1-bit palettes or transition-surface dithering. First decide whether the goal is text-obedience research or production control. For production control, move to REST palette/reference inputs or approved Aseprite/indexed-color processing instead of escalating prompt wording alone.
+Do not spend large prompt-only batches trying to force exact 1-bit palettes or transition-surface dithering. First decide whether the goal is text-obedience research or production control. For production control, move to REST palette/reference inputs or approved Aseprite/indexed-color processing instead of escalating prompt wording alone. If using REST `color_image` for top-down tilesets, start with a `64x64` palette reference image so the background job does not fail after accepting a smaller request payload.
 
 When testing `transition_reference_image`, keep `text_guidance_scale` at the default first. Increase it only when the text wording itself is more important than the reference style, because high text guidance does not mean high reference adherence.
 
