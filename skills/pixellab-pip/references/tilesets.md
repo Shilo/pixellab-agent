@@ -25,6 +25,8 @@ Before spending repeated generations on prompt wording, check the visible MCP sc
 - `color_image`: REST control for palette anchoring; for top-down REST tilesets, prepare it as a 64x64 palette reference unless current docs or route behavior prove another size is accepted.
 - Pro-only shape controls such as `spread_x`, `slope_size`, and `raggedness`.
 
+When the user asks for maximum, 100%, or forced text guidance, map that request to the maximum valid `text_guidance_scale` exposed by the chosen tool or schema. Do not also change `transition_size`, `tile_strength`, `tileset_adherence`, or `tileset_adherence_freedom` unless the user requested those controls or the failure mode specifically calls for them.
+
 If the desired result depends on a strict palette, prefer REST tileset generation when it exposes `color_image` and the visible MCP tool does not. Use prompt-only MCP retries only after checking that the needed palette controls are unavailable in the current surface.
 
 The Standard top-down generator does not reliably enforce strict 1-bit black-and-white output from text alone, even with high `text_guidance_scale`. Treat `1-bit`, `no gray`, and similar wording as soft hints unless a palette control or approved post-processing route is also used.
@@ -34,6 +36,8 @@ For REST top-down tilesets, treat `lower_reference_image`, `upper_reference_imag
 Use REST `color_image` when the user clearly wants a fixed palette, such as an explicit color list, `1-bit`, `black and white`, or a supplied palette image. For top-down REST tilesets, the request validator may accept a smaller PNG but the background job can fail later with an internal `Expected image of size 64x64` error. Avoid that process trap by sending a 64x64 palette reference image for `color_image` unless current route behavior proves a different size works. If a tileset job fails with that size expectation and the palette image was smaller or unknown, retry once with a 64x64 `color_image` when the user's budget/attempt count allows; report the mismatch as a PixelLab validation/background-job caveat.
 
 `color_image` constrains the palette, not where colors or texture appear inside each Wang tile. If the user needs texture on a pure terrain tile, put the texture placement in that terrain's description, not only in the transition description. Be aware that strict 1-bit wording plus terms such as `white`, `pale`, or `solid` can collapse a pure terrain tile into a single-color fill even when the same description also mentions dirt, grain, or speckles. Reference images can force placement more strongly, but use them only under the reference-image conditions above.
+
+For REST top-down tilesets, distinguish the canonical tileset image/layout from the returned tile object list. Some responses expose a 4x4 `tileset15` layout or `tileset_image` while also returning 25 tile objects with transition/context variants. Do not reassemble the tile objects into a 5x5 sheet and present that as the final 16-tile Wang tileset. Prefer the canonical spritesheet/tileset image when the metadata says the layout is 4x4/16, and label any decoded tile-object sheet as an inspection artifact.
 
 If PixelLab produces a useful tileset whose colors still need exact indexed-palette cleanup, read `aseprite-cli.md` for the palette-clamp route. Report the untouched PixelLab original separately from any Aseprite/local palette-clamped derivative, and do not imply the derivative is the raw PixelLab result.
 
