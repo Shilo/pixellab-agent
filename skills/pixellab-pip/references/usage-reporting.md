@@ -6,7 +6,7 @@ After final success verification for a live PixelLab generation, edit, transform
 
 ## Report Shape
 
-Use this order for successful work. Keep it readable and short; omit sections that truly do not apply.
+Use this order for successful work. Keep it readable and short; omit sections that truly do not apply. For live generation work that completes but fails verification, still use this report shape and say plainly that verification failed.
 
 ```markdown
 Done - [one plain sentence saying what was produced and whether it passed verification.]
@@ -22,7 +22,7 @@ Done - [one plain sentence saying what was produced and whether it passed verifi
 - Prompt prep: user wording preserved, agent-enhanced, PixelLab inline `enhance_prompt`, or PixelLab enhance endpoint
 
 **Inputs Used**
-- `description`: exact final text sent, or concise excerpt if very long
+- `description`: exact final text sent, when used
 - `action`: exact final text sent, when animation/action was used
 - Required image/frame fields: name each field that materially anchored the result, such as `image`, `first_frame`, `last_frame`, `reference_image`, `style_image`, `init_image`, `mask_image`, or `directions`, and say when an optional paired field was omitted if that changes interpretation, such as `last_frame: omitted`
 - Generation settings: size, view/direction, seed, count, mode/method/product label, `no_background`, frame count/timing, masks, references, palette, outline/detail/shading, reused base asset, or other non-default settings that materially affected the output
@@ -42,7 +42,7 @@ Put route and inputs in bullets instead of burying them in prose. Do not lead wi
 
 For REST routes, report the exact public v2 HTTP path that was actually used, such as `REST POST /v2/create-tileset` for top-down tileset creation, `REST POST /v2/create-tileset-sidescroller` for sidescroller creation, or `GET /v2/tilesets/{tileset_id}` for top-down retrieval. Do not omit the `/v2` prefix or collapse create and retrieval routes into one shorthand.
 
-Always include the final user-facing natural-language values that affected generation, especially `description`, `action`, `edit_description`, `animation_description`, `style_description`, `negative_description`, `item_descriptions`, `text`, and `color_palette`. If prompt enhancement or agent enhancement changed the user's wording, show the final value used. If a value is too long, include the most useful excerpt and say it was truncated for readability.
+Always include every final user-facing natural-language value that was sent to PixelLab or otherwise affected generation, especially `description`, `action`, `edit_description`, `animation_description`, `style_description`, `negative_description`, `item_descriptions`, `text`, and `color_palette`. This is mandatory for both successful reports and completed-but-failed-verification reports. If a `description` field was used, the report must display `description` under `Inputs Used`; do not omit it because the output failed, because the report is short, or because the field seems obvious from the request. If prompt enhancement or agent enhancement changed the user's wording, show the final value used. Show the exact value for `description` unless it is too large for the chat response; when truncation is unavoidable, label it as truncated and include the saved local request/manifest file that contains the full exact value.
 
 Always name image, mask, reference, and frame input fields by their actual API/tool field names when they define the result. Do this even when the field is required by the selected route, because required inputs can still carry the subject identity, edit target, style, direction, or animation anchor. For animation, explicitly state `first_frame` and whether `last_frame` was used or omitted.
 
