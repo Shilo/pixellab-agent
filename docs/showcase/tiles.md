@@ -21,7 +21,7 @@ PixelLab Pip can showcase tile workflows from several surfaces: Create Image Pro
 Original prompt:
 
 ```text
-/pixellab-pip create a 16x16 tile atlas for Minecraft-inspired terrain textures.
+/pixellab-pip create a grid of 16x16 minecraft-inspired tiles using image pro. every tile must be unique and textured.
 ```
 
 The Minecraft-inspired atlas is the lead tile showcase because it is a valid `256x256` image that can be sliced into a `16x16` grid of `16x16` cells. It demonstrates that Create Image Pro can produce a mechanically correct atlas at Minecraft's native texture size. Verification found `251 / 256` exact-unique cells, so this is a strong first-pass atlas rather than a strict all-unique final pack.
@@ -70,7 +70,7 @@ Findings:
 Original prompt:
 
 ```text
-/pixellab-pip create a 64-tile Minecraft-inspired 32x32 terrain pack.
+pip create a grid of 32x32 tiles using create image pro. they must be various tiles for a minecraft mod
 ```
 
 The Minecraft mod terrain pack demonstrates a cleaner uniqueness workflow at `32x32`: generate `64` original PixelLab images at native tile size, then locally arrange those original tiles into an exact `8x8` sheet. The assembled sheet is a stable showcase artifact with auditable 32px cell boundaries.

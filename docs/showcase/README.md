@@ -27,7 +27,7 @@ Real PixelLab Pip example workflows, including prompts, selected routes, outputs
 [<img src="tiles/minecraft-inspired-generate-image-v2-16x16-atlas.png" alt="Minecraft-inspired 16x16 tile atlas" width="256">](tiles.md)
 
 ```text
-/pixellab-pip create a 16x16 tile atlas for Minecraft-inspired terrain textures.
+/pixellab-pip create a grid of 16x16 minecraft-inspired tiles using image pro. every tile must be unique and textured.
 ```
 
 ### Gameplay GUI
